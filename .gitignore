@@ -6,4 +6,5 @@ composer.lock
 Thumbs.db
 .idea
 /app/config/development
-build/
+build
+cache.properties
