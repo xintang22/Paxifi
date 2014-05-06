@@ -19,7 +19,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $item->shouldReceive('setData')->andReturn('foo');
         $item->shouldReceive('setTransformer');
 
-        $fractal->shouldReceive('createData')->with($item)->andReturn('bar');
+        $fractal->shouldReceive('toArray');
+        $fractal->shouldReceive('createData')->with($item)->once()->andReturn($fractal);
 
         $response->withItem();
     }
@@ -37,7 +38,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $response->setContent('foo');
         $response->setTransformer($transformer = m::mock('League\Fractal\TransformerAbstract'));
 
-        $fractal->shouldReceive('createData')->once()->with($collection)->andReturn('bar');
+        $fractal->shouldReceive('toArray');
+        $fractal->shouldReceive('createData')->with($collection)->once()->andReturn($fractal);
 
         $collection->shouldReceive('setData')->once()->with('foo');
         $collection->shouldReceive('setTransformer')->once()->with($transformer);
@@ -58,7 +60,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $response->setContent($paginatedContent = m::mock('Paxifi\Support\Response\Paginator'));
         $response->setTransformer($transformer = m::mock('League\Fractal\TransformerAbstract'));
 
-        $fractal->shouldReceive('createData')->once()->with($collection)->andReturn('bar');
+        $fractal->shouldReceive('toArray');
+        $fractal->shouldReceive('createData')->with($collection)->once()->andReturn($fractal);
 
         $collection->shouldReceive('setData')->once()->with($paginatedContent)->andReturn('foo');
         $collection->shouldReceive('setTransformer')->once()->with($transformer);
@@ -72,7 +75,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testThrowExceptionIfContentIsNotPaginatorAndRespondWithPaginatedCollection()
+    public function testThrowExceptionIfRespondWithPaginatedCollectionButContentIsNotPaginatorInterface()
     {
         $response = new Response(
             $fractal = m::mock('League\Fractal\Manager'),
