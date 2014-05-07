@@ -135,6 +135,8 @@ class Response
      * Sets the response headers.
      *
      * @param array $headers
+     *
+     * @return $this
      */
     public function setHeaders($headers)
     {
@@ -157,6 +159,8 @@ class Response
      * Sets the item resource.
      *
      * @param \Paxifi\Support\Response\Item $item
+     *
+     * @return $this
      */
     public function setItem($item)
     {
@@ -179,6 +183,8 @@ class Response
      * Sets the paginator instance.
      *
      * @param \Paxifi\Support\Response\Paginator $paginator
+     *
+     * @return $this
      */
     public function setPaginator($paginator)
     {
@@ -201,6 +207,8 @@ class Response
      * Sets the response status code.
      *
      * @param int $statusCode
+     *
+     * @return $this
      */
     public function setStatusCode($statusCode)
     {
@@ -223,6 +231,8 @@ class Response
      * Sets the transformer instance.
      *
      * @param \League\Fractal\TransformerAbstract $transformer
+     *
+     * @return $this
      */
     public function setTransformer($transformer)
     {
@@ -306,5 +316,5 @@ class Response
 
         return $this;
     }
-    
+
 } 
