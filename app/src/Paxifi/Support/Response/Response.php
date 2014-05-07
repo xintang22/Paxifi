@@ -139,6 +139,8 @@ class Response
     public function setHeaders($headers)
     {
         $this->headers = $headers;
+
+        return $this;
     }
 
     /**
@@ -159,6 +161,8 @@ class Response
     public function setItem($item)
     {
         $this->item = $item;
+
+        return $this;
     }
 
     /**
@@ -179,6 +183,8 @@ class Response
     public function setPaginator($paginator)
     {
         $this->paginator = $paginator;
+
+        return $this;
     }
 
     /**
@@ -199,6 +205,8 @@ class Response
     public function setStatusCode($statusCode)
     {
         $this->statusCode = $statusCode;
+
+        return $this;
     }
 
     /**
@@ -219,6 +227,8 @@ class Response
     public function setTransformer($transformer)
     {
         $this->transformer = $transformer;
+
+        return $this;
     }
 
     /**
@@ -283,4 +293,18 @@ class Response
         }
     }
 
+    /**
+     * Sets the scopes to be embedded in the response.
+     *
+     * @param array $scopes
+     *
+     * @return $this
+     */
+    public function setRequestedScopes(array $scopes)
+    {
+        $this->fractal->setRequestedScopes($scopes);
+
+        return $this;
+    }
+    
 } 

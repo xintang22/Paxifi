@@ -94,6 +94,21 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $response->withCollection(true);
     }
 
+    public function testSetRequestedScope()
+    {
+        $response = new Response(
+            $fractal = m::mock('League\Fractal\Manager'),
+            m::mock('Paxifi\Support\Response\Item'),
+            m::mock('Paxifi\Support\Response\Collection'),
+            m::mock('Paxifi\Support\Response\Paginator'),
+            m::mock('Paxifi\Support\Response\Cursor')
+        );
+
+        $fractal->shouldReceive('setRequestedScopes')->with(array('foo', 'bar'))->once();
+
+        $response->setRequestedScopes(array('foo', 'bar'));
+    }
+
     public function tearDown()
     {
         m::close();
