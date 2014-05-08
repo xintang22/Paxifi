@@ -13,12 +13,12 @@ abstract class ApiController extends Controller
     /**
      * @var array An array of response headers
      */
-    protected $headers;
+    protected $headers = [];
 
     /**
      * @var int The response status code
      */
-    protected $statusCode;
+    protected $statusCode = 200;
 
     function __construct(Response $response)
     {
