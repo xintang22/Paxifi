@@ -108,6 +108,7 @@ return array(
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 
         'Paxifi\Provider\ApiServiceProvider',
+        'Paxifi\Provider\DriverServiceProvider',
 
 	),
 
