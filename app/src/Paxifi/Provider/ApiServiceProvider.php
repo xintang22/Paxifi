@@ -24,7 +24,7 @@ class ApiServiceProvider extends ServiceProvider
         // Resource Pagination Configuration
         $this->app['config']->set('paxifi.api.pagination.count.default', 10);
 
-        $this->app['config']->set('paxifi.api.pagination.enabled', true);
+        $this->app['config']->set('paxifi.api.pagination.enabled', false);
 
         $this->app['config']->set('paxifi.api.pagination.cursor.enabled', false);
     }

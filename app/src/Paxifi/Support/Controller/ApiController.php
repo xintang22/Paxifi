@@ -3,6 +3,10 @@
 use Illuminate\Routing\Controller;
 use Paxifi\Support\Response\Response;
 
+/**
+ * The Api Base Controller
+ * @package Paxifi\Support\Controller
+ */
 abstract class ApiController extends Controller
 {
     /**
@@ -20,9 +24,30 @@ abstract class ApiController extends Controller
      */
     protected $statusCode = 200;
 
-    function __construct(Response $response)
+    /**
+     * @var bool
+     */
+    protected $paginationEnabled;
+
+    /**
+     * @var int
+     */
+    protected $perPage;
+
+    /**
+     * The constructor.
+     */
+    function __construct()
     {
-        $this->response = $response;
+        $this->response = \App::make('Paxifi\Support\Response\Response');
+
+        $this->response->setRequestedScopes(explode(',', \Input::get('embed')));
+
+        $this->perPage = \Input::get('count', \Config::get('paxifi.api.pagination.count.default'));
+
+        $this->paginationEnabled = \Config::get('paxifi.api.pagination.enabled');
+
+        $this->fireDebugFilters();
     }
 
     /**
@@ -199,5 +224,19 @@ abstract class ApiController extends Controller
     public function errorWrongArgs($message = 'Wrong Arguments')
     {
         return $this->setStatusCode(400)->respondWithError($message);
+    }
+
+    /**
+     * Fires clockwork events
+     */
+    private function fireDebugFilters()
+    {
+        $this->beforeFilter(function () {
+            \Event::fire('clockwork.controller.start');
+        });
+
+        $this->afterFilter(function () {
+            \Event::fire('clockwork.controller.end');
+        });
     }
 }
