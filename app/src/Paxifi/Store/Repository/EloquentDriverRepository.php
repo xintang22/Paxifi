@@ -4,7 +4,7 @@ use Illuminate\Auth\UserInterface;
 use Paxifi\Support\Contracts\AddressInterface;
 use Paxifi\Support\Repository\BaseModel;
 
-class EloquentDriverRepository extends BaseModel implements DriverRepositoryInterface, UserInterface
+class EloquentDriverRepository extends BaseModel implements DriverRepositoryInterface, AddressInterface, UserInterface
 {
     /**
      * The table associated with the model.
@@ -59,6 +59,46 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public function getAddressAttribute($value)
     {
         return unserialize($value);
+    }
+
+    /**
+     * Retrieve the driver's country.
+     *
+     * @return mixed
+     */
+    public function getCity()
+    {
+        return $this->address['city'];
+    }
+
+    /**
+     * Retrieve the driver's country.
+     *
+     * @return mixed
+     */
+    public function getCountry()
+    {
+        return $this->address['country'];
+    }
+
+    /**
+     * Retrieve the driver's postcode.
+     *
+     * @return mixed
+     */
+    public function getPostcode()
+    {
+        return $this->address['postcode'];
+    }
+
+    /**
+     * Retrieve the driver's street.
+     *
+     * @return mixed
+     */
+    public function getStreet()
+    {
+        return $this->address['street'];
     }
 
     /**
