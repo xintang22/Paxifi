@@ -32,13 +32,13 @@ class BaseModel extends Model implements ValidatorInterface
      */
     public function validate($data)
     {
-        // make a new validator object
-        $v = \Validator::make($data, $this->rules);
+        /** @var $validator \Illuminate\Validation\Validator */
+        $validator = \Validator::make($data, $this->rules);
 
         // check for failure
-        if ($v->fails()) {
+        if ($validator->fails()) {
             // set errors and return false
-            $this->errors = $v->errors;
+            $this->errors = $validator->errors()->all();
             return false;
         }
 
