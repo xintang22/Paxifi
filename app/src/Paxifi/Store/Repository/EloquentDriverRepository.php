@@ -26,7 +26,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      * @var array
      */
     protected $rules = array(
-        'name' => 'required|alpha|min:6',
+        'name' => 'required',
         'email' => 'required|email|unique:drivers',
         'password' => 'required',
         'photo' => 'url',
