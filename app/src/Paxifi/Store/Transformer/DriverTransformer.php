@@ -1,11 +1,18 @@
 <?php namespace Paxifi\Store\Transformer;
 
 use League\Fractal\TransformerAbstract;
+use Paxifi\Store\Repository\DriverRepositoryInterface;
 
 class DriverTransformer extends TransformerAbstract {
 
-    public function transform($data)
+    public function transform(DriverRepositoryInterface $driver)
     {
-        return $data;
+        return array(
+            'email' => $driver->email,
+            'photo' => $driver->photo,
+            'name' => $driver->name,
+            'address' => $driver->address,
+            'currency' => $driver->currency,
+        );
     }
 } 
