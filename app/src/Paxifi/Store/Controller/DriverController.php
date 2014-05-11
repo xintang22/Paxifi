@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Store\Controller;
 
+use Paxifi\Store\Auth\Auth;
 use Paxifi\Store\Repository\DriverRepositoryInterface;
 use Paxifi\Store\Transformer\DriverTransformer;
 use Paxifi\Support\Controller\ApiController;
@@ -43,7 +44,11 @@ class DriverController extends ApiController
     {
         $data = \Input::all();
 
-        return $this->setStatusCode(201)->respondWithItem($data);
+        if ($driver = $this->driver->store($data)) {
+            return $this->setStatusCode(201)->respondWithItem($driver);
+        }
+
+        return $this->errorWrongArgs($this->driver->getValidationErrors());
     }
 
     /**
@@ -91,4 +96,28 @@ class DriverController extends ApiController
     {
         return $this->transformer;
     }
+
+    public function login()
+    {
+        $credentials = array(
+            'email' => \Input::get('email'),
+            'password' => \Input::get('password'),
+        );
+
+        if (Auth::attempt($credentials)) {
+            return array(
+                'success' => 1,
+                'token' => \Session::token(),
+            );
+        }
+
+        return $this->errorUnauthorized();
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return array('success' => 1);
+    }
+
 }
