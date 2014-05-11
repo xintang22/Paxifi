@@ -193,7 +193,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
 
             $this->save();
 
-            return true;
+            return $this;
         }
 
         return false;
