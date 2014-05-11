@@ -1,10 +1,10 @@
 <?php namespace Paxifi\Provider;
 
 use Illuminate\Support\ServiceProvider;
+use Paxifi\Store\Auth\AuthManager;
 
 class DriverServiceProvider extends ServiceProvider
 {
-
     /**
      * Register the service provider.
      *
@@ -15,6 +15,8 @@ class DriverServiceProvider extends ServiceProvider
         $this->registerRoutes();
 
         $this->registerDriverRepository();
+
+        $this->registerAuthManager();
     }
 
     /**
@@ -36,5 +38,21 @@ class DriverServiceProvider extends ServiceProvider
     {
         $this->app['router']->get('drivers', 'Paxifi\Store\Controller\DriverController@index');
         $this->app['router']->post('drivers', 'Paxifi\Store\Controller\DriverController@store');
+        $this->app['router']->post('drivers/login', 'Paxifi\Store\Controller\DriverController@login');
+        $this->app['router']->post('drivers/logout', 'Paxifi\Store\Controller\DriverController@logout');
+    }
+
+    /**
+     * Register the Auth manager.
+     *
+     * @return void
+     */
+    protected function registerAuthManager()
+    {
+        $this->app->bindShared('driver.auth', function ($app) {
+            $app['auth.loaded'] = true;
+
+            return new AuthManager($app);
+        });
     }
 }
