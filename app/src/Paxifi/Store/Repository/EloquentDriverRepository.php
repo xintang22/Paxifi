@@ -1,10 +1,11 @@
 <?php namespace Paxifi\Store\Repository;
 
+use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Auth\UserInterface;
 use Paxifi\Support\Contracts\AddressInterface;
 use Paxifi\Support\Repository\BaseModel;
 
-class EloquentDriverRepository extends BaseModel implements DriverRepositoryInterface, AddressInterface, UserInterface
+class EloquentDriverRepository extends BaseModel implements DriverRepositoryInterface, AddressInterface, UserInterface, RemindableInterface
 {
     /**
      * The table associated with the model.
