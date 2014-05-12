@@ -97,6 +97,11 @@ class DriverController extends ApiController
         return $this->transformer;
     }
 
+    /**
+     * Login the driver.
+     *
+     * @return array|\Illuminate\Http\JsonResponse
+     */
     public function login()
     {
         $credentials = array(
@@ -107,17 +112,24 @@ class DriverController extends ApiController
         if (Auth::attempt($credentials)) {
             return array(
                 'success' => 1,
-                'token' => \Session::token(),
+                'message' => 'You have been successfully logged in.',
+                '_token' => \Session::token(),
             );
         }
 
         return $this->errorUnauthorized();
     }
 
+    /**
+     * Logout the driver.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout()
     {
         Auth::logout();
-        return array('success' => 1);
+
+        return $this->setStatusCode(200)->respond(array('success' => 1, 'message' => 'You have been successfully logged out.'));
     }
 
 }
