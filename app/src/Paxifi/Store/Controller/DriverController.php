@@ -97,39 +97,4 @@ class DriverController extends ApiController
         return $this->transformer;
     }
 
-    /**
-     * Login the driver.
-     *
-     * @return array|\Illuminate\Http\JsonResponse
-     */
-    public function login()
-    {
-        $credentials = array(
-            'email' => \Input::get('email'),
-            'password' => \Input::get('password'),
-        );
-
-        if (Auth::attempt($credentials)) {
-            return array(
-                'success' => 1,
-                'message' => 'You have been successfully logged in.',
-                '_token' => \Session::token(),
-            );
-        }
-
-        return $this->errorUnauthorized();
-    }
-
-    /**
-     * Logout the driver.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function logout()
-    {
-        Auth::logout();
-
-        return $this->setStatusCode(200)->respond(array('success' => 1, 'message' => 'You have been successfully logged out.'));
-    }
-
 }

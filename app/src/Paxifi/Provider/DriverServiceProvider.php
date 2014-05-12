@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Provider;
 
+use Illuminate\Auth\Reminders\PasswordBroker;
 use Illuminate\Support\ServiceProvider;
 use Paxifi\Store\Auth\AuthManager;
 
@@ -38,8 +39,8 @@ class DriverServiceProvider extends ServiceProvider
     {
         $this->app['router']->get('drivers', 'Paxifi\Store\Controller\DriverController@index');
         $this->app['router']->post('drivers', 'Paxifi\Store\Controller\DriverController@store');
-        $this->app['router']->post('drivers/login', 'Paxifi\Store\Controller\DriverController@login');
-        $this->app['router']->post('drivers/logout', 'Paxifi\Store\Controller\DriverController@logout');
+        $this->app['router']->post('drivers/login', 'Paxifi\Store\Controller\AuthController@login');
+        $this->app['router']->post('drivers/logout', 'Paxifi\Store\Controller\AuthController@logout');
     }
 
     /**
