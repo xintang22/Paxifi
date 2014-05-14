@@ -1,7 +1,7 @@
 <?php namespace Paxifi\Store\Transformer;
 
 use League\Fractal\TransformerAbstract;
-use Paxifi\Store\Repository\DriverRepositoryInterface;
+use Paxifi\Store\Repository\Driver\DriverRepositoryInterface;
 
 class DriverTransformer extends TransformerAbstract {
 

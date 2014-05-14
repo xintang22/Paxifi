@@ -1,4 +1,4 @@
-<?php namespace Paxifi\Store\Repository;
+<?php namespace Paxifi\Store\Repository\Driver;
 
 use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Auth\UserInterface;

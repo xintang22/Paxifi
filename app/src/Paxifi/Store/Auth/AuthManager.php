@@ -40,7 +40,7 @@ class AuthManager extends IlluminateAuthManager
      */
     protected function createEloquentProvider()
     {
-        $model = 'Paxifi\Store\Repository\EloquentDriverRepository';
+        $model = 'Paxifi\Store\Repository\Driver\EloquentDriverRepository';
 
         return new EloquentUserProvider($this->app['hash'], $model);
     }

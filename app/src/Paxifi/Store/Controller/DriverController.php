@@ -1,14 +1,13 @@
 <?php namespace Paxifi\Store\Controller;
 
-use Paxifi\Store\Auth\Auth;
-use Paxifi\Store\Repository\DriverRepositoryInterface;
+use Paxifi\Store\Repository\Driver\DriverRepositoryInterface;
 use Paxifi\Store\Transformer\DriverTransformer;
 use Paxifi\Support\Controller\ApiController;
 
 class DriverController extends ApiController
 {
     /**
-     * @var \Paxifi\Store\Repository\DriverRepositoryInterface
+     * @var \Paxifi\Store\Repository\Driver\DriverRepositoryInterface
      */
     private $driver;
 
