@@ -17,7 +17,7 @@ class BaseModel extends Model implements ValidatorInterface
     /**
      * @var array
      */
-    protected $errors;
+    protected static $errors;
 
     /**
      * @{@inheritdoc }
@@ -38,7 +38,7 @@ class BaseModel extends Model implements ValidatorInterface
         // check for failure
         if ($validator->fails()) {
             // set errors and return false
-            $this->errors = $validator->errors()->all();
+            self::$errors = $validator->errors()->all();
             return false;
         }
 
@@ -51,21 +51,24 @@ class BaseModel extends Model implements ValidatorInterface
      */
     public function getValidationErrors()
     {
-        return $this->errors;
+        return self::$errors;
     }
 
     /**
      * Save a new model and return the instance.
      *
-     * @param  array  $attributes
+     * @param  array $attributes
+     *
      * @return \Illuminate\Database\Eloquent\Model|static
      */
     public static function create(array $attributes)
     {
         $model = new static($attributes);
 
-        if ($model->validate($attributes))
+        if ($model->validate($attributes)) {
+
             return parent::create($attributes);
+        }
 
         return false;
     }
