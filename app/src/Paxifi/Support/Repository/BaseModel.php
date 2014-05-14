@@ -53,4 +53,18 @@ class BaseModel extends Model implements ValidatorInterface
     {
         return $this->errors;
     }
+
+    /**
+     * Save a new model and return the instance.
+     *
+     * @param  array  $attributes
+     * @return \Illuminate\Database\Eloquent\Model|static
+     */
+    public static function create(array $attributes)
+    {
+        if (self::validate($attributes))
+            return parent::create($attributes);
+
+        return false;
+    }
 }
