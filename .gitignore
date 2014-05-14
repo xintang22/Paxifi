@@ -8,3 +8,5 @@ Thumbs.db
 /app/config/development
 build
 cache.properties
+
+phpunit.xml
