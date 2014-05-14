@@ -62,7 +62,9 @@ class BaseModel extends Model implements ValidatorInterface
      */
     public static function create(array $attributes)
     {
-        if (self::validate($attributes))
+        $model = new static($attributes);
+
+        if ($model->validate($attributes))
             return parent::create($attributes);
 
         return false;

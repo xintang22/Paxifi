@@ -43,7 +43,7 @@ class DriverController extends ApiController
     {
         $data = \Input::all();
 
-        if ($driver = $this->driver->store($data)) {
+        if ($driver = $this->driver->create($data)) {
             return $this->setStatusCode(201)->respondWithItem($driver);
         }
 

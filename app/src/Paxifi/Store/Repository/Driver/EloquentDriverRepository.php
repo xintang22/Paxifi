@@ -22,6 +22,13 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     protected $hidden = array('password');
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = array('name', 'photo', 'password', 'email', 'address', 'currency');
+
+    /**
      * The data validation rules
      *
      * @var array
@@ -172,32 +179,6 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public function getReminderEmail()
     {
         return $this->email;
-    }
-
-    /**
-     * Add a new driver.
-     *
-     * @param $data
-     *
-     * @return bool
-     */
-    public function store($data)
-    {
-        if ($this->validate($data)) {
-
-            $this->name = $data['name'];
-            $this->email = $data['email'];
-            $this->password = $data['password'];
-            $this->photo = $data['photo'];
-            $this->address = $data['address'];
-            $this->currency = $data['currency'];
-
-            $this->save();
-
-            return $this;
-        }
-
-        return false;
     }
 
 }
