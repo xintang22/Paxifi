@@ -109,6 +109,7 @@ return array(
 
         'Paxifi\Provider\ApiServiceProvider',
         'Paxifi\Provider\DriverServiceProvider',
+        'Paxifi\Provider\FileUploaderServiceProvider',
 
 	),
 

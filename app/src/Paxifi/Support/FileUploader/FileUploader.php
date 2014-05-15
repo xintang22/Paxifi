@@ -14,6 +14,6 @@ class FileUploader extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'file.uploader';
+        return 'paxifi.files.uploader';
     }
 } 

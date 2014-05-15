@@ -3,13 +3,13 @@
 interface UploaderProviderInterface
 {
     /**
-     * File upload handler.
+     * Upload a file to target and return a full URL
      *
-     * @param       $source
-     * @param       $destination
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile|array $file
+     * @param string $target
      * @param array $options
      *
-     * @return mixed
+     * @return bool|string
      */
-    public function upload($source, $destination, $options = array());
+    public function upload($file, $target = null, $options = array());
 }
