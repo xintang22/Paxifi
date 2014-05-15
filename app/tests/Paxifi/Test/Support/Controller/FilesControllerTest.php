@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Test\Support\Controller;
 
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FilesControllerTest extends \TestCase
@@ -8,11 +9,14 @@ class FilesControllerTest extends \TestCase
 
     public function setUp()
     {
+        parent::setUp();
+
         $this->workspace = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . time() . rand(0, 1000);
         mkdir($this->workspace, 0777, true);
         $this->workspace = realpath($this->workspace);
 
-        parent::setUp();
+        // Override the files uploads directory
+        $this->app['config']->set('paxifi.files.uploads_directory', $this->workspace);
     }
 
     public function tearDown()
@@ -36,15 +40,44 @@ class FilesControllerTest extends \TestCase
 
     public function testUploadSingleFile()
     {
-        $this->call('post', 'files', array(), array('files' => $this->files(true)));
+        $foo = $this->files(true);
 
-        $targetPath = $this->app['path.public'] . '/uploads/foo.txt';
+        $response = $this->call('post', 'files', array(), array('files' => $foo));
 
         $this->assertResponseOk();
 
-        $this->assertFileExists($targetPath);
+        // If successful upload, the foo.txt will no longer exist.
+        $this->assertFileNotExists($this->workspace . DIRECTORY_SEPARATOR . 'foo.txt');
 
-        $this->clean($targetPath);
+        return $response;
+    }
+
+    /**
+     * @depends testUploadSingleFile
+     */
+    public function testReturnUrlToUploadedFile(JsonResponse $response)
+    {
+        $this->assertJson($response->getContent());
+        $this->assertContains('urls', $response->getContent());
+    }
+
+    /**
+     * @expectedException \Symfony\Component\HttpFoundation\File\Exception\FileException
+     */
+    public function testThrowFileExceptionIfNoFileUploaded()
+    {
+        $this->call('post', 'files');
+    }
+
+    public function testUploadMultipleFiles()
+    {
+        $this->call('post', 'files', array(), array('files' => $this->files()));
+
+        $this->assertResponseOk();
+
+        // If successful upload, the foo.txt will no longer exist.
+        $this->assertFileNotExists($this->workspace . DIRECTORY_SEPARATOR . 'foo.txt');
+        $this->assertFileNotExists($this->workspace . DIRECTORY_SEPARATOR . 'bar.txt');
     }
 
     protected function files($one = false)
