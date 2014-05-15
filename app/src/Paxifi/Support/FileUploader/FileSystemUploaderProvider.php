@@ -5,7 +5,7 @@ use \Illuminate\Config\Repository as Config;
 class FileSystemUploaderProvider implements UploaderProviderInterface
 {
     /**
-     * @var \Illuminate\Support\Facades\Config
+     * @var \Illuminate\Config\Repository
      */
     protected $config;
 
