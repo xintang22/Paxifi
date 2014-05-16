@@ -1,6 +1,7 @@
 <?php namespace Paxifi\Store\Controller;
 
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Event;
 use Paxifi\Store\Auth\Auth;
 
 class AuthController extends Controller
@@ -18,10 +19,13 @@ class AuthController extends Controller
         );
 
         if (Auth::attempt($credentials)) {
+
+            Event::fire('driver.login', array(Auth::user()));
+
             return array(
-                'success' => 1,
+                'success' => true,
                 'message' => 'You have been successfully logged in.',
-                '_token' => \Session::token(),
+                'access_token' => \Session::token(),
             );
         }
 
@@ -35,8 +39,15 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        Auth::logout();
+        if ($driver = Auth::user()) {
 
-        return \Response::json(array('success' => 1, 'message' => 'You have been successfully logged out.'));
+            Event::fire('driver.logout', array($driver));
+
+            Auth::logout();
+
+            return \Response::json(array('success' => true, 'message' => 'You have been successfully logged out.'));
+        }
+
+        return \Response::json(array('error' => true, 'message' => 'You are not logged in.'), 404);
     }
 }
