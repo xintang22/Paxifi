@@ -50,6 +50,8 @@ class DriverServiceProvider extends ServiceProvider
         $this->app['router']->post('drivers/password/remind', 'Paxifi\Store\Controller\RemindersController@remind');
         $this->app['router']->get('drivers/password/reset/{token}', 'Paxifi\Store\Controller\RemindersController@show');
         $this->app['router']->post('drivers/password/reset', 'Paxifi\Store\Controller\RemindersController@reset');
+
+        $this->app['router']->get('drivers/seller_id', 'Paxifi\Store\Controller\DriverController@checkSellerId');
     }
 
     /**

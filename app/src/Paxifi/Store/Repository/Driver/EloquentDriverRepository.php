@@ -26,7 +26,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @var array
      */
-    protected $fillable = array('name', 'photo', 'password', 'email', 'address', 'currency');
+    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency');
 
     /**
      * The data validation rules
@@ -35,6 +35,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      */
     protected $rules = array(
         'name' => 'required',
+        'seller_id' => 'required|unique:drivers|alpha_dash|max:12',
         'email' => 'required|email|unique:drivers',
         'password' => 'required',
         'photo' => 'url',
@@ -181,4 +182,16 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         return $this->email;
     }
 
+
+    /**
+     * Find driver by his/her seller id.
+     *
+     * @param $sellerId
+     *
+     * @return mixed
+     */
+    public function findBySellerId($sellerId)
+    {
+        return $this->where('seller_id', '=', $sellerId)->take(1)->get();
+    }
 }

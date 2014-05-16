@@ -96,4 +96,26 @@ class DriverController extends ApiController
         return $this->transformer;
     }
 
+    /**
+     * Checks if the seller id is available.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkSellerId()
+    {
+        if ($sellerId = \Input::get('id'))
+        {
+            $driver = $this->driver->findBySellerId($sellerId);
+
+            if (!$driver->count()) {
+                return $this->respond(array('success' => true, 'message' => sprintf('%s is available', $sellerId)));
+            }
+
+            return $this->errorWrongArgs(sprintf('%s is not available', $sellerId));
+        }
+
+        return $this->errorWrongArgs('Seller id is missing.');
+
+    }
+
 }

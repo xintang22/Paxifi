@@ -1,6 +1,6 @@
 <?php
 
-use Paxifi\Store\Repository\EloquentDriverRepository as Driver;
+use Paxifi\Store\Repository\Driver\EloquentDriverRepository as Driver;
 use Faker\Factory as Faker;
 
 class DriversTableSeeder extends Seeder
@@ -19,6 +19,7 @@ class DriversTableSeeder extends Seeder
                     'password' => Hash::make($faker->name),
                     'photo' => $faker->imageUrl(250, 250),
                     'name' => $faker->name,
+                    'seller_id' => $faker->firstName,
                     'address' => array(
                         'street' => $faker->streetAddress,
                         'city' => $faker->city,
