@@ -37,15 +37,15 @@ class AuthController extends Controller
 
             return \Response::json(array(
                 'success' => true,
-                'message' => $this->translator->trans('responses.auth.success.login'),
+                'message' => $this->translator->trans('responses.auth.login'),
                 'access_token' => \Session::token(),
             ));
         }
 
         return \Response::json(array(
             'error' => true,
-            'message' => $this->translator->trans('responses.auth.error.wrong_credentials')
-        ), 401);
+            'message' => $this->translator->trans('responses.auth.wrong_credentials')
+        ), 403);
     }
 
     /**
@@ -63,13 +63,13 @@ class AuthController extends Controller
 
             return \Response::json(array(
                 'success' => true,
-                'message' => $this->translator->trans('responses.auth.success.logout'),
+                'message' => $this->translator->trans('responses.auth.logout'),
             ));
         }
 
         return \Response::json(array(
             'error' => true,
-            'message' => $this->translator->trans('responses.auth.error.not_logged_in'),
+            'message' => $this->translator->trans('responses.auth.not_logged_in'),
         ), 403);
     }
 }

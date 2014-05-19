@@ -31,7 +31,7 @@ class DriverController extends ApiController
      */
     public function index()
     {
-        return [1, 2, 3];
+        return $this->respondWithCollection($this->driver->all());
     }
 
     /**
@@ -103,18 +103,22 @@ class DriverController extends ApiController
      */
     public function checkSellerId()
     {
-        if ($sellerId = \Input::get('id'))
-        {
+        if ($sellerId = \Input::get('id')) {
             $driver = $this->driver->findBySellerId($sellerId);
 
             if (!$driver->count()) {
-                return $this->respond(array('success' => true, 'message' => sprintf('%s is available', $sellerId)));
+                return $this->respond(array(
+                    'success' => true,
+                    'message' => $this->translator->trans('responses.store.seller_id_available', array('seller_id' => $sellerId))
+                ));
             }
 
-            return $this->errorWrongArgs(sprintf('%s is not available', $sellerId));
+            return $this->errorWrongArgs(
+                $this->translator->trans('responses.store.seller_id_not_available', array('seller_id' => $sellerId))
+            );
         }
 
-        return $this->errorWrongArgs('Seller id is missing.');
+        return $this->errorWrongArgs($this->translator->trans('responses.store.missing_seller_id'));
 
     }
 

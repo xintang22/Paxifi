@@ -4,21 +4,34 @@ return array(
 
     "auth" => array(
 
-        "success" => array(
+        "login" => "You have been successfully logged in.",
 
-            "login" => "You have been successfully logged in.",
+        "logout" => "You have been successfully logged out.",
 
-            "logout" => "You have been successfully logged out.",
+        "wrong_credentials" => "Wrong email or password.",
 
-        ),
+        "not_logged_in" => "You are not logged in.",
 
-        "error" => array(
+    ),
 
-            "wrong_credentials" => "Wrong email or password.",
+    "reminder" => array(
 
-            "not_logged_in" => "You are not logged in.",
+        "mail_subject" => "Paxifi | Password Reminder",
 
-        ),
+        "driver" => "We can't find a driver with that e-mail address.",
+
+        "sent" => "Password reminder sent to :email!",
+
+        "reset" => "Your password has been successfully updated.",
+    ),
+
+    "store" => array(
+
+        "seller_id_available" => ":seller_id is available.",
+
+        "seller_id_not_available" => ":seller_id is already taken.",
+
+        "missing_seller_id" => 'Seller id is missing.',
 
     ),
 

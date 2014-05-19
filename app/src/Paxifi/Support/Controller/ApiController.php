@@ -35,6 +35,13 @@ abstract class ApiController extends Controller
     protected $perPage;
 
     /**
+     * The Translator implementation.
+     *
+     * @var \Illuminate\Translation\Translator
+     */
+    protected $translator;
+
+    /**
      * The constructor.
      */
     function __construct()
@@ -42,6 +49,8 @@ abstract class ApiController extends Controller
         $this->response = \App::make('Paxifi\Support\Response\Response');
 
         $this->response->setRequestedScopes(explode(',', \Input::get('embed')));
+
+        $this->translator = \App::make('translator');
 
         $this->perPage = \Input::get('count', \Config::get('paxifi.api.pagination.count.default'));
 
@@ -149,7 +158,7 @@ abstract class ApiController extends Controller
     protected function respondWithError($message)
     {
         return $this->respond(array(
-            'error' => 1,
+            'error' => true,
             'message' => $message
         ));
     }

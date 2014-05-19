@@ -2,6 +2,7 @@
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Translation\Translator;
 use Paxifi\Store\Auth\Password;
 
 /**
@@ -10,6 +11,17 @@ use Paxifi\Store\Auth\Password;
  */
 class RemindersController extends Controller
 {
+    /**
+     * The Translator implementation.
+     *
+     * @var \Illuminate\Translation\Translator
+     */
+    protected $translator;
+
+    function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
 
     /**
      * Send the password reminder.
@@ -19,15 +31,21 @@ class RemindersController extends Controller
     public function remind()
     {
         $response = Password::remind(\Input::only('email'), function ($message) {
-            $message->subject('Paxifi | Password Reminder');
+            $message->subject($this->translator->trans('responses.reminder.mail_subject'));
         });
 
         switch ($response) {
             case Password::INVALID_USER:
-                return Response::json(array('error' => 1, 'message' => 'Driver does not exist.'), 400);
+                return Response::json(array(
+                    'error' => true,
+                    'message' => $this->translator->trans('responses.reminder.driver'),
+                ), 400);
 
             case Password::REMINDER_SENT:
-                return Response::json(array('success' => 1, 'message' => sprintf('Mail has been sent to %s', \Input::get('email'))));
+                return Response::json(array(
+                    'success' => true,
+                    'message' => $this->translator->trans('responses.reminder.sent', array('email' => \Input::get('email')))
+                ));
         }
     }
 
@@ -69,7 +87,7 @@ class RemindersController extends Controller
                 return \Redirect::back()->with('error', \Lang::get($response));
 
             case Password::PASSWORD_RESET:
-                return \Redirect::back()->with('success', 'Your password has been successfully updated.');
+                return \Redirect::back()->with('success', $this->translator->trans('responses.reminder.reset'));
         }
     }
 
