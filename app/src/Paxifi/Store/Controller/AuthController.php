@@ -2,10 +2,23 @@
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Translation\Translator;
 use Paxifi\Store\Auth\Auth;
 
 class AuthController extends Controller
 {
+    /**
+     * The Translator implementation.
+     *
+     * @var \Illuminate\Translation\Translator
+     */
+    protected $translator;
+
+    function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * Login the driver.
      *
@@ -22,14 +35,17 @@ class AuthController extends Controller
 
             Event::fire('driver.login', array(Auth::user()));
 
-            return array(
+            return \Response::json(array(
                 'success' => true,
-                'message' => 'You have been successfully logged in.',
+                'message' => $this->translator->trans('responses.auth.success.login'),
                 'access_token' => \Session::token(),
-            );
+            ));
         }
 
-        return \Response::json(array('error' => 1, 'message' => 'Wrong email or password'), 401);
+        return \Response::json(array(
+            'error' => true,
+            'message' => $this->translator->trans('responses.auth.error.wrong_credentials')
+        ), 401);
     }
 
     /**
@@ -45,9 +61,15 @@ class AuthController extends Controller
 
             Auth::logout();
 
-            return \Response::json(array('success' => true, 'message' => 'You have been successfully logged out.'));
+            return \Response::json(array(
+                'success' => true,
+                'message' => $this->translator->trans('responses.auth.success.logout'),
+            ));
         }
 
-        return \Response::json(array('error' => true, 'message' => 'You are not logged in.'), 404);
+        return \Response::json(array(
+            'error' => true,
+            'message' => $this->translator->trans('responses.auth.error.not_logged_in'),
+        ), 403);
     }
 }
