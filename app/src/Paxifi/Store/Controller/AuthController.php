@@ -1,23 +1,11 @@
 <?php namespace Paxifi\Store\Controller;
 
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Translation\Translator;
 use Paxifi\Store\Auth\Auth;
+use Paxifi\Support\Controller\BaseApiController;
 
-class AuthController extends Controller
+class AuthController extends BaseApiController
 {
-    /**
-     * The Translator implementation.
-     *
-     * @var \Illuminate\Translation\Translator
-     */
-    protected $translator;
-
-    function __construct(Translator $translator)
-    {
-        $this->translator = $translator;
-    }
 
     /**
      * Login the driver.
@@ -35,17 +23,14 @@ class AuthController extends Controller
 
             Event::fire('driver.login', array(Auth::user()));
 
-            return \Response::json(array(
+            return $this->respond(array(
                 'success' => true,
                 'message' => $this->translator->trans('responses.auth.login'),
                 'access_token' => \Session::token(),
             ));
         }
 
-        return \Response::json(array(
-            'error' => true,
-            'message' => $this->translator->trans('responses.auth.wrong_credentials')
-        ), 403);
+        return $this->errorForbidden($this->translator->trans('responses.auth.wrong_credentials'));
     }
 
     /**
@@ -61,15 +46,12 @@ class AuthController extends Controller
 
             Auth::logout();
 
-            return \Response::json(array(
+            return $this->respond(array(
                 'success' => true,
                 'message' => $this->translator->trans('responses.auth.logout'),
             ));
         }
 
-        return \Response::json(array(
-            'error' => true,
-            'message' => $this->translator->trans('responses.auth.not_logged_in'),
-        ), 403);
+        return $this->errorForbidden($this->translator->trans('responses.auth.not_logged_in'));
     }
 }

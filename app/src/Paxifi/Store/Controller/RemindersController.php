@@ -1,28 +1,15 @@
 <?php namespace Paxifi\Store\Controller;
 
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Translation\Translator;
 use Paxifi\Store\Auth\Password;
+use Paxifi\Support\Controller\BaseApiController;
 
 /**
  * Class RemindersController
  * @package Paxifi\Store\Controller
  */
-class RemindersController extends Controller
+class RemindersController extends BaseApiController
 {
-    /**
-     * The Translator implementation.
-     *
-     * @var \Illuminate\Translation\Translator
-     */
-    protected $translator;
-
-    function __construct(Translator $translator)
-    {
-        $this->translator = $translator;
-    }
-
     /**
      * Send the password reminder.
      *
@@ -36,13 +23,10 @@ class RemindersController extends Controller
 
         switch ($response) {
             case Password::INVALID_USER:
-                return Response::json(array(
-                    'error' => true,
-                    'message' => $this->translator->trans('responses.reminder.driver'),
-                ), 400);
+                return $this->errorWrongArgs($this->translator->trans('responses.reminder.driver'));
 
             case Password::REMINDER_SENT:
-                return Response::json(array(
+                return $this->respond(array(
                     'success' => true,
                     'message' => $this->translator->trans('responses.reminder.sent', array('email' => \Input::get('email')))
                 ));
