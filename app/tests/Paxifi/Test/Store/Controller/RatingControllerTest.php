@@ -16,7 +16,7 @@ class RatingControllerTest extends \TestCase
     public function testThumbsUp()
     {
 
-        $this->call('post', 'drivers/1/rating?type=up', array());
+        $this->call('post', 'drivers/1/rating', array('type' => 'up'));
 
         $this->assertResponseOk();
 
@@ -29,7 +29,7 @@ class RatingControllerTest extends \TestCase
     public function testThumbsDown()
     {
 
-        $this->call('post', 'drivers/1/rating?type=down', array());
+        $this->call('post', 'drivers/1/rating', array('type' => 'down'));
 
         $this->assertResponseOk();
 
