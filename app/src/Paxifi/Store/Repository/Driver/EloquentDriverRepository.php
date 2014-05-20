@@ -2,10 +2,11 @@
 
 use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Auth\UserInterface;
+use Paxifi\Feedback\Repository\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;
 use Paxifi\Support\Repository\BaseModel;
 
-class EloquentDriverRepository extends BaseModel implements DriverRepositoryInterface, AddressInterface, UserInterface, RemindableInterface
+class EloquentDriverRepository extends BaseModel implements DriverRepositoryInterface, AddressInterface, UserInterface, RemindableInterface, RatingInterface
 {
     /**
      * The table associated with the model.
@@ -193,5 +194,31 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public function findBySellerId($sellerId)
     {
         return $this->where('seller_id', '=', $sellerId)->take(1)->get();
+    }
+
+    /**
+     * Increment the thumbs up.
+     *
+     * @return $this
+     */
+    public function thumbsUp()
+    {
+        $this->thumbs_up++;
+        $this->save();
+
+        return $this;
+    }
+
+    /**
+     * Increment the thumbs down.
+     *
+     * @return $this
+     */
+    public function thumbsDown()
+    {
+        $this->thumbs_down++;
+        $this->save();
+
+        return $this;
     }
 }

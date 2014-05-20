@@ -22,6 +22,8 @@ class CreateDriversTable extends Migration
             $table->text('address');
             $table->string('currency', 3)->default('USD');
             $table->string('remember_token')->nullable();
+            $table->integer('thumbs_up')->default(0)->nullable();
+            $table->integer('thumbs_down')->default(0)->nullable();
             $table->timestamps();
         });
     }
