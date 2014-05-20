@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder {
 
         $this->call('DriversTableSeeder');
 
+        $this->call('CategoriesTableSeeder');
+
 		// $this->call('UserTableSeeder');
 	}
 
