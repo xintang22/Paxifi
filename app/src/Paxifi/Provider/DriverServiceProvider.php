@@ -29,7 +29,7 @@ class DriverServiceProvider extends ServiceProvider
      */
     protected function registerDriverRepository()
     {
-        $this->app->bind('Paxifi\Store\Repository\Driver\DriverRepositoryInterface', 'Paxifi\Store\Repository\Driver\EloquentDriverRepository', true);
+        $this->app->bind('paxifi.repository.driver', 'Paxifi\Store\Repository\Driver\EloquentDriverRepository', true);
     }
 
     /**
@@ -97,5 +97,15 @@ class DriverServiceProvider extends ServiceProvider
 
             );
         });
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return array('paxifi.repository.driver', 'driver.auth', 'driver.auth.reminder');
     }
 }

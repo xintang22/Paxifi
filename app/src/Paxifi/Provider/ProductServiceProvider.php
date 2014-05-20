@@ -24,7 +24,7 @@ class ProductServiceProvider extends ServiceProvider
      */
     protected function registerCategoryRepository()
     {
-        $this->app->bind('Paxifi\Store\Repository\Category\CategoryRepositoryInterface', 'Paxifi\Store\Repository\Category\EloquentCategoryRepository', true);
+        $this->app->bind('paxifi.repository.category', 'Paxifi\Store\Repository\Category\EloquentCategoryRepository', true);
     }
 
     /**
@@ -37,4 +37,13 @@ class ProductServiceProvider extends ServiceProvider
         $this->app['router']->get('products/categories', 'Paxifi\Store\Controller\CategoryController@index');
     }
 
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return array('paxifi.repository.category');
+    }
 }

@@ -70,4 +70,14 @@ class FileUploaderServiceProvider extends ServiceProvider
             ), 400);
         });
     }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return array('paxifi.files.uploader');
+    }
 }

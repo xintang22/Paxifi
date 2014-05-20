@@ -1,29 +1,11 @@
 <?php namespace Paxifi\Store\Controller;
 
-use Paxifi\Store\Repository\Driver\DriverRepositoryInterface;
+use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Store\Transformer\DriverTransformer;
 use Paxifi\Support\Controller\ApiController;
 
 class DriverController extends ApiController
 {
-    /**
-     * @var \Paxifi\Store\Repository\Driver\DriverRepositoryInterface
-     */
-    private $driver;
-
-    /**
-     * @var \Paxifi\Store\Transformer\DriverTransformer
-     */
-    private $transformer;
-
-    function __construct(DriverRepositoryInterface $driver, DriverTransformer $transformer)
-    {
-        $this->driver = $driver;
-        $this->transformer = $transformer;
-
-        parent::__construct();
-    }
-
     /**
      * Display a listing of drivers.
      *
@@ -31,7 +13,7 @@ class DriverController extends ApiController
      */
     public function index()
     {
-        return $this->respondWithCollection($this->driver->all());
+        return $this->respondWithCollection(DriverRepository::all());
     }
 
     /**
@@ -43,11 +25,11 @@ class DriverController extends ApiController
     {
         $data = \Input::all();
 
-        if ($driver = $this->driver->create($data)) {
+        if ($driver = DriverRepository::create($data)) {
             return $this->setStatusCode(201)->respondWithItem($driver);
         }
 
-        return $this->errorWrongArgs($this->driver->getValidationErrors());
+        return $this->errorWrongArgs(DriverRepository::getValidationErrors());
     }
 
     /**
@@ -93,7 +75,7 @@ class DriverController extends ApiController
      */
     public function getTransformer()
     {
-        return $this->transformer;
+        return new DriverTransformer();
     }
 
     /**
@@ -104,7 +86,7 @@ class DriverController extends ApiController
     public function checkSellerId()
     {
         if ($sellerId = \Input::get('id')) {
-            $driver = $this->driver->findBySellerId($sellerId);
+            $driver = DriverRepository::findBySellerId($sellerId);
 
             if (!$driver->count()) {
                 return $this->respond(array(

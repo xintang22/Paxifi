@@ -1,41 +1,34 @@
 <?php namespace Paxifi\Store\Controller;
 
-use Paxifi\Store\Repository\Driver\DriverRepositoryInterface;
+use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Support\Controller\BaseApiController;
 
 class RatingController extends BaseApiController
 {
-
     /**
-     * @var \Paxifi\Store\Repository\Driver\DriverRepositoryInterface
+     * Rate the store/driver.
+     *
+     * @param $id
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    protected $driver;
-
-    function __construct(DriverRepositoryInterface $driver)
-    {
-        $this->driver = $driver;
-
-        parent::__construct();
-    }
-
     public function rating($id)
     {
 
-        if ($driver = $this->driver->find($id)) {
+        if ($driver = DriverRepository::find($id)) {
 
             switch (\Input::get('type')) {
-                case 'up':
-                    $driver->thumbsUp();
-
-                    return $this->respond(array('success' => true));
-
                 case 'down':
                     $driver->thumbsDown();
 
                     return $this->respond(array('success' => true));
 
+                case 'up':
                 default:
-                    return $this->errorWrongArgs('Be more specific, idiot!');
+                    $driver->thumbsUp();
+
+                    return $this->respond(array('success' => true));
+
             }
 
         }

@@ -1,8 +1,8 @@
-<?php namespace Paxifi\Store\Repository\Driver;
+<?php namespace Paxifi\Store\Repository\Category;
 
 use Illuminate\Support\Facades\Facade;
 
-class DriverRepository extends Facade
+class CategoryRepository extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -11,6 +11,6 @@ class DriverRepository extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'paxifi.repository.driver';
+        return 'paxifi.repository.category';
     }
 } 
