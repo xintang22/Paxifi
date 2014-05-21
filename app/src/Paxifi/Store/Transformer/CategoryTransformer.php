@@ -8,6 +8,7 @@ class CategoryTransformer extends TransformerAbstract
     public function transform(CategoryRepositoryInterface $category)
     {
         return array(
+            'id' => $category->id,
             'name' => $category->name,
         );
     }
