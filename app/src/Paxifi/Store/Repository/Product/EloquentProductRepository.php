@@ -2,7 +2,7 @@
 
 use Paxifi\Support\Repository\BaseModel;
 
-class EloquentProductRepository extends BaseModel implements ProductRespositoryInterface
+class EloquentProductRepository extends BaseModel implements ProductRepositoryInterface
 {
 
     protected $table = 'products';

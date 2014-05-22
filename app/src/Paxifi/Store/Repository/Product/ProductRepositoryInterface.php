@@ -1,6 +1,6 @@
 <?php namespace Paxifi\Store\Repository\Product;
 
-interface ProductRespositoryInterface
+interface ProductRepositoryInterface
 {
 
 } 
