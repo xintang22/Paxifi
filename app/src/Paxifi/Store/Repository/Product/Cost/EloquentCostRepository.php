@@ -41,9 +41,4 @@ class EloquentCostRepository extends BaseModel
         self::observe(new CostRepositoryObserver());
     }
 
-    public function getOldAttribute($key)
-    {
-        return $this->original[$key] ?: null;
-    }
-
 }
