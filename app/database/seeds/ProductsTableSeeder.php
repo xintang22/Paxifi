@@ -28,8 +28,8 @@ class ProductsTableSeeder extends Seeder
                     'tax' => $faker->randomFloat(2, 0, 2),
                     'price' => $faker->randomFloat(1, 2, 10),
                     'category_id' => $faker->randomNumber(null, 10),
-                    'quantity' => 100,
-                    'average_cost' => 110.0,
+                    'quantity' => 0,
+                    'average_cost' => 0,
                 )
             );
 

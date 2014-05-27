@@ -10,21 +10,9 @@ class CostRepositoryObserver
      *
      * @return void
      */
-    public function created($cost)
+    public function saved($cost)
     {
-        // TODO: Update the product average cost and inventory
-    }
-
-    /**
-     * Register an updated model event with the dispatcher.
-     *
-     * @param  $cost
-     *
-     * @return void
-     */
-    public function updated($cost)
-    {
-        // TODO: Update the product average cost and inventory
+        $this->updateProductAverageCost($cost->product);
     }
 
     /**
@@ -36,6 +24,37 @@ class CostRepositoryObserver
      */
     public function deleted($cost)
     {
-        // TODO: Update the product average cost and inventory
+        $this->updateProductAverageCost($cost->product);
+    }
+
+    /**
+     * Update the Product average cost.
+     *
+     * @param \Paxifi\Store\Repository\Product\EloquentProductRepository $product
+     *
+     * @return void
+     */
+    private function updateProductAverageCost($product)
+    {
+        $count = $product->costs->count();
+
+        if ($count === 0) {
+
+            $product->average_cost = 0;
+
+        } else {
+
+            $total = 0;
+
+            foreach ($product->costs as $cost) {
+
+                $total += $cost->cost;
+
+            }
+
+            $product->average_cost = $total / $count;
+        }
+
+        $product->save();
     }
 } 
