@@ -11,6 +11,6 @@ class CostRepository extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'paxifi.repository.cost';
+        return 'paxifi.repository.product.cost';
     }
 }
