@@ -46,7 +46,7 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
         if ($this->inventory == 0) return $this;
 
         for ($i = 0; $i < $amount; $i++) {
-            $this->updateSingleCostInvetory();
+            $this->updateSingleCostInventory();
         }
 
         return $this;
@@ -55,7 +55,7 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
     /**
      * Decrease the inventory for a single product cost.
      */
-    private function updateSingleCostInvetory()
+    private function updateSingleCostInventory()
     {
         $cost = self::find($this->id)->costs->filter(function ($cost) {
             return $cost->inventory > 0;
