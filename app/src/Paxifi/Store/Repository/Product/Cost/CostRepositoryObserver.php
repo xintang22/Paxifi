@@ -52,7 +52,7 @@ class CostRepositoryObserver
 
             }
 
-            $product->average_cost = $total / $count;
+            $product->average_cost = round($total / $count, 2);
         }
 
         $product->save();
