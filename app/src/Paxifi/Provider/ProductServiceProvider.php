@@ -25,6 +25,10 @@ class ProductServiceProvider extends ServiceProvider
     protected function registerCategoryRepository()
     {
         $this->app->bind('paxifi.repository.category', 'Paxifi\Store\Repository\Category\EloquentCategoryRepository', true);
+
+        $this->app->bind('paxifi.repository.product', 'Paxifi\Store\Repository\Product\EloquentProductRepository', true);
+
+        $this->app->bind('paxifi.repository.product.cost', 'Paxifi\Store\Repository\Product\Cost\EloquentCostRepository', true);
     }
 
     /**
@@ -35,6 +39,9 @@ class ProductServiceProvider extends ServiceProvider
     public function registerRoutes()
     {
         $this->app['router']->get('products/categories', 'Paxifi\Store\Controller\CategoryController@index');
+
+        // CRUD
+        $this->app['router']->post('products', 'Paxifi\Store\Controller\ProductController@store');
     }
 
     /**
@@ -44,6 +51,6 @@ class ProductServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array('paxifi.repository.category');
+        return array('paxifi.repository.category', 'paxifi.repository.product', 'paxifi.repository.product.cost');
     }
 }
