@@ -37,4 +37,32 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
     {
         return $this->belongsTo('Paxifi\Store\Repository\Driver\EloquentDriverRepository', 'driver_id');
     }
+
+    /**
+     * @{@inheritdoc }
+     */
+    public function updateInventory($amount = 1)
+    {
+        if ($this->inventory == 0) return $this;
+
+        for ($i = 0; $i < $amount; $i++) {
+            $this->updateSingleCostInvetory();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Decrease the inventory for a single product cost.
+     */
+    private function updateSingleCostInvetory()
+    {
+        $cost = self::find($this->id)->costs->filter(function ($cost) {
+            return $cost->inventory > 0;
+        })->first();
+
+        $cost->inventory--;
+
+        $cost->save();
+    }
 }
