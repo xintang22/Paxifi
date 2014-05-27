@@ -18,7 +18,7 @@ class CreateProductCostsTable extends Migration {
             $table->unsignedInteger('product_id');
 
             $table->decimal('cost');
-            $table->unsignedInteger('quantity');
+            $table->unsignedInteger('inventory');
 
             $table->timestamps();
 

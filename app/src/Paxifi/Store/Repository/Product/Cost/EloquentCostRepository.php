@@ -17,7 +17,7 @@ class EloquentCostRepository extends BaseModel
      *
      * @var array
      */
-    protected $fillable = array('cost', 'quantity', 'product_id');
+    protected $fillable = array('cost', 'inventory', 'product_id');
 
     /**
      * Define an inverse relationship with Driver.

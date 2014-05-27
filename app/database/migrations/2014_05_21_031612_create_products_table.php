@@ -24,7 +24,7 @@ class CreateProductsTable extends Migration
 
             $table->decimal('price');
             $table->decimal('average_cost');
-            $table->unsignedInteger('quantity');
+            $table->unsignedInteger('inventory');
             $table->decimal('tax');
 
             $table->timestamps();

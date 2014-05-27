@@ -41,7 +41,7 @@ class CostRepositoryObserver
         if ($count === 0) {
 
             $product->average_cost = 0;
-            $product->quantity = 0;
+            $product->inventory = 0;
 
         } else {
 
@@ -51,12 +51,12 @@ class CostRepositoryObserver
             foreach ($product->costs as $cost) {
 
                 $totalCost += $cost->cost;
-                $totalInventory += $cost->quantity;
+                $totalInventory += $cost->inventory;
 
             }
 
             $product->average_cost = round($totalCost / $count, 2);
-            $product->quantity = $totalInventory;
+            $product->inventory = $totalInventory;
         }
 
         $product->save();
