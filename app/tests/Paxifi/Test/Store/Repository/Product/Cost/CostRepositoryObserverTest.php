@@ -11,7 +11,7 @@ class CostRepositoryObserverTest extends \TestCase
 
     public function setUp()
     {
-        $this->refreshApplication();
+        parent::setUp();
 
         $this->app['artisan']->call('migrate');
 
@@ -68,6 +68,55 @@ class CostRepositoryObserverTest extends \TestCase
         Cost::find(2)->delete();
 
         $this->assertEquals(7.33, Product::find(1)->average_cost);
+    }
+
+    public function testCorrectlyUpdateProductInventoryAfterCostCreation()
+    {
+        $this->assertEquals(0, Product::find(1)->quantity);
+
+        Cost::create(array('cost' => 10.10, 'quantity' => 10, 'product_id' => 1,));
+
+        $this->assertEquals(10, Product::find(1)->quantity);
+
+        Cost::create(array('cost' => 7.33, 'quantity' => 15, 'product_id' => 1,));
+
+        $this->assertEquals(25, Product::find(1)->quantity);
+    }
+
+    public function testCorrectlyUpdateProductInventoryAfterCostUpdate()
+    {
+        Cost::create(array('cost' => 10.10, 'quantity' => 10, 'product_id' => 1,));
+
+        Cost::create(array('cost' => 7.33, 'quantity' => 10, 'product_id' => 1,));
+
+        $cost = Cost::find(1);
+
+        $cost->quantity = 7;
+
+        $cost->save();
+
+        $this->assertEquals(17, Product::find(1)->quantity);
+    }
+
+    public function testCorrectlyUpdateProductInventoryAfterCostDeletion()
+    {
+        $this->assertEquals(0, Product::find(1)->quantity);
+
+        Cost::create(array('cost' => 10.10, 'quantity' => 10, 'product_id' => 1,));
+
+        $this->assertEquals(10, Product::find(1)->quantity);
+
+        Cost::find(1)->delete();
+
+        $this->assertEquals(0, Product::find(1)->quantity);
+
+        Cost::create(array('cost' => 10.10, 'quantity' => 10, 'product_id' => 1,));
+
+        Cost::create(array('cost' => 7.33, 'quantity' => 10, 'product_id' => 1,));
+
+        Cost::find(2)->delete();
+
+        $this->assertEquals(10, Product::find(1)->quantity);
     }
 
     public function tearDown()

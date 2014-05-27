@@ -12,7 +12,7 @@ class CostRepositoryObserver
      */
     public function saved($cost)
     {
-        $this->updateProductAverageCost($cost->product);
+        $this->updateProduct($cost->product);
     }
 
     /**
@@ -24,35 +24,39 @@ class CostRepositoryObserver
      */
     public function deleted($cost)
     {
-        $this->updateProductAverageCost($cost->product);
+        $this->updateProduct($cost->product);
     }
 
     /**
-     * Update the Product average cost.
+     * Update the Product average cost and inventory.
      *
      * @param \Paxifi\Store\Repository\Product\EloquentProductRepository $product
      *
      * @return void
      */
-    private function updateProductAverageCost($product)
+    private function updateProduct($product)
     {
         $count = $product->costs->count();
 
         if ($count === 0) {
 
             $product->average_cost = 0;
+            $product->quantity = 0;
 
         } else {
 
-            $total = 0;
+            $totalCost = 0;
+            $totalInventory = 0;
 
             foreach ($product->costs as $cost) {
 
-                $total += $cost->cost;
+                $totalCost += $cost->cost;
+                $totalInventory += $cost->quantity;
 
             }
 
-            $product->average_cost = round($total / $count, 2);
+            $product->average_cost = round($totalCost / $count, 2);
+            $product->quantity = $totalInventory;
         }
 
         $product->save();
