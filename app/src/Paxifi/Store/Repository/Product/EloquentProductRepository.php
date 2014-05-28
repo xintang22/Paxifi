@@ -19,6 +19,35 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
     protected $fillable = array('name', 'photos', 'description', 'price', 'average_cost', 'inventory', 'tax', 'driver_id', 'category_id');
 
     /**
+     * The data validation rules
+     *
+     * @var array
+     */
+    protected $rules = array();
+
+    /**
+     * Serialize the photos.
+     *
+     * @param $value
+     */
+    public function setPhotosAttribute($value)
+    {
+        $this->attributes['photos'] = serialize($value);
+    }
+
+    /**
+     * Returns un-serialized photos.
+     *
+     * @param $value
+     *
+     * @return mixed
+     */
+    public function getPhotosAttribute($value)
+    {
+        return unserialize($value);
+    }
+
+    /**
      * Define a one-to-many relationship with Costs.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

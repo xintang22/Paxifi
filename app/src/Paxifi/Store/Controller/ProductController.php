@@ -1,5 +1,7 @@
 <?php namespace Paxifi\Store\Controller;
 
+use Illuminate\Support\Collection;
+use Paxifi\Store\Repository\Product\Cost\EloquentCostRepository;
 use Paxifi\Store\Repository\Product\ProductRepository;
 use Paxifi\Store\Transformer\ProductTransformer;
 use Paxifi\Support\Controller\ApiController;
@@ -23,7 +25,19 @@ class ProductController extends ApiController
      */
     public function store()
     {
-        //
+        if ($product = ProductRepository::create(\Input::all())) {
+
+            $costs = Collection::make(\Input::get('costs'));
+
+            foreach ($costs as $cost) {
+
+                $product->costs()->save(new EloquentCostRepository($cost));
+            }
+
+            return $this->setStatusCode(201)->respondWithItem(ProductRepository::find($product->id));
+        }
+
+        return $this->errorWrongArgs(ProductRepository::getValidationErrors());
     }
 
     /**
@@ -61,6 +75,7 @@ class ProductController extends ApiController
     {
         //
     }
+
     /**
      * Retrieves the Data Transformer
      *

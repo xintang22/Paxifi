@@ -15,6 +15,13 @@ class ProductControllerTest extends \TestCase
         parent::setUp();
 
         $this->faker = Faker::create();
+
+        $this->app['artisan']->call('migrate');
+
+        $this->seedTestData();
+
+        Cost::flushEventListeners();
+        Cost::boot();
     }
 
     public function testCreateProduct()
@@ -49,6 +56,15 @@ class ProductControllerTest extends \TestCase
             )
         );
 
+        $this->assertEquals(0, Product::all()->count());
+
+        $response = json_decode($this->call('post', 'products', $data)->getContent(), true);
+
+        $this->assertResponseStatus(201);
+
+        $this->assertEquals(1, Product::all()->count());
+        $this->assertEquals(3, Product::find(1)->costs->count());
+
     }
 
     public function testUpdateProduct()
@@ -69,6 +85,11 @@ class ProductControllerTest extends \TestCase
     public function testGetSingleProduct()
     {
 
+    }
+
+    public function tearDown()
+    {
+        $this->app['artisan']->call('migrate:reset');
     }
 
     protected function seedTestData()
