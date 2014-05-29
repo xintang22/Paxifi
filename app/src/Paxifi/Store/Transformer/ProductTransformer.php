@@ -6,13 +6,11 @@ use Paxifi\Store\Repository\Product\ProductRepositoryInterface;
 class ProductTransformer extends TransformerAbstract
 {
     /**
-     * List of resources possible to embed via this transformer
+     * Resources that can be included if requested
      *
      * @var array
      */
-    protected $availableEmbeds = [
-        'driver'
-    ];
+    protected $availableEmbeds = array('driver');
 
     public function transform(ProductRepositoryInterface $product)
     {
@@ -36,11 +34,11 @@ class ProductTransformer extends TransformerAbstract
      *
      * @return \League\Fractal\Resource\Item
      */
-    public function embedAuthor(ProductRepositoryInterface $product)
+    public function embedDriver(ProductRepositoryInterface $product)
     {
         $driver = $product->driver;
 
-        return $this->item($driver, new DriverTransformer);
+        return $this->item($driver, new DriverTransformer, 'driver');
     }
 
     /**
