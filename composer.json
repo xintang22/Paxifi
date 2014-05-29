@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "laravel/framework": "4.1.*",
-        "league/fractal": "*",
+        "league/fractal": "0.7.0",
         "itsgoingd/clockwork": "v1.5",
         "aws/aws-sdk-php": "2.*"
     },
