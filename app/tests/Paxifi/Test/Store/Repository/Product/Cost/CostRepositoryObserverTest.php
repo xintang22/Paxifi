@@ -25,24 +25,24 @@ class CostRepositoryObserverTest extends \TestCase
     {
         $this->assertEquals(0.0, Product::find(1)->average_cost);
 
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(10.10, Product::find(1)->average_cost);
 
-        Cost::create(array('cost' => 7.33, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 7.33, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(8.72, Product::find(1)->average_cost);
     }
 
     public function testCorrectlyUpdateProductAverageCostAfterCostUpdate()
     {
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
-        Cost::create(array('cost' => 7.33, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 7.33, 'inventory' => 10, 'product_id' => 1,));
 
         $cost = Cost::find(1);
 
-        $cost->cost = 6.00;
+        $cost->unit_cost = 6.00;
 
         $cost->save();
 
@@ -53,7 +53,7 @@ class CostRepositoryObserverTest extends \TestCase
     {
         $this->assertEquals(0, Product::find(1)->average_cost);
 
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(10.10, Product::find(1)->average_cost);
 
@@ -61,9 +61,9 @@ class CostRepositoryObserverTest extends \TestCase
 
         $this->assertEquals(0, Product::find(1)->average_cost);
 
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
-        Cost::create(array('cost' => 7.33, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 7.33, 'inventory' => 10, 'product_id' => 1,));
 
         Cost::find(2)->delete();
 
@@ -74,20 +74,20 @@ class CostRepositoryObserverTest extends \TestCase
     {
         $this->assertEquals(0, Product::find(1)->inventory);
 
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(10, Product::find(1)->inventory);
 
-        Cost::create(array('cost' => 7.33, 'inventory' => 15, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 7.33, 'inventory' => 15, 'product_id' => 1,));
 
         $this->assertEquals(25, Product::find(1)->inventory);
     }
 
     public function testCorrectlyUpdateProductInventoryAfterCostUpdate()
     {
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
-        Cost::create(array('cost' => 7.33, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 7.33, 'inventory' => 10, 'product_id' => 1,));
 
         $cost = Cost::find(1);
 
@@ -102,7 +102,7 @@ class CostRepositoryObserverTest extends \TestCase
     {
         $this->assertEquals(0, Product::find(1)->inventory);
 
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(10, Product::find(1)->inventory);
 
@@ -110,9 +110,9 @@ class CostRepositoryObserverTest extends \TestCase
 
         $this->assertEquals(0, Product::find(1)->inventory);
 
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
-        Cost::create(array('cost' => 7.33, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 7.33, 'inventory' => 10, 'product_id' => 1,));
 
         Cost::find(2)->delete();
 
@@ -160,7 +160,7 @@ class CostRepositoryObserverTest extends \TestCase
                 'description' => $faker->text(),
                 'photos' => $faker->imageUrl(250, 250),
                 'tax' => $faker->randomFloat(2, 0, 2),
-                'price' => $faker->randomFloat(1, 2, 10),
+                'unit_price' => $faker->randomFloat(1, 2, 10),
                 'category_id' => 1,
                 'inventory' => 0,
                 'average_cost' => 0,

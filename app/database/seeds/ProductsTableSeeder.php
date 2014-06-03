@@ -24,11 +24,16 @@ class ProductsTableSeeder extends Seeder
                     'name' => $faker->name,
                     'driver_id' => $faker->randomNumber(null, 10),
                     'description' => $faker->text(),
-                    'photos' => $faker->imageUrl(250, 250),
+                    'photos' => array(
+                        array(
+                            'order' => 1,
+                            'url' => $faker->imageUrl(250, 250),
+                        ),
+                    ),
                     'tax' => $faker->randomFloat(2, 0, 2),
-                    'price' => $faker->randomFloat(1, 2, 10),
+                    'unit_price' => $faker->randomFloat(1, 2, 10),
                     'category_id' => $faker->randomNumber(null, 10),
-                    'quantity' => 0,
+                    'inventory' => 0,
                     'average_cost' => 0,
                 )
             );
@@ -37,8 +42,8 @@ class ProductsTableSeeder extends Seeder
 
                 Cost::create(
                     array(
-                        'cost' => $faker->randomFloat(1, 2, 10),
-                        'quantity' => 10,
+                        'unit_cost' => $faker->randomFloat(1, 2, 10),
+                        'inventory' => 10,
                         'product_id' => $product->id,
                     )
                 );

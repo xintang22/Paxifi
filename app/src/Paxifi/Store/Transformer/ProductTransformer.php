@@ -19,7 +19,7 @@ class ProductTransformer extends TransformerAbstract
             'name' => $product->name,
             'description' => $product->description,
             'photos' => $product->photos,
-            'price' => $product->price,
+            'unit_price' => $product->unit_price,
             'average_cost' => $product->average_cost,
             'inventory' => $product->inventory,
             'tax' => $product->tax,

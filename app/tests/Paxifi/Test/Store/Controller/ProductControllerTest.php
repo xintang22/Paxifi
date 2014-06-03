@@ -45,14 +45,14 @@ class ProductControllerTest extends \TestCase
                 ),
             ),
             'tax' => $this->faker->randomFloat(2, 0, 2),
-            'price' => $this->faker->randomFloat(1, 2, 10),
+            'unit_price' => $this->faker->randomFloat(1, 2, 10),
             'category_id' => 1,
             'inventory' => 0,
             'average_cost' => 0,
             'costs' => array(
-                array('cost' => 10.70, 'inventory' => 10,),
-                array('cost' => 5.25, 'inventory' => 20,),
-                array('cost' => 7.00, 'inventory' => 15,),
+                array('unit_cost' => 10.70, 'inventory' => 10,),
+                array('unit_cost' => 5.25, 'inventory' => 20,),
+                array('unit_cost' => 7.00, 'inventory' => 15,),
             )
         );
 

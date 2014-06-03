@@ -22,10 +22,11 @@ class CreateProductsTable extends Migration
             $table->mediumText('photos');
             $table->mediumText('description');
 
-            $table->decimal('price');
+            $table->decimal('unit_price');
             $table->decimal('average_cost');
             $table->unsignedInteger('inventory');
             $table->decimal('tax');
+            $table->boolean('status')->default(1);
 
             $table->timestamps();
 

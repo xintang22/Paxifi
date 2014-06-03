@@ -24,6 +24,7 @@ class CreateDriversTable extends Migration
             $table->string('remember_token')->nullable();
             $table->integer('thumbs_up')->default(0)->nullable();
             $table->integer('thumbs_down')->default(0)->nullable();
+            $table->tinyInteger('status', false, true)->nullable()->default(0);
             $table->timestamps();
         });
     }

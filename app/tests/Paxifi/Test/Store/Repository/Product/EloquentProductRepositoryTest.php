@@ -21,8 +21,8 @@ class EloquentProductRepositoryTest extends \TestCase
 
     public function testUpdateProductInventoryByOne()
     {
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(20, Product::find(1)->inventory);
 
@@ -30,15 +30,15 @@ class EloquentProductRepositoryTest extends \TestCase
 
         $this->assertEquals(19, Product::find(1)->inventory);
 
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(29, Product::find(1)->inventory);
     }
 
     public function testUpdateProductInventoryByMultiple()
     {
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(20, Product::find(1)->inventory);
 
@@ -46,7 +46,7 @@ class EloquentProductRepositoryTest extends \TestCase
 
         $this->assertEquals(17, Product::find(1)->inventory);
 
-        Cost::create(array('cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(27, Product::find(1)->inventory);
     }
@@ -104,7 +104,7 @@ class EloquentProductRepositoryTest extends \TestCase
                 'description' => $faker->text(),
                 'photos' => $faker->imageUrl(250, 250),
                 'tax' => $faker->randomFloat(2, 0, 2),
-                'price' => $faker->randomFloat(1, 2, 10),
+                'unit_price' => $faker->randomFloat(1, 2, 10),
                 'category_id' => 1,
                 'inventory' => 0,
                 'average_cost' => 0,

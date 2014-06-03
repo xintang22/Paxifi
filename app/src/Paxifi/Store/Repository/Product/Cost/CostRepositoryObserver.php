@@ -50,7 +50,7 @@ class CostRepositoryObserver
 
             foreach ($product->costs as $cost) {
 
-                $totalCost += $cost->cost;
+                $totalCost += $cost->unit_cost;
                 $totalInventory += $cost->inventory;
 
             }
