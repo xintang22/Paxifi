@@ -10,3 +10,6 @@ build
 cache.properties
 
 phpunit.xml
+
+.env.php
+.env.local.php
