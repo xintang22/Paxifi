@@ -16,11 +16,13 @@ class CreateOrdersTable extends Migration {
 		{
             $table->increments('id');
 
-            $table->unsignedInteger('payment_id');
+            $table->unsignedInteger('payment_id')->nullable();
 
             $table->unsignedInteger('total_items');
             $table->decimal('total_costs');
             $table->decimal('total_sales');
+            $table->decimal('profit')->default(0)->nullable();
+            $table->decimal('commission')->default(0)->nullable();
 
             $table->string('buyer_email')->nullable();
             $table->tinyInteger('feedback')->default(0)->nullable();
