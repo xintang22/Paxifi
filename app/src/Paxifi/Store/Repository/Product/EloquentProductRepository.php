@@ -68,6 +68,17 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
     }
 
     /**
+     * Orders the product belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function orders()
+    {
+        return $this->belongsToMany('Paxifi\Order\Repository\EloquentOrderRepository', 'order_items', 'product_id', 'order_id')
+            ->withPivot(array('quantity'))->withTimestamps();
+    }
+
+    /**
      * @{@inheritdoc }
      */
     public function updateInventory($amount = 1)
