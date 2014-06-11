@@ -111,6 +111,7 @@ return array(
         'Paxifi\Provider\DriverServiceProvider',
         'Paxifi\Provider\FileUploaderServiceProvider',
         'Paxifi\Provider\ProductServiceProvider',
+        'Paxifi\Provider\OrderServiceProvider',
         'Paxifi\Provider\PaymentServiceProvider',
 
 	),

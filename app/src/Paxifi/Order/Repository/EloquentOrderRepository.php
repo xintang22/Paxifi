@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Order\Repository;
 
+use Paxifi\Store\Repository\Product\EloquentProductRepository;
 use Paxifi\Support\Repository\BaseModel;
 
 class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterface
@@ -24,9 +25,9 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
      * @var array
      */
     protected $rules = array(
-        'total_items' => 'required',
-        'total_costs' => 'required',
-        'total_sales' => 'required',
+        'total_items' => 'sometimes|required',
+        'total_costs' => 'sometimes|required',
+        'total_sales' => 'sometimes|required',
         'buyer_email' => 'email',
     );
 
@@ -53,13 +54,76 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
         self::observe(new OrderRepositoryObserver(\App::make('Paxifi\Support\Commission\CalculatorInterface')));
     }
 
+    /**
+     * @return mixed
+     */
     public function getTotalCosts()
     {
         return $this->total_costs;
     }
 
+    /**
+     * @return mixed
+     */
     public function getTotalSales()
     {
         return $this->total_sales;
+    }
+
+    /**
+     * Add order item.
+     *
+     * @param array $item
+     *
+     * @throws \InvalidArgumentException
+     * @return $this
+     */
+    public function addItem(array $item)
+    {
+        // Product id exists?
+        $product = EloquentProductRepository::findOrFail($item['product_id']);
+
+        // Product stock available?
+        if ((int)$item['quantity'] > $product->inventory)
+            throw new \InvalidArgumentException('Stock is not available.');
+
+        $this->total_items += $item['quantity'];
+        $this->total_costs += $product->average_cost * $item['quantity'];
+        $this->total_sales += (1 + $product->tax) * $product->unit_price * $item['quantity'];
+
+        $this->products()->attach($product->id, array('quantity' => $item['quantity']));
+
+        // Fires an event to update the inventory.
+        static::$dispatcher->fire('paxifi.order.product', array($product, $item['quantity']));
+
+        return $this;
+    }
+
+    /**
+     * Set Paxifi's fee.
+     *
+     * @param double $commission
+     *
+     * @return $this
+     */
+    public function setCommission($commission)
+    {
+        $this->commission = $commission;
+
+        return $this;
+    }
+
+    /**
+     * Set the driver's profit.
+     *
+     * @param double $profit
+     *
+     * @return $this
+     */
+    public function setProfit($profit)
+    {
+        $this->profit = $profit;
+
+        return $this;
     }
 }
