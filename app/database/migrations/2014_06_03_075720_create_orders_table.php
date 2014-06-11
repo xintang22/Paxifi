@@ -18,14 +18,14 @@ class CreateOrdersTable extends Migration {
 
             $table->unsignedInteger('payment_id')->nullable();
 
-            $table->unsignedInteger('total_items');
-            $table->decimal('total_costs');
-            $table->decimal('total_sales');
-            $table->decimal('profit')->default(0)->nullable();
-            $table->decimal('commission')->default(0)->nullable();
+            $table->unsignedInteger('total_items')->default(0);
+            $table->decimal('total_costs')->default(0);
+            $table->decimal('total_sales')->default(0);
+            $table->decimal('profit')->default(0);
+            $table->decimal('commission')->default(0);
 
             $table->string('buyer_email')->nullable();
-            $table->tinyInteger('feedback')->default(0)->nullable();
+            $table->tinyInteger('feedback')->default(0);
             $table->text('comment')->nullable();
 
             $table->boolean('status')->default(0);
