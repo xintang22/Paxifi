@@ -1,4 +1,4 @@
-<?php namespace Paxifi\Feedback\Repository;
+<?php namespace Paxifi\Support\Contracts;
 
 interface RatingInterface
 {

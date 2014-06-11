@@ -2,7 +2,7 @@
 
 use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Auth\UserInterface;
-use Paxifi\Feedback\Repository\RatingInterface;
+use Paxifi\Support\Contracts\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;
 use Paxifi\Support\Repository\BaseModel;
 
