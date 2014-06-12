@@ -8,31 +8,24 @@ class RatingController extends BaseApiController
     /**
      * Rate the store/driver.
      *
-     * @param $id
+     * @param  \Paxifi\Store\Repository\Driver\DriverRepository $driver
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function rating($id)
+    public function rating($driver)
     {
+        switch (\Input::get('type')) {
+            case 'down':
+                $driver->thumbsDown();
 
-        if ($driver = DriverRepository::find($id)) {
+                return $this->respond(array('success' => true));
 
-            switch (\Input::get('type')) {
-                case 'down':
-                    $driver->thumbsDown();
+            case 'up':
+            default:
+                $driver->thumbsUp();
 
-                    return $this->respond(array('success' => true));
-
-                case 'up':
-                default:
-                    $driver->thumbsUp();
-
-                    return $this->respond(array('success' => true));
-
-            }
+                return $this->respond(array('success' => true));
 
         }
-
-        return $this->errorWrongArgs('Store does not exist.');
     }
 }
