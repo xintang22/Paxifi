@@ -63,6 +63,10 @@ class DriverServiceProvider extends ServiceProvider
      */
     protected function registerRoutes()
     {
+        // Search
+        $this->app['router']->get('drivers/search', 'Paxifi\Store\Controller\DriverController@search');
+
+        // CRUD
         $this->app['router']->get('drivers', 'Paxifi\Store\Controller\DriverController@index');
         $this->app['router']->post('drivers', 'Paxifi\Store\Controller\DriverController@store');
         $this->app['router']->get('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@show');
@@ -81,10 +85,8 @@ class DriverServiceProvider extends ServiceProvider
         $this->app['router']->get('drivers/password/reset/{token}', 'Paxifi\Store\Controller\RemindersController@show');
         $this->app['router']->post('drivers/password/reset', 'Paxifi\Store\Controller\RemindersController@reset');
 
-        $this->app['router']->get('drivers/seller_id', 'Paxifi\Store\Controller\DriverController@checkSellerId');
-
         // Rating
-        $this->app['router']->post('drivers/{id}/rating', 'Paxifi\Store\Controller\RatingController@rating');
+        $this->app['router']->post('drivers/{driver}/rating', 'Paxifi\Store\Controller\RatingController@rating');
     }
 
     /**

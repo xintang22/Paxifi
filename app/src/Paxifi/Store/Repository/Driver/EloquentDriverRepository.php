@@ -2,6 +2,7 @@
 
 use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Auth\UserInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Paxifi\Support\Contracts\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;
 use Paxifi\Support\Repository\BaseModel;
@@ -220,5 +221,25 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         $this->save();
 
         return $this;
+    }
+
+    /**
+     * @param \Illuminate\Support\Collection $params
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function search($params)
+    {
+        $query = $this->newQuery();
+
+        $params->each(function ($param) use ($query) {
+            $query->where($param['column'], $param['operator'], $param['value']);
+        });
+
+        $models = $query->get(array('id', 'name', 'seller_id'));
+
+        if (! $models->isEmpty()) return $models;
+
+        throw with(new ModelNotFoundException)->setModel(get_class($this->model));
     }
 }

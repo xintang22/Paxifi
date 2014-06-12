@@ -1,11 +1,15 @@
 <?php namespace Paxifi\Store\Controller;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
 use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Store\Transformer\DriverTransformer;
 use Paxifi\Support\Controller\ApiController;
 
 class DriverController extends ApiController
 {
+    protected $searchables = ['seller_id'];
+
     /**
      * Display a listing of drivers.
      *
@@ -79,32 +83,6 @@ class DriverController extends ApiController
     }
 
     /**
-     * Checks if the seller id is available.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function checkSellerId()
-    {
-        if ($sellerId = \Input::get('id')) {
-            $driver = DriverRepository::findBySellerId($sellerId);
-
-            if (!$driver->count()) {
-                return $this->respond(array(
-                    'success' => true,
-                    'message' => $this->translator->trans('responses.store.seller_id_available', array('seller_id' => $sellerId))
-                ));
-            }
-
-            return $this->errorWrongArgs(
-                $this->translator->trans('responses.store.seller_id_not_available', array('seller_id' => $sellerId))
-            );
-        }
-
-        return $this->errorWrongArgs($this->translator->trans('responses.store.missing_seller_id'));
-
-    }
-
-    /**
      * Retrieves the stores sales
      *
      * @param  \Paxifi\Store\Repository\Driver\DriverRepository $driver
@@ -115,5 +93,65 @@ class DriverController extends ApiController
     {
         return "Show store {$driver->id}'s sales";
     }
+
+    /**
+     * Search store by different criteria.
+     *
+     * @TODO: add more searchable fields
+     */
+    public function search()
+    {
+        try {
+            $q = \Input::get('q');
+
+            /** @var \Illuminate\Support\Collection $searchParams */
+            $searchParams = $this->extractSearchParams(explode(',', $q));
+
+            if ($searchParams->isEmpty()) {
+                return $this->errorWrongArgs('Missing or invalid search arguments.');
+            }
+
+            $results = DriverRepository::search($searchParams);
+
+            return $this->respond(array(
+                'success' => true,
+                'count' => $results->count(),
+                'results' => $results->toArray(),
+            ));
+
+        } catch (ModelNotFoundException $e) {
+            return $this->errorNotFound('Store not found');
+        }
+
+    }
+
+    /**
+     * Extract the search properties and their values.
+     *
+     * @param $segments
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    private function extractSearchParams($segments)
+    {
+        $params = new Collection();
+
+        foreach ($segments as $segment) {
+
+            list($column, $value) = explode('=', $segment);
+
+            if (in_array($column, $this->searchables)) {
+
+                $params->push(array(
+                    'column' => $column,
+                    'operator' => '=',
+                    'value' => $value,
+                ));
+            }
+        }
+
+        return $params;
+    }
+
 
 }
