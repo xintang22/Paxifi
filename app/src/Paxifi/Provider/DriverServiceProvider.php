@@ -1,8 +1,10 @@
 <?php namespace Paxifi\Provider;
 
 use Illuminate\Auth\Reminders\PasswordBroker;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
 use Paxifi\Store\Auth\AuthManager;
+use Paxifi\Store\Exception\StoreNotFoundException;
 
 class DriverServiceProvider extends ServiceProvider
 {
@@ -13,6 +15,8 @@ class DriverServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->registerRouteModelBindings();
+
         $this->registerRoutes();
 
         $this->registerDriverRepository();
@@ -33,6 +37,26 @@ class DriverServiceProvider extends ServiceProvider
     }
 
     /**
+     * Register model binding.
+     *
+     * @return void
+     */
+    protected function registerRouteModelBindings()
+    {
+        $this->app['router']->model('driver', 'Paxifi\Store\Repository\Driver\EloquentDriverRepository', function () {
+            throw new StoreNotFoundException('Store does not exist.');
+        });
+
+        $this->app->error(function (StoreNotFoundException $exception) {
+            return Response::json(array('error' => array(
+                'context' => null,
+                'message' => 'Invalid store id.',
+                'code' => 400,
+            )), 400);
+        });
+    }
+
+    /**
      * Register Driver resource Routes
      *
      * @return void
@@ -41,6 +65,12 @@ class DriverServiceProvider extends ServiceProvider
     {
         $this->app['router']->get('drivers', 'Paxifi\Store\Controller\DriverController@index');
         $this->app['router']->post('drivers', 'Paxifi\Store\Controller\DriverController@store');
+        $this->app['router']->get('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@show');
+        $this->app['router']->put('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@update');
+        $this->app['router']->delete('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@destroy');
+
+        // sales
+        $this->app['router']->get('drivers/{driver}/sales', 'Paxifi\Store\Controller\DriverController@sales');
 
         // Authentication
         $this->app['router']->post('drivers/login', 'Paxifi\Store\Controller\AuthController@login');

@@ -35,37 +35,37 @@ class DriverController extends ApiController
     /**
      * Display the specified driver.
      *
-     * @param  int|string $id
+     * @param  \Paxifi\Store\Repository\Driver\DriverRepository $driver
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show($driver)
     {
-        //
+        return "Show store {$driver->id}";
     }
 
     /**
      * Update the specified driver in storage.
      *
-     * @param  int|string $id
+     * @param  \Paxifi\Store\Repository\Driver\DriverRepository $driver
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update($id)
+    public function update($driver)
     {
-        //
+        return "Update store {$driver->id}";
     }
 
     /**
      * Remove the specified driver from storage.
      *
-     * @param  int|string $id
+     * @param  \Paxifi\Store\Repository\Driver\DriverRepository $driver
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy($driver)
     {
-        //
+        return "Delete store {$driver->id}";
     }
 
     /**
@@ -102,6 +102,18 @@ class DriverController extends ApiController
 
         return $this->errorWrongArgs($this->translator->trans('responses.store.missing_seller_id'));
 
+    }
+
+    /**
+     * Retrieves the stores sales
+     *
+     * @param  \Paxifi\Store\Repository\Driver\DriverRepository $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sales($driver)
+    {
+        return "Show store {$driver->id}'s sales";
     }
 
 }
