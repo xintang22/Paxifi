@@ -42,11 +42,11 @@ class DriverControllerTest extends \TestCase
 
     public function testSellerIdIsAvailable()
     {
-        $response = $this->call('get', 'drivers/seller_id', array('id' => 'Foo123'));
+        $response = $this->call('get', 'drivers/search', array('q' => 'seller_id=Foo123'));
 
-        $this->assertResponseOk();
+        $this->assertResponseStatus(404);
 
-        $this->assertContains('success', $response->getContent());
+        $this->assertContains('error', $response->getContent());
     }
 
     public function testSellerIdIsNotAvailable()
@@ -72,11 +72,11 @@ class DriverControllerTest extends \TestCase
 
         $this->call('post', 'drivers', $postData);
 
-        $response = $this->call('get', 'drivers/seller_id', array('id' => 'Foo123'));
+        $response = $this->call('get', 'drivers/search', array('q' => 'seller_id=Foo123'));
 
-        $this->assertResponseStatus(400);
+        $this->assertResponseStatus(200);
 
-        $this->assertContains('error', $response->getContent());
+        $this->assertContains('Foo123', $response->getContent());
     }
 
     public function tearDown()
