@@ -3,12 +3,17 @@
 use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Paxifi\Support\Contracts\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;
 use Paxifi\Support\Repository\BaseModel;
 
 class EloquentDriverRepository extends BaseModel implements DriverRepositoryInterface, AddressInterface, UserInterface, RemindableInterface, RatingInterface
 {
+    use SoftDeletingTrait;
+
+    protected $dates = ['deleted_at'];
+
     /**
      * The table associated with the model.
      *
@@ -31,19 +36,14 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'status',);
 
     /**
-     * The data validation rules
+     * Driver-Product relationship.
      *
-     * @var array
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    protected $rules = array(
-        'name' => 'required',
-        'seller_id' => 'required|unique:drivers|alpha_dash|max:12',
-        'email' => 'required|email|unique:drivers',
-        'password' => 'required',
-        'photo' => 'url',
-        'address' => 'required',
-        'currency' => 'required',
-    );
+    public function products()
+    {
+        return $this->hasOne('Paxifi\Store\Repository\Product\EloquentProductRepository', 'driver_id', 'id');
+    }
 
     /**
      * Serialize the address.
@@ -238,7 +238,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
 
         $models = $query->get(array('id', 'name', 'seller_id'));
 
-        if (! $models->isEmpty()) return $models;
+        if (!$models->isEmpty()) return $models;
 
         throw with(new ModelNotFoundException)->setModel(get_class($this->model));
     }

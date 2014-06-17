@@ -8,6 +8,7 @@ class DriverTransformer extends TransformerAbstract {
     public function transform(DriverRepositoryInterface $driver)
     {
         return array(
+            'id' => $driver->id,
             'email' => $driver->email,
             'photo' => $driver->photo,
             'name' => $driver->name,

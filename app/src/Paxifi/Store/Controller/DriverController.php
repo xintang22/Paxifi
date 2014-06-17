@@ -3,8 +3,11 @@
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Paxifi\Store\Repository\Driver\DriverRepository;
+use Paxifi\Store\Repository\Driver\Validation\CreateDriverValidator;
+use Paxifi\Store\Repository\Driver\Validation\UpdateDriverValidator;
 use Paxifi\Store\Transformer\DriverTransformer;
 use Paxifi\Support\Controller\ApiController;
+use Paxifi\Support\Validation\ValidationException;
 
 class DriverController extends ApiController
 {
@@ -27,13 +30,22 @@ class DriverController extends ApiController
      */
     public function store()
     {
-        $data = \Input::all();
+        try {
 
-        if ($driver = DriverRepository::create($data)) {
+            with(new CreateDriverValidator())->validate(\Input::all());
+
+            $driver = DriverRepository::create(\Input::all());
+
+            \Event::fire('paxifi.store.created', [$driver]);
+
             return $this->setStatusCode(201)->respondWithItem($driver);
+
+        } catch (ValidationException $e) {
+
+            return $this->errorWrongArgs($e->getErrors()->all());
+
         }
 
-        return $this->errorWrongArgs(DriverRepository::getValidationErrors());
     }
 
     /**
@@ -45,7 +57,7 @@ class DriverController extends ApiController
      */
     public function show($driver)
     {
-        return "Show store {$driver->id}";
+        return $this->respondWithItem($driver);
     }
 
     /**
@@ -57,7 +69,20 @@ class DriverController extends ApiController
      */
     public function update($driver)
     {
-        return "Update store {$driver->id}";
+        try {
+
+            with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id'));
+
+            $driver->update(\Input::all());
+
+            \Event::fire('paxifi.store.updated', [$driver]);
+
+            return $this->respondWithItem(DriverRepository::find($driver->id));
+
+        } catch (ValidationException $e) {
+
+            return $this->errorWrongArgs($e->getErrors()->all());
+        }
     }
 
     /**
@@ -69,7 +94,17 @@ class DriverController extends ApiController
      */
     public function destroy($driver)
     {
-        return "Delete store {$driver->id}";
+        try {
+
+            $driver->delete();
+
+            return $this->setStatusCode(204)->respond(array());
+
+        } catch (\Exception $e) {
+
+            return $this->errorInternalError();
+
+        }
     }
 
     /**
