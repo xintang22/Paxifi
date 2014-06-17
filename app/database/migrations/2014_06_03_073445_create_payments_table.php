@@ -24,6 +24,7 @@ class CreatePaymentsTable extends Migration {
             $table->longText('details');
 
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('payment_method_id')->references('id')->on('payment_methods');
 		});

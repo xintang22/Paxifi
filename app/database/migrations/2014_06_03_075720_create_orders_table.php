@@ -31,6 +31,7 @@ class CreateOrdersTable extends Migration {
             $table->boolean('status')->default(0);
 
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('payment_id')->references('id')->on('payments');
 		});

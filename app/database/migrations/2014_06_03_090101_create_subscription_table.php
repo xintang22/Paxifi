@@ -33,6 +33,7 @@ class CreateSubscriptionTable extends Migration
             $table->enum('status', array('trialing', 'active', 'past_due', 'canceled'))->default('trialing');
 
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('driver_id')->references('id')->on('drivers');
             $table->foreign('plan_id')->references('id')->on('subscription_plans');

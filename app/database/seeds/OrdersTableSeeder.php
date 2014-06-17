@@ -17,7 +17,7 @@ class OrdersTableSeeder extends Seeder
                 array(
                     'total_costs' => 50.50,
                     'total_sales' => 70,
-                    'total_items' => $faker->randomNumber(null, 10),
+                    'total_items' => $faker->randomNumber(null),
                     'buyer_email' => $faker->email,
                     'feedback' => 1,
                     'comment' => $faker->text(),

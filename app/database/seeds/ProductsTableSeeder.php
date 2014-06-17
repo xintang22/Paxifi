@@ -22,7 +22,7 @@ class ProductsTableSeeder extends Seeder
             $product = Product::create(
                 array(
                     'name' => $faker->name,
-                    'driver_id' => $faker->randomNumber(null, 10),
+                    'driver_id' => $faker->numberBetween(1, 10),
                     'description' => $faker->text(),
                     'photos' => array(
                         array(
@@ -32,7 +32,7 @@ class ProductsTableSeeder extends Seeder
                     ),
                     'tax' => $faker->randomFloat(2, 0, 2),
                     'unit_price' => $faker->randomFloat(1, 2, 10),
-                    'category_id' => $faker->randomNumber(null, 10),
+                    'category_id' => $faker->numberBetween(1, 3),
                     'inventory' => 0,
                     'average_cost' => 0,
                 )
