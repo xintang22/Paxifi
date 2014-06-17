@@ -82,13 +82,18 @@ class BaseApiController extends Controller
      *
      * @param string $message
      *
+     * @param null|string $context
+     *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function respondWithError($message)
+    protected function respondWithError($message, $context = null)
     {
         return $this->respond(array(
-            'error' => true,
-            'message' => $message
+            'error' => array(
+                'context' => $context,
+                'message' => $message,
+                'code' => $this->getStatusCode(),
+            )
         ));
     }
 
