@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
 use Paxifi\Store\Auth\AuthManager;
 use Paxifi\Store\Exception\StoreNotFoundException;
+use Paxifi\Subscription\Exception\SubscriptionNotFoundException;
 
 class DriverServiceProvider extends ServiceProvider
 {
@@ -43,6 +44,7 @@ class DriverServiceProvider extends ServiceProvider
      */
     protected function registerRouteModelBindings()
     {
+        // Store
         $this->app['router']->model('driver', 'Paxifi\Store\Repository\Driver\EloquentDriverRepository', function () {
             throw new StoreNotFoundException('Store does not exist.');
         });
@@ -50,7 +52,20 @@ class DriverServiceProvider extends ServiceProvider
         $this->app->error(function (StoreNotFoundException $exception) {
             return Response::json(array('error' => array(
                 'context' => null,
-                'message' => 'Store does not exist.',
+                'message' => $exception->getMessage(),
+                'code' => 404,
+            )), 404);
+        });
+
+        // Subscription
+        $this->app['router']->model('subscription', 'Paxifi\Subscription\Repository\EloquentSubscriptionRepository', function () {
+            throw new SubscriptionNotFoundException('Subscription does not exist.');
+        });
+
+        $this->app->error(function (SubscriptionNotFoundException $exception) {
+            return Response::json(array('error' => array(
+                'context' => null,
+                'message' => $exception->getMessage(),
                 'code' => 404,
             )), 404);
         });
@@ -72,6 +87,13 @@ class DriverServiceProvider extends ServiceProvider
         $this->app['router']->get('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@show');
         $this->app['router']->put('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@update');
         $this->app['router']->delete('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@destroy');
+
+        // Subscriptions
+        $this->app['router']->get('drivers/{driver}/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@index');
+        $this->app['router']->post('drivers/{driver}/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@store');
+        $this->app['router']->get('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@show');
+        $this->app['router']->put('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@update');
+        $this->app['router']->delete('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@cancel');
 
         // sales
         $this->app['router']->get('drivers/{driver}/sales', 'Paxifi\Store\Controller\DriverController@sales');
