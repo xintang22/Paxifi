@@ -50,9 +50,9 @@ class DriverServiceProvider extends ServiceProvider
         $this->app->error(function (StoreNotFoundException $exception) {
             return Response::json(array('error' => array(
                 'context' => null,
-                'message' => 'Invalid store id.',
-                'code' => 400,
-            )), 400);
+                'message' => 'Store does not exist.',
+                'code' => 404,
+            )), 404);
         });
     }
 
