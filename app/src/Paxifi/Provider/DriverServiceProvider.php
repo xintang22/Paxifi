@@ -95,6 +95,13 @@ class DriverServiceProvider extends ServiceProvider
         $this->app['router']->put('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@update');
         $this->app['router']->delete('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@cancel');
 
+        // Products
+        $this->app['router']->get('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@index');
+        $this->app['router']->post('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@store');
+        $this->app['router']->get('drivers/{driver}/products/{product}', 'Paxifi\Store\Controller\ProductController@show');
+        $this->app['router']->put('drivers/{driver}/products/{product}', 'Paxifi\Store\Controller\ProductController@update');
+        $this->app['router']->delete('drivers/{driver}/products/{product}', 'Paxifi\Store\Controller\ProductController@cancel');
+
         // sales
         $this->app['router']->get('drivers/{driver}/sales', 'Paxifi\Store\Controller\DriverController@sales');
 

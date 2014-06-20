@@ -94,5 +94,21 @@ abstract class Validator
         return $this->messages;
     }
 
+    /**
+     * Register custom validation rules
+     *
+     * @return void
+     */
+    protected function registerExtensions()
+    {
+        $this->validator->extend('address', function ($attribute, $value, $parameters) {
+            return $this->validator->make($value, [
+                'street' => 'required',
+                'city' => 'required',
+                'country' => 'required',
+                'postcode' => 'required',
+            ])->passes();
+        });
+    }
 
 }

@@ -3,8 +3,10 @@
 use Illuminate\Support\Collection;
 use Paxifi\Store\Repository\Product\Cost\EloquentCostRepository;
 use Paxifi\Store\Repository\Product\ProductRepository;
+use Paxifi\Store\Repository\Product\Validation\CreateProductValidator;
 use Paxifi\Store\Transformer\ProductTransformer;
 use Paxifi\Support\Controller\ApiController;
+use Paxifi\Support\Validation\ValidationException;
 
 class ProductController extends ApiController
 {
@@ -21,45 +23,59 @@ class ProductController extends ApiController
     /**
      * Store a newly created product
      *
+     * @param $driver
+     *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store()
+    public function store($driver)
     {
-        if ($product = ProductRepository::create(\Input::all())) {
+        try {
 
-            $costs = Collection::make(\Input::get('costs'));
+            with(new CreateProductValidator())->validate(\Input::except('costs'));
 
-            foreach ($costs as $cost) {
+            $product = $driver->products()->create(\Input::all());
 
-                $product->costs()->save(new EloquentCostRepository($cost));
+            foreach (\Input::get('costs') as $cost) {
+
+                $product->costs()->create($cost);
+
             }
 
             return $this->setStatusCode(201)->respondWithItem(ProductRepository::find($product->id));
-        }
 
-        return $this->errorWrongArgs(ProductRepository::getValidationErrors());
+        } catch (ValidationException $e) {
+
+            return $this->errorWrongArgs($e->getErrors()->all());
+
+        }
     }
 
     /**
      * Display the specified product.
      *
-     * @param  int|string $id
+     * @param $driver
+     * @param $product
+     *
+     * @internal param int|string $id
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show($driver, $product)
     {
-        //
+        return $this->respondWithItem($product);
     }
 
     /**
      * Update the specified product in storage.
      *
-     * @param  int|string $id
+     * @param $driver
+     * @param $product
+     *
+     * @internal param int|string $id
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update($id)
+    public function update($driver, $product)
     {
         //
     }
