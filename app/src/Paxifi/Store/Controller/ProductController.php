@@ -49,6 +49,8 @@ class ProductController extends ApiController
 
             }
 
+            \Event::fire('paxifi.product.created', [$product]);
+
             return $this->setStatusCode(201)->respondWithItem(ProductRepository::find($product->id));
 
         } catch (ValidationException $e) {
@@ -110,6 +112,8 @@ class ProductController extends ApiController
             $product = $driver->products()->findOrFail($productId);
 
             $product->delete();
+
+            \Event::fire('paxifi.product.deleted', [$product]);
 
             return $this->setStatusCode(204)->respond(array());
 
