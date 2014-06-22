@@ -13,7 +13,7 @@ class ProductController extends ApiController
     /**
      * Display a listing of all products.
      *
-     * @param EloquentDriverRepository $driver
+     * @param \Paxifi\Store\Repository\Driver\EloquentDriverRepository $driver
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -31,7 +31,7 @@ class ProductController extends ApiController
     /**
      * Store a newly created product
      *
-     * @param $driver
+     * @param \Paxifi\Store\Repository\Driver\EloquentDriverRepository $driver
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -61,12 +61,8 @@ class ProductController extends ApiController
     /**
      * Display the specified product.
      *
-     * @param EloquentDriverRepository $driver
+     * @param \Paxifi\Store\Repository\Driver\EloquentDriverRepository $driver
      * @param int $productId
-     *
-     * @internal param $product
-     *
-     * @internal param int|string $id
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -89,14 +85,12 @@ class ProductController extends ApiController
     /**
      * Update the specified product in storage.
      *
-     * @param $driver
-     * @param $product
-     *
-     * @internal param int|string $id
+     * @param \Paxifi\Store\Repository\Driver\EloquentDriverRepository $driver
+     * @param int $productId
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update($driver, $product)
+    public function update($driver, $productId)
     {
         //
     }
@@ -104,13 +98,30 @@ class ProductController extends ApiController
     /**
      * Remove the specified product from storage.
      *
-     * @param  int|string $id
+     * @param \Paxifi\Store\Repository\Driver\EloquentDriverRepository $driver
+     * @param int $productId
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy($driver, $productId)
     {
-        //
+        try {
+
+            $product = $driver->products()->findOrFail($productId);
+
+            $product->delete();
+
+            return $this->setStatusCode(204)->respond(array());
+
+        } catch (ModelNotFoundException $e) {
+
+            return $this->errorNotFound($this->translator->trans('responses.product.not_found', array('id' => $productId)));
+
+        } catch (\Exception $e) {
+
+            return $this->errorInternalError();
+
+        }
     }
 
     /**
