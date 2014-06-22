@@ -58,7 +58,7 @@ class ProductControllerTest extends \TestCase
 
         $this->assertEquals(0, Product::all()->count());
 
-        $response = json_decode($this->call('post', 'products', $data)->getContent(), true);
+        $response = json_decode($this->call('post', 'drivers/1/products', $data)->getContent(), true);
 
         $this->assertResponseStatus(201);
 
