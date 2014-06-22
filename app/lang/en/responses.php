@@ -27,11 +27,12 @@ return array(
 
     "store" => array(
 
-        "seller_id_available" => ":seller_id is available.",
+        "not_found" => 'Store with ID :id was not found.',
+    ),
 
-        "seller_id_not_available" => ":seller_id is already taken.",
+    "product" => array(
 
-        "missing_seller_id" => 'Seller id is missing.',
+        "not_found" => "Product with ID :id was not found.",
 
     ),
 

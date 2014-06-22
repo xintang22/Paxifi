@@ -1,7 +1,6 @@
 <?php namespace Paxifi\Store\Controller;
 
-use Illuminate\Support\Collection;
-use Paxifi\Store\Repository\Product\Cost\EloquentCostRepository;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Paxifi\Store\Repository\Product\ProductRepository;
 use Paxifi\Store\Repository\Product\Validation\CreateProductValidator;
 use Paxifi\Store\Transformer\ProductTransformer;
@@ -53,16 +52,29 @@ class ProductController extends ApiController
     /**
      * Display the specified product.
      *
-     * @param $driver
-     * @param $product
+     * @param \Paxifi\Store\Repository\Driver\EloquentDriverRepository $driver
+     * @param int $productId
+     *
+     * @internal param $product
      *
      * @internal param int|string $id
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($driver, $product)
+    public function show($driver, $productId)
     {
-        return $this->respondWithItem($product);
+        try {
+
+            $product = $driver->products()->findOrFail($productId);
+
+            return $this->respondWithItem($product);
+
+        } catch (ModelNotFoundException $e) {
+
+            return $this->errorNotFound($this->translator->trans('responses.product.not_found', array('id' => $productId)));
+
+        }
+
     }
 
     /**
