@@ -41,7 +41,7 @@ class ProductServiceProvider extends ServiceProvider
         $this->app['router']->get('products/categories', 'Paxifi\Store\Controller\CategoryController@index');
 
         // CRUD
-        $this->app['router']->post('products', 'Paxifi\Store\Controller\ProductController@store');
+        $this->app['router']->get('products', 'Paxifi\Store\Controller\ProductController@index');
     }
 
     /**
