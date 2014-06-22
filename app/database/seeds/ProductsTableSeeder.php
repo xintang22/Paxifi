@@ -42,7 +42,7 @@ class ProductsTableSeeder extends Seeder
 
                 Cost::create(
                     array(
-                        'unit_cost' => $faker->randomFloat(1, 2, 10),
+                        'unit_cost' => (5 + $j) / 2,
                         'inventory' => 10,
                         'product_id' => $product->id,
                     )

@@ -22,6 +22,8 @@ class CreateProductCostsTable extends Migration {
 
             $table->timestamps();
 
+            $table->unique(array('product_id', 'unit_cost'));
+
             // Foreign keys
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
 		});
