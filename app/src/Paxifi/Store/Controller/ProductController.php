@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
+use Paxifi\Store\Repository\Product\Cost\EloquentCostRepository;
 use Paxifi\Store\Repository\Product\ProductRepository;
 use Paxifi\Store\Repository\Product\Validation\CreateProductValidator;
 use Paxifi\Store\Repository\Product\Validation\UpdateProductValidator;
@@ -103,7 +104,24 @@ class ProductController extends ApiController
 
             $product->update(\Input::except('costs'));
 
-            // @TODO: update costs
+            // @TODO: find a better way to handle updating/deleting product's costs
+            if (\Input::get('costs')) {
+
+                // delete all product's costs
+                $product->costs()->get()->each(function ($cost) {
+                    $cost->delete();
+                });
+
+                foreach (\Input::get('costs') as $cost) {
+
+                    $product->costs()->create($cost);
+
+                    // EloquentCostRepository::updateOrCreate(array('product_id' => $product->id, 'unit_cost' => $cost['unit_cost']), array(
+                    //     'unit_cost' => $cost['unit_cost'],
+                    //    'inventory' => $cost['inventory'],
+                    // ));
+                }
+            }
 
             \Event::fire('paxifi.product.updated', [$product]);
 
