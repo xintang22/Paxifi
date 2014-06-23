@@ -41,6 +41,8 @@ class ProductController extends ApiController
     {
         try {
 
+            \DB::beginTransaction();
+
             with(new CreateProductValidator())->validate(\Input::except('costs'));
 
             $product = $driver->products()->create(\Input::all());
@@ -53,11 +55,17 @@ class ProductController extends ApiController
 
             \Event::fire('paxifi.product.created', [$product]);
 
+            \DB::commit();
+
             return $this->setStatusCode(201)->respondWithItem(ProductRepository::find($product->id));
 
         } catch (ValidationException $e) {
 
             return $this->errorWrongArgs($e->getErrors()->all());
+
+        } catch (\Exception $e) {
+
+            return $this->errorInternalError('System error.');
 
         }
     }
@@ -98,6 +106,8 @@ class ProductController extends ApiController
     {
         try {
 
+            \DB::beginTransaction();
+
             $product = $driver->products()->findOrFail($productId);
 
             with(new UpdateProductValidator())->validate(\Input::except('costs'));
@@ -125,6 +135,8 @@ class ProductController extends ApiController
 
             \Event::fire('paxifi.product.updated', [$product]);
 
+            \DB::commit();
+
             return $this->respondWithItem(ProductRepository::find($productId));
 
         } catch (ModelNotFoundException $e) {
@@ -134,6 +146,11 @@ class ProductController extends ApiController
         } catch (ValidationException $e) {
 
             return $this->errorWrongArgs($e->getErrors()->all());
+
+        } catch (\Exception $e) {
+
+            return $this->errorInternalError('System error.');
+
         }
     }
 
