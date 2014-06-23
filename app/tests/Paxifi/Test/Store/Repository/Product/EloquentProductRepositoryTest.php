@@ -22,7 +22,7 @@ class EloquentProductRepositoryTest extends \TestCase
     public function testUpdateProductInventoryByOne()
     {
         Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
-        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.00, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(20, Product::find(1)->inventory);
 
@@ -30,7 +30,7 @@ class EloquentProductRepositoryTest extends \TestCase
 
         $this->assertEquals(19, Product::find(1)->inventory);
 
-        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 12.10, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(29, Product::find(1)->inventory);
     }
@@ -38,7 +38,7 @@ class EloquentProductRepositoryTest extends \TestCase
     public function testUpdateProductInventoryByMultiple()
     {
         Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
-        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 10.00, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(20, Product::find(1)->inventory);
 
@@ -46,7 +46,7 @@ class EloquentProductRepositoryTest extends \TestCase
 
         $this->assertEquals(17, Product::find(1)->inventory);
 
-        Cost::create(array('unit_cost' => 10.10, 'inventory' => 10, 'product_id' => 1,));
+        Cost::create(array('unit_cost' => 12.10, 'inventory' => 10, 'product_id' => 1,));
 
         $this->assertEquals(27, Product::find(1)->inventory);
     }
