@@ -53,7 +53,7 @@ class ProductTransformer extends TransformerAbstract
         return $costs->map(function ($cost) {
             return array(
                 'id' => $cost->id,
-                'cost' => $cost->cost,
+                'cost' => $cost->unit_cost,
                 'inventory' => $cost->inventory,
             );
         })->all();

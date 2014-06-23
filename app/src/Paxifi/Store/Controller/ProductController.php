@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Store\Repository\Product\ProductRepository;
 use Paxifi\Store\Repository\Product\Validation\CreateProductValidator;
+use Paxifi\Store\Repository\Product\Validation\UpdateProductValidator;
 use Paxifi\Store\Transformer\ProductTransformer;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
@@ -94,7 +95,28 @@ class ProductController extends ApiController
      */
     public function update($driver, $productId)
     {
-        //
+        try {
+
+            $product = $driver->products()->findOrFail($productId);
+
+            with(new UpdateProductValidator())->validate(\Input::except('costs'));
+
+            $product->update(\Input::except('costs'));
+
+            // @TODO: update costs
+
+            \Event::fire('paxifi.product.updated', [$product]);
+
+            return $this->respondWithItem(ProductRepository::find($productId));
+
+        } catch (ModelNotFoundException $e) {
+
+            return $this->errorNotFound($this->translator->trans('responses.product.not_found', array('id' => $productId)));
+
+        } catch (ValidationException $e) {
+
+            return $this->errorWrongArgs($e->getErrors()->all());
+        }
     }
 
     /**

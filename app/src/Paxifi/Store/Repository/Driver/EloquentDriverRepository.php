@@ -42,7 +42,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      */
     public function products()
     {
-        return $this->hasOne('Paxifi\Store\Repository\Product\EloquentProductRepository', 'driver_id', 'id');
+        return $this->hasMany('Paxifi\Store\Repository\Product\EloquentProductRepository', 'driver_id', 'id');
     }
 
     /**
