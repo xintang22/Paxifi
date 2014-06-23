@@ -4,6 +4,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Support\Contracts\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;
 use Paxifi\Support\Repository\BaseModel;
@@ -44,6 +45,22 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     {
         return $this->hasMany('Paxifi\Store\Repository\Product\EloquentProductRepository', 'driver_id', 'id');
     }
+
+    /**
+     * Returns a list of driver's sales
+     *
+     * @return array
+     */
+    public function sales()
+    {
+        return \DB::table('drivers')
+            ->join('products', 'drivers.id', '=', 'products.driver_id')
+            ->join('order_items', 'products.id', '=', 'order_items.product_id')
+            ->select('order_items.order_id')
+            ->distinct()
+            ->get();
+    }
+
 
     /**
      * Serialize the address.
