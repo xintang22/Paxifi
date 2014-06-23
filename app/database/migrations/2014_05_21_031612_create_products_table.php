@@ -23,8 +23,8 @@ class CreateProductsTable extends Migration
             $table->mediumText('description');
 
             $table->decimal('unit_price');
-            $table->decimal('average_cost');
-            $table->unsignedInteger('inventory');
+            $table->decimal('average_cost')->nullable();
+            $table->unsignedInteger('inventory')->nullable();
             $table->decimal('tax', 8, 5);
             $table->boolean('status')->default(1);
 
