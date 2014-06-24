@@ -75,10 +75,14 @@ class Response
      * Sets the collection resource.
      *
      * @param \Paxifi\Support\Response\Collection $collection
+     *
+     * @return $this
      */
     public function setCollection($collection)
     {
         $this->collection = $collection;
+
+        return $this;
     }
 
     /**
@@ -95,10 +99,14 @@ class Response
      * Sets the response content.
      *
      * @param array|object|string $content
+     *
+     * @return $this
      */
     public function setContent($content)
     {
         $this->content = $content;
+
+        return $this;
     }
 
     /**
@@ -115,10 +123,14 @@ class Response
      * Sets the cursor instance.
      *
      * @param \Paxifi\Support\Response\Cursor $cursor
+     *
+     * @return $this
      */
     public function setCursor($cursor)
     {
         $this->cursor = $cursor;
+
+        return $this;
     }
 
     /**
