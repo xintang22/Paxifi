@@ -2,7 +2,6 @@
 
 use Carbon\Carbon;
 use Paxifi\Sales\Repository\SaleCollection;
-use Paxifi\Sales\Transformer\SaleTransformer;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Support\Controller\ApiController;
 
