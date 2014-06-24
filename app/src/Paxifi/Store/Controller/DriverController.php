@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Store\Repository\Driver\Validation\CreateDriverValidator;
+use Paxifi\Store\Repository\Driver\Validation\SettingsValidator;
 use Paxifi\Store\Repository\Driver\Validation\UpdateDriverValidator;
 use Paxifi\Store\Transformer\DriverTransformer;
 use Paxifi\Support\Controller\ApiController;
@@ -118,15 +119,63 @@ class DriverController extends ApiController
     }
 
     /**
-     * Retrieves the stores sales
+     * Retrieves the stores settings
      *
      * @param  \Paxifi\Store\Repository\Driver\DriverRepository $driver
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sales($driver)
+    public function settings($driver)
     {
-        return "Show store {$driver->id}'s sales";
+        return $this->respond(array(
+            'settings' => array(
+                'notify_sale' => (boolean)$driver->notify_sale,
+                'notify_inventory' => (boolean)$driver->notify_inventory,
+                'notify_feedback' => (boolean)$driver->notify_feedback,
+                'notify_billing' => (boolean)$driver->notify_billing,
+                'notify_others' => (boolean)$driver->notify_others,
+            ),
+        ));
+    }
+
+    /**
+     * Updates the stores settings
+     *
+     * @param  \Paxifi\Store\Repository\Driver\DriverRepository $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateSettings($driver)
+    {
+        try {
+
+            with(new SettingsValidator())->validate(\Input::all());
+
+            $driver->notify_sale = \Input::get('notify_sale', $driver->notify_sale);
+            $driver->notify_inventory = \Input::get('notify_inventory', $driver->notify_inventory);
+            $driver->notify_feedback = \Input::get('notify_feedback', $driver->notify_feedback);
+            $driver->notify_billing = \Input::get('notify_billing', $driver->notify_billing);
+            $driver->notify_others = \Input::get('notify_others', $driver->notify_others);
+
+            $driver->save();
+
+            \Event::fire('paxifi.store.settings.updated', [$driver]);
+
+            return $this->respond(array(
+                'settings' => array(
+                    'notify_sale' => (boolean)$driver->notify_sale,
+                    'notify_inventory' => (boolean)$driver->notify_inventory,
+                    'notify_feedback' => (boolean)$driver->notify_feedback,
+                    'notify_billing' => (boolean)$driver->notify_billing,
+                    'notify_others' => (boolean)$driver->notify_others,
+                ),
+            ));
+
+        } catch (ValidationException $e) {
+
+            return $this->errorWrongArgs($e->getErrors()->all());
+        }
+
     }
 
     /**

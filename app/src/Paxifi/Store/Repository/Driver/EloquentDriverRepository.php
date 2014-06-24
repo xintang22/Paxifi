@@ -33,7 +33,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @var array
      */
-    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'status',);
+    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'status', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others',);
 
     /**
      * Driver-Product relationship.

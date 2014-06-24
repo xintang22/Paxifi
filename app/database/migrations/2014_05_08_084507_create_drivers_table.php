@@ -24,6 +24,13 @@ class CreateDriversTable extends Migration
             $table->string('remember_token')->nullable();
             $table->integer('thumbs_up')->default(0)->nullable();
             $table->integer('thumbs_down')->default(0)->nullable();
+
+            $table->boolean('notify_sale')->default(true);
+            $table->boolean('notify_inventory')->default(true);
+            $table->boolean('notify_feedback')->default(true);
+            $table->boolean('notify_billing')->default(true);
+            $table->boolean('notify_others')->default(true);
+
             $table->tinyInteger('status', false, true)->nullable()->default(0);
             $table->timestamps();
             $table->softDeletes();
