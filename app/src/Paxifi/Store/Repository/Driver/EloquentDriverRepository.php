@@ -4,7 +4,6 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
-use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Support\Contracts\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;
 use Paxifi\Support\Repository\BaseModel;
@@ -49,14 +48,22 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     /**
      * Returns a list of driver's sales
      *
+     * @param null $from
+     * @param null $to
+     *
      * @return array
      */
-    public function sales()
+    public function sales($from, $to)
     {
         return \DB::table('drivers')
             ->join('products', 'drivers.id', '=', 'products.driver_id')
             ->join('order_items', 'products.id', '=', 'order_items.product_id')
-            ->select('order_items.order_id')
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->select('orders.id')
+            ->where('drivers.id', '=', $this->id)
+            ->where('orders.created_at', '>=', $from)
+            ->where('orders.created_at', '<=', $to)
+            ->where('orders.status', '=', 1)
             ->distinct()
             ->get();
     }
