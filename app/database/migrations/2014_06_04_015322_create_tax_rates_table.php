@@ -15,12 +15,13 @@ class CreateTaxRatesTable extends Migration
     {
         Schema::create('tax_rates', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('category', array('standard', 'reduced'));
+            $table->unsignedInteger('driver_id');
+            $table->enum('category', array('custom', 'global'))->default('custom');
             $table->decimal('amount', 8, 5);
-            $table->string('country');
-            $table->string('state')->nullable();
-            $table->string('city')->nullable();
-            $table->string('postcode')->nullable();
+            $table->boolean('included_in_price')->default(0);
+            $table->boolean('applied_only_for_product')->default(1);
+
+            $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
 
             $table->timestamps();
         });

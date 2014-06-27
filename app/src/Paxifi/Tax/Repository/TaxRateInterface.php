@@ -20,6 +20,8 @@ interface TaxRateInterface
      * Set tax amount.
      *
      * @param float $amount
+     *
+     * @return $this
      */
     public function setAmount($amount);
 
@@ -34,6 +36,8 @@ interface TaxRateInterface
      * Set as included in price or not.
      *
      * @param Boolean $includedInPrice
+     *
+     * @return $this
      */
     public function setIncludedInPrice($includedInPrice);
 

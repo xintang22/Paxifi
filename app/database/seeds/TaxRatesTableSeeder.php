@@ -234,13 +234,13 @@ class TaxRatesTableSeeder extends Seeder
 
     public function run()
     {
-        DB::table('tax_rates')->truncate();
+        DB::table('official_tax_rates')->truncate();
 
         foreach ($this->taxRates as $tax) {
 
             $tax['created_at'] = $tax['updated_at'] = \Carbon\Carbon::now();
 
-            DB::table('tax_rates')->insert($tax);
+            DB::table('official_tax_rates')->insert($tax);
         }
     }
 } 
