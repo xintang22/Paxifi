@@ -7,12 +7,14 @@ class TaxRatesTableSeeder extends Seeder
             'category' => 'standard',
             'country' => 'UK',
             'amount' => '0.2000',
+            'included_in_price' => true,
         ],
 
         [
             'category' => 'reduced',
             'country' => 'UK',
             'amount' => '0.0500',
+            'included_in_price' => true,
         ],
 
         [

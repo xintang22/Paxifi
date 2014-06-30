@@ -25,6 +25,9 @@ class CreateDriversTable extends Migration
             $table->integer('thumbs_up')->default(0)->nullable();
             $table->integer('thumbs_down')->default(0)->nullable();
 
+            $table->boolean('tax_enabled')->default(false);
+            $table->boolean('tax_included_in_price')->default(false);
+
             $table->boolean('notify_sale')->default(true);
             $table->boolean('notify_inventory')->default(true);
             $table->boolean('notify_feedback')->default(true);

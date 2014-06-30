@@ -4,9 +4,11 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Illuminate\Support\Collection;
 use Paxifi\Support\Contracts\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;
 use Paxifi\Support\Repository\BaseModel;
+use Paxifi\Tax\Repository\OfficialTaxRate;
 
 class EloquentDriverRepository extends BaseModel implements DriverRepositoryInterface, AddressInterface, UserInterface, RemindableInterface, RatingInterface
 {
@@ -33,7 +35,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @var array
      */
-    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'status', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others',);
+    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'status', 'tax_enabled', 'tax_included_in_price', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others',);
 
     /**
      * Driver-Product relationship.
@@ -265,5 +267,41 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         if (!$models->isEmpty()) return $models;
 
         throw with(new ModelNotFoundException)->setModel(get_class($this->model));
+    }
+
+    /**
+     * Retrieves official tax rates
+     *
+     * @return array
+     */
+    public function officialTaxRates()
+    {
+        if ($this->getCountry() == 'US') {
+            return OfficialTaxRate::postcode($this->getPostcode())->get();
+        } else if ($this->getCountry() == 'UK') {
+            return OfficialTaxRate::country('UK')->get();
+        }
+
+        return new Collection();
+    }
+
+    /**
+     * Defines custom tax rates relationship
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function customTaxRates()
+    {
+        return $this->hasMany('\Paxifi\Tax\Repository\TaxRate', 'driver_id', 'id');
+    }
+
+    /**
+     * Get the stores's tax rate.
+     *
+     * @return \Paxifi\Tax\Repository\TaxRateInterface
+     */
+    public function getTaxRates()
+    {
+        return $this->officialTaxRates()->merge($this->customTaxRates()->get());
     }
 }

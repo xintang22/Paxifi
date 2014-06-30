@@ -8,6 +8,13 @@ class TaxRate extends BaseModel implements TaxRateInterface
     protected $table = 'tax_rates';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['category', 'amount', 'included_in_price'];
+
+    /**
      * Get tax amount.
      *
      * @return float
@@ -48,7 +55,7 @@ class TaxRate extends BaseModel implements TaxRateInterface
      */
     public function isIncludedInPrice()
     {
-        return $this->include_in_price;
+        return $this->included_in_price;
     }
 
     /**

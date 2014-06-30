@@ -3,6 +3,7 @@
 use Illuminate\Auth\Reminders\PasswordBroker;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
+use Paxifi\Store\Auth\Auth;
 use Paxifi\Store\Auth\AuthManager;
 use Paxifi\Store\Exception\StoreNotFoundException;
 use Paxifi\Subscription\Exception\SubscriptionNotFoundException;
@@ -109,6 +110,10 @@ class DriverServiceProvider extends ServiceProvider
         // sales
         $this->app['router']->get('drivers/{driver}/sales', 'Paxifi\Sales\Controller\SalesController@index');
         $this->app['router']->get('drivers/{driver}/sales/forecasts', 'Paxifi\Sales\Controller\SalesController@forecasts');
+
+        // taxes
+        $this->app['router']->get('drivers/{driver}/taxes', 'Paxifi\Store\Controller\TaxController@index');
+        $this->app['router']->post('drivers/{driver}/taxes', 'Paxifi\Store\Controller\TaxController@store');
 
         // Authentication
         $this->app['router']->post('drivers/login', 'Paxifi\Store\Controller\AuthController@login');

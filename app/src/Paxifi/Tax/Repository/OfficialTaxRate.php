@@ -69,4 +69,56 @@ class OfficialTaxRate extends BaseModel implements TaxRateInterface
 
         return $this;
     }
+
+    /**
+     * Dynamic Country Scope
+     *
+     * @param $query
+     * @param $country
+     *
+     * @return mixed
+     */
+    public function scopeCountry($query, $country)
+    {
+        return $query->whereCountry($country);
+    }
+
+    /**
+     * Dynamic City Scope
+     *
+     * @param $query
+     * @param $city
+     *
+     * @return mixed
+     */
+    public function scopeCity($query, $city)
+    {
+        return $query->whereCity($city);
+    }
+
+    /**
+     * Dynamic State Scope
+     *
+     * @param $query
+     * @param $state
+     *
+     * @return mixed
+     */
+    public function scopeState($query, $state)
+    {
+        return $query->whereState($state);
+    }
+
+    /**
+     * Dynamic Postcode Scope
+     *
+     * @param $query
+     * @param $postcode
+     *
+     * @return mixed
+     */
+    public function scopePostcode($query, $postcode)
+    {
+        return $query->wherePostcode($postcode);
+    }
 }
