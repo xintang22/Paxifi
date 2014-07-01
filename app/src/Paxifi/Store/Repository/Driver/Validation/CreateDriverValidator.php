@@ -12,5 +12,13 @@ class CreateDriverValidator extends Validator
         'photo' => 'url',
         'address' => 'required',
         'currency' => 'required',
+        'tax_enabled' => 'boolean',
+        'tax_included_in_price' => 'boolean',
+        'tax_global_amount' => 'numeric|between:0,1',
+        'notify_sale' => 'boolean',
+        'notify_inventory' => 'boolean',
+        'notify_feedback' => 'boolean',
+        'notify_billing' => 'boolean',
+        'notify_others' => 'boolean',
     ];
 } 
