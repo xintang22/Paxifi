@@ -1,8 +1,10 @@
 <?php namespace Paxifi\Store\Repository\Product;
 
 use Paxifi\Support\Repository\BaseModel;
+use Paxifi\Tax\Repository\TaxRate;
+use Paxifi\Tax\TaxableInterface;
 
-class EloquentProductRepository extends BaseModel implements ProductRepositoryInterface
+class EloquentProductRepository extends BaseModel implements ProductRepositoryInterface, TaxableInterface
 {
     /**
      * The table associated with the model.
@@ -104,5 +106,15 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
         $cost->inventory--;
 
         $cost->save();
+    }
+
+    /**
+     * Get the product's tax rate.
+     *
+     * @return \Paxifi\Tax\Repository\TaxRateInterface
+     */
+    public function getTaxRate()
+    {
+        return new TaxRate($this->tax_amount, $this->driver->tax_included_in_price);
     }
 }
