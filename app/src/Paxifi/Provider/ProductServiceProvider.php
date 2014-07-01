@@ -15,6 +15,8 @@ class ProductServiceProvider extends ServiceProvider
         $this->registerRoutes();
 
         $this->registerCategoryRepository();
+
+        $this->registerListeners();
     }
 
     /**
@@ -42,6 +44,20 @@ class ProductServiceProvider extends ServiceProvider
 
         // CRUD
         $this->app['router']->get('products', 'Paxifi\Store\Controller\ProductController@index');
+    }
+
+    /**
+     * Register Product listeners
+     *
+     * @return void
+     */
+    public function registerListeners()
+    {
+        // @TODO: Update the product inventory after success payment.
+        $this->app['events']->listen('paxifi.product.ordered', function ($product, $quantity) {
+            $product->updateInventory($quantity);
+            $product->save();
+        });
     }
 
     /**
