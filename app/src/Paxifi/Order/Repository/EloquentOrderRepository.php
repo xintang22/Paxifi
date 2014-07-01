@@ -2,6 +2,7 @@
 
 use Paxifi\Store\Repository\Product\EloquentProductRepository;
 use Paxifi\Support\Repository\BaseModel;
+use Paxifi\Tax\Calculator\Calculator;
 
 class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterface
 {
@@ -71,6 +72,14 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
     }
 
     /**
+     * @return mixed
+     */
+    public function getTotalTax()
+    {
+        return $this->total_tax;
+    }
+
+    /**
      * Add order item.
      *
      * @param array $item
@@ -87,14 +96,24 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
         if ((int)$item['quantity'] > $product->inventory)
             throw new \InvalidArgumentException('Stock is not available.');
 
+        // Total Items
         $this->total_items += $item['quantity'];
+
+        // Total Costs
         $this->total_costs += $product->average_cost * $item['quantity'];
-        $this->total_sales += (1 + $product->tax_amount) * $product->unit_price * $item['quantity'];
+
+        // Total Tax
+        $totalUnitPrice = $product->unit_price * $item['quantity'];
+        $totalTax = Calculator::calculate($totalUnitPrice, $product->getTaxRate());
+        $this->total_tax += $totalTax;
+
+        // Total Sales
+        $this->total_sales += $product->getTaxRate()->isIncludedInPrice() ? $totalUnitPrice : $totalUnitPrice + $totalTax;
 
         $this->products()->attach($product->id, array('quantity' => $item['quantity']));
 
         // Fires an event to update the inventory.
-        static::$dispatcher->fire('paxifi.order.product', array($product, $item['quantity']));
+        static::$dispatcher->fire('paxifi.product.ordered', array($product, $item['quantity']));
 
         return $this;
     }

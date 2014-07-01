@@ -5,4 +5,6 @@ interface OrderRepositoryInterface
     public function getTotalCosts();
 
     public function getTotalSales();
+
+    public function getTotalTax();
 }
