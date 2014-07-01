@@ -46,8 +46,9 @@ class Calculator implements CalculatorInterface
     {
         $sales = $order->getTotalSales();
         $costs = $order->getTotalCosts();
+        $tax = $order->getTotalTax();
 
-        return $sales - $costs - $this->calculateCommission($order);
+        return $sales - $costs - $tax - $this->calculateCommission($order);
     }
 
     /**
