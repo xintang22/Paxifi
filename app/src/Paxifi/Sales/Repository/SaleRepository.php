@@ -97,6 +97,7 @@ class SaleRepository implements ArrayableInterface
             'total_items' => $this->totalItems,
             'total_costs' => $this->totalCosts,
             'total_sales' => $this->totalSales,
+            'total_tax' => $this->totalTax,
             'profit' => $this->profit,
             'commission' => $this->commission,
             // 'payment_method' => $this->paymentMethod,
