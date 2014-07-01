@@ -4,5 +4,5 @@ use Paxifi\Tax\Repository\TaxRateInterface;
 
 interface CalculatorInterface
 {
-    public function calculate($base, TaxRateInterface $rate);
+    public static function calculate($base, TaxRateInterface $rate);
 } 
