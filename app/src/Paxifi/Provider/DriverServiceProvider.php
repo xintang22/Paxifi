@@ -113,7 +113,6 @@ class DriverServiceProvider extends ServiceProvider
 
         // taxes
         $this->app['router']->get('drivers/{driver}/taxes', 'Paxifi\Store\Controller\TaxController@index');
-        $this->app['router']->post('drivers/{driver}/taxes', 'Paxifi\Store\Controller\TaxController@store');
 
         // Authentication
         $this->app['router']->post('drivers/login', 'Paxifi\Store\Controller\AuthController@login');
