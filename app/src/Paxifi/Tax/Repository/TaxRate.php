@@ -1,18 +1,26 @@
 <?php namespace Paxifi\Tax\Repository;
 
-use Paxifi\Support\Repository\BaseModel;
-
-class TaxRate extends BaseModel implements TaxRateInterface
+class TaxRate implements TaxRateInterface
 {
-
-    protected $table = 'tax_rates';
+    /**
+     * @var float array
+     */
+    protected $amount;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
+     * @var boolean
      */
-    protected $fillable = ['category', 'amount', 'included_in_price'];
+    protected $includedInPrice;
+
+    /**
+     * @param float $amount
+     * @param boolean $includedInPrice
+     */
+    function __construct($amount, $includedInPrice)
+    {
+        $this->amount = $amount;
+        $this->includedInPrice = $includedInPrice;
+    }
 
     /**
      * Get tax amount.
@@ -55,7 +63,7 @@ class TaxRate extends BaseModel implements TaxRateInterface
      */
     public function isIncludedInPrice()
     {
-        return $this->included_in_price;
+        return $this->includedInPrice;
     }
 
     /**
@@ -67,7 +75,7 @@ class TaxRate extends BaseModel implements TaxRateInterface
      */
     public function setIncludedInPrice($includedInPrice)
     {
-        $this->included_in_price = (Boolean)$includedInPrice;
+        $this->includedInPrice = (Boolean)$includedInPrice;
 
         return $this;
     }
