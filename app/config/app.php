@@ -113,6 +113,7 @@ return array(
         'Paxifi\Provider\ProductServiceProvider',
         'Paxifi\Provider\OrderServiceProvider',
         'Paxifi\Provider\PaymentServiceProvider',
+        'Paxifi\Provider\TaxServiceProvider',
 
 	),
 
