@@ -35,7 +35,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @var array
      */
-    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'status', 'tax_enabled', 'tax_included_in_price', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others',);
+    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'status', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others',);
 
     /**
      * Driver-Product relationship.
@@ -276,23 +276,21 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      */
     public function officialTaxRates()
     {
+        $rates = new Collection();
+
         if ($this->getCountry() == 'US') {
-            return OfficialTaxRate::postcode($this->getPostcode())->get();
+            $rates = OfficialTaxRate::postcode($this->getPostcode())->get(array('category', 'amount', 'included_in_price'));
         } else if ($this->getCountry() == 'UK') {
-            return OfficialTaxRate::country('UK')->get();
+            $rates = OfficialTaxRate::country('UK')->get(array('category', 'amount', 'included_in_price'));
         }
 
-        return new Collection();
-    }
-
-    /**
-     * Defines custom tax rates relationship
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function customTaxRates()
-    {
-        return $this->hasMany('\Paxifi\Tax\Repository\TaxRate', 'driver_id', 'id');
+        return $rates->map(function($rate) {
+            return [
+                'amount' => $rate->amount,
+                'category' => $rate->category,
+                'included_in_price' => (boolean)$rate->included_in_price,
+            ];
+        });
     }
 
     /**
@@ -302,6 +300,14 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      */
     public function getTaxRates()
     {
-        return $this->officialTaxRates()->merge($this->customTaxRates()->get());
+        if (!$this->officialTaxRates()->isEmpty()) {
+            return $this->officialTaxRates()->toArray();
+        }
+
+        return [[
+            'amount' => $this->tax_global_amount,
+            'category' => 'global',
+            'included_in_price' => (boolean)$this->tax_included_in_price,
+        ]];
     }
 }

@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Store\Transformer;
 
+use Illuminate\Support\Collection;
 use League\Fractal\TransformerAbstract;
 use Paxifi\Store\Repository\Driver\DriverRepositoryInterface;
 
@@ -16,7 +17,7 @@ class DriverTransformer extends TransformerAbstract
             'seller_id' => $driver->seller_id,
             'address' => $driver->address,
             'currency' => $driver->currency,
-            'tax_enabled' => (boolean)$driver->tax_enabled,
+            'tax' => $this->transformTaxConfiguration($driver),
             'settings' => array(
                 'notify_sale' => (boolean)$driver->notify_sale,
                 'notify_inventory' => (boolean)$driver->notify_inventory,
@@ -26,26 +27,20 @@ class DriverTransformer extends TransformerAbstract
             ),
         );
 
-        if ($driver->tax_enabled) {
-            $transformer['taxes'] = $this->transformTaxRates($driver->getTaxRates());
-        }
-
         return $transformer;
     }
 
-    protected function transformTaxRates($taxRates)
+    protected function transformTaxConfiguration($driver)
     {
-        if ($taxRates) {
-            return $taxRates->map(function ($tax) {
-                return [
-                    'id' => $tax->id,
-                    'category' => $tax->category,
-                    'amount' => $tax->amount,
-                    'included_in_price' => (boolean)$tax->included_in_price
-                ];
-            });
+        $tax = [
+            'enabled' => (boolean)$driver->tax_enabled,
+        ];
+
+        if ($driver->tax_enabled) {
+            $tax['included_in_price'] = (boolean)$driver->tax_included_in_price;
+            $tax['rates'] = $driver->getTaxRates();
         }
 
-        return [];
+        return $tax;
     }
 }
