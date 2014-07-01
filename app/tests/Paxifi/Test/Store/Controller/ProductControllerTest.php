@@ -44,7 +44,7 @@ class ProductControllerTest extends \TestCase
                     'url' => $this->faker->imageUrl(250, 250),
                 ),
             ),
-            'tax' => $this->faker->randomFloat(2, 0, 2),
+            'tax_amount' => $this->faker->randomFloat(2, 0, 2),
             'unit_price' => $this->faker->randomFloat(1, 2, 10),
             'category_id' => 1,
             'inventory' => 0,

@@ -159,7 +159,7 @@ class CostRepositoryObserverTest extends \TestCase
                 'driver_id' => $store->id,
                 'description' => $faker->text(),
                 'photos' => $faker->imageUrl(250, 250),
-                'tax' => $faker->randomFloat(2, 0, 2),
+                'tax_amount' => $faker->randomFloat(2, 0, 2),
                 'unit_price' => $faker->randomFloat(1, 2, 10),
                 'category_id' => 1,
                 'inventory' => 0,
