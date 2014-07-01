@@ -10,7 +10,7 @@ class ProductTransformer extends TransformerAbstract
      *
      * @var array
      */
-    protected $availableEmbeds = array('driver');
+    // protected $availableEmbeds = array('driver');
 
     public function transform(ProductRepositoryInterface $product)
     {
@@ -22,7 +22,10 @@ class ProductTransformer extends TransformerAbstract
             'unit_price' => $product->unit_price,
             'average_cost' => $product->average_cost,
             'inventory' => $product->inventory,
-            'tax' => $product->tax,
+            'tax' => array(
+                'amount' => $product->tax_amount,
+                'included_in_price' => (boolean)$product->driver->tax_included_in_price,
+            ),
             'costs' => $this->transformCosts($product->costs),
         );
     }

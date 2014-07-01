@@ -30,7 +30,7 @@ class ProductsTableSeeder extends Seeder
                             'url' => $faker->imageUrl(250, 250),
                         ),
                     ),
-                    'tax' => $faker->randomFloat(2, 0, 2),
+                    'tax_amount' => 0.0200 + ($i * 0.001),
                     'unit_price' => $faker->randomFloat(1, 2, 10),
                     'category_id' => $faker->numberBetween(1, 3),
                     'inventory' => 0,

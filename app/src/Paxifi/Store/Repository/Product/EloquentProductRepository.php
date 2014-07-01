@@ -16,7 +16,7 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
      *
      * @var array
      */
-    protected $fillable = array('name', 'photos', 'description', 'unit_price', 'average_cost', 'inventory', 'tax', 'driver_id', 'category_id');
+    protected $fillable = array('name', 'photos', 'description', 'unit_price', 'average_cost', 'inventory', 'tax_amount', 'driver_id', 'category_id');
 
     /**
      * The data validation rules

@@ -89,7 +89,7 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
 
         $this->total_items += $item['quantity'];
         $this->total_costs += $product->average_cost * $item['quantity'];
-        $this->total_sales += (1 + $product->tax) * $product->unit_price * $item['quantity'];
+        $this->total_sales += (1 + $product->tax_amount) * $product->unit_price * $item['quantity'];
 
         $this->products()->attach($product->id, array('quantity' => $item['quantity']));
 
