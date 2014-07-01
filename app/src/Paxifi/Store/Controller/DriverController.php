@@ -128,12 +128,14 @@ class DriverController extends ApiController
     public function settings($driver)
     {
         return $this->respond(array(
-            'settings' => array(
-                'notify_sale' => (boolean)$driver->notify_sale,
-                'notify_inventory' => (boolean)$driver->notify_inventory,
-                'notify_feedback' => (boolean)$driver->notify_feedback,
-                'notify_billing' => (boolean)$driver->notify_billing,
-                'notify_others' => (boolean)$driver->notify_others,
+            'data' => array(
+                'settings' => array(
+                    'notify_sale' => (boolean)$driver->notify_sale,
+                    'notify_inventory' => (boolean)$driver->notify_inventory,
+                    'notify_feedback' => (boolean)$driver->notify_feedback,
+                    'notify_billing' => (boolean)$driver->notify_billing,
+                    'notify_others' => (boolean)$driver->notify_others,
+                ),
             ),
         ));
     }
@@ -162,12 +164,14 @@ class DriverController extends ApiController
             \Event::fire('paxifi.store.settings.updated', [$driver]);
 
             return $this->respond(array(
-                'settings' => array(
-                    'notify_sale' => (boolean)$driver->notify_sale,
-                    'notify_inventory' => (boolean)$driver->notify_inventory,
-                    'notify_feedback' => (boolean)$driver->notify_feedback,
-                    'notify_billing' => (boolean)$driver->notify_billing,
-                    'notify_others' => (boolean)$driver->notify_others,
+                'data' => array(
+                    'settings' => array(
+                        'notify_sale' => (boolean)$driver->notify_sale,
+                        'notify_inventory' => (boolean)$driver->notify_inventory,
+                        'notify_feedback' => (boolean)$driver->notify_feedback,
+                        'notify_billing' => (boolean)$driver->notify_billing,
+                        'notify_others' => (boolean)$driver->notify_others,
+                    ),
                 ),
             ));
 
