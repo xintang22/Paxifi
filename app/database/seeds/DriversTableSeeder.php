@@ -16,7 +16,7 @@ class DriversTableSeeder extends Seeder
             Driver::create(
                 array(
                     'email' => $faker->email,
-                    'password' => Hash::make($faker->name),
+                    'password' => Hash::make('password'),
                     'photo' => $faker->imageUrl(250, 250),
                     'name' => $faker->name,
                     'seller_id' => $faker->firstName,

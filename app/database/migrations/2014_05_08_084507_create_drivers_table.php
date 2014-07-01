@@ -27,6 +27,7 @@ class CreateDriversTable extends Migration
 
             $table->boolean('tax_enabled')->default(false);
             $table->boolean('tax_included_in_price')->default(false);
+            $table->decimal('tax_global_amount', 8, 5)->nullable();
 
             $table->boolean('notify_sale')->default(true);
             $table->boolean('notify_inventory')->default(true);
