@@ -1,7 +1,6 @@
 <?php namespace Paxifi\Store\Controller;
 
-use Illuminate\Support\Facades\Event;
-use Paxifi\Store\Auth\Auth;
+use DB;
 use Paxifi\Support\Controller\BaseApiController;
 
 class AuthController extends BaseApiController
@@ -14,23 +13,7 @@ class AuthController extends BaseApiController
      */
     public function login()
     {
-        $credentials = array(
-            'email' => \Input::get('email'),
-            'password' => \Input::get('password'),
-        );
-
-        if (Auth::attempt($credentials)) {
-
-            Event::fire('driver.login', array(Auth::user()));
-
-            return $this->respond(array(
-                'success' => true,
-                'message' => $this->translator->trans('responses.auth.login'),
-                'access_token' => \Session::token(),
-            ));
-        }
-
-        return $this->errorForbidden($this->translator->trans('responses.auth.wrong_credentials'));
+        return \AuthorizationServer::performAccessTokenFlow();
     }
 
     /**
@@ -40,18 +23,17 @@ class AuthController extends BaseApiController
      */
     public function logout()
     {
-        if ($driver = Auth::user()) {
+        try {
+            $ownerId = \ResourceServer::getOwnerId();
 
-            Event::fire('driver.logout', array($driver));
+            DB::table('oauth_sessions')
+                ->where('oauth_sessions.owner_id', '=', $ownerId)
+                ->delete();
 
-            Auth::logout();
+            return $this->respond([])->setStatusCode(204);
 
-            return $this->respond(array(
-                'success' => true,
-                'message' => $this->translator->trans('responses.auth.logout'),
-            ));
+        } catch (\Exception $e) {
+            return $this->errorInternalError($e->getMessage());
         }
-
-        return $this->errorForbidden($this->translator->trans('responses.auth.not_logged_in'));
     }
 }
