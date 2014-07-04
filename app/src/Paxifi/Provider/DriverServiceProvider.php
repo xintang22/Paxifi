@@ -79,52 +79,83 @@ class DriverServiceProvider extends ServiceProvider
      */
     protected function registerRoutes()
     {
-        // Search
-        $this->app['router']->get('drivers/search', 'Paxifi\Store\Controller\DriverController@search');
+        // driver has to be a numeric value
+        $this->app['router']->pattern('driver', '[0-9]+');
 
-        // CRUD
-        $this->app['router']->get('drivers', 'Paxifi\Store\Controller\DriverController@index');
-        $this->app['router']->post('drivers', 'Paxifi\Store\Controller\DriverController@store');
-        $this->app['router']->get('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@show');
-        $this->app['router']->put('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@update');
-        $this->app['router']->delete('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@destroy');
-
-        // Settings
-        $this->app['router']->get('drivers/{driver}/settings', 'Paxifi\Store\Controller\DriverController@settings');
-        $this->app['router']->put('drivers/{driver}/settings', 'Paxifi\Store\Controller\DriverController@updateSettings');
-
-        // Subscriptions
-        $this->app['router']->get('drivers/{driver}/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@index');
-        $this->app['router']->post('drivers/{driver}/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@store');
-        $this->app['router']->get('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@show');
-        $this->app['router']->put('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@update');
-        $this->app['router']->delete('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@cancel');
-
-        // Products
-        $this->app['router']->get('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@index');
-        $this->app['router']->post('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@store');
-        $this->app['router']->get('drivers/{driver}/products/{product}', 'Paxifi\Store\Controller\ProductController@show');
-        $this->app['router']->put('drivers/{driver}/products/{product}', 'Paxifi\Store\Controller\ProductController@update');
-        $this->app['router']->delete('drivers/{driver}/products/{product}', 'Paxifi\Store\Controller\ProductController@destroy');
-
-        // sales
-        $this->app['router']->get('drivers/{driver}/sales', 'Paxifi\Sales\Controller\SalesController@index');
-        $this->app['router']->get('drivers/{driver}/sales/forecasts', 'Paxifi\Sales\Controller\SalesController@forecasts');
-
-        // taxes
-        $this->app['router']->get('drivers/{driver}/taxes', 'Paxifi\Store\Controller\TaxController@index');
-
-        // Authentication
-        $this->app['router']->post('drivers/login', 'Paxifi\Store\Controller\AuthController@login');
-        $this->app['router']->post('drivers/logout', 'Paxifi\Store\Controller\AuthController@logout');
-
-        // Password reminder
-        $this->app['router']->post('drivers/password/remind', 'Paxifi\Store\Controller\RemindersController@remind');
+        // @TODO Update to send directly temporary password
         $this->app['router']->get('drivers/password/reset/{token}', 'Paxifi\Store\Controller\RemindersController@show');
         $this->app['router']->post('drivers/password/reset', 'Paxifi\Store\Controller\RemindersController@reset');
 
-        // Rating
-        $this->app['router']->post('drivers/{driver}/rating', 'Paxifi\Store\Controller\RatingController@rating');
+        $this->app['router']->group(['before' => 'oauth'], function () {
+
+            // =========================================================================================================
+            // OAuth
+            // =========================================================================================================
+
+            // Search
+            $this->app['router']->get('drivers/search', 'Paxifi\Store\Controller\DriverController@search');
+
+            // Password reminder
+            $this->app['router']->post('drivers/password/remind', 'Paxifi\Store\Controller\RemindersController@remind');
+
+            // =========================================================================================================
+            // OAuth + Client
+            // =========================================================================================================
+
+            $this->app['router']->group(['before' => 'oauth-owner:client'], function () {
+
+                // Login the driver
+                $this->app['router']->post('drivers/login', 'Paxifi\Store\Controller\AuthController@login');
+
+                // Register new Store
+                $this->app['router']->post('drivers', 'Paxifi\Store\Controller\DriverController@store');
+
+                // Rating
+                $this->app['router']->post('drivers/{driver}/rating', 'Paxifi\Store\Controller\RatingController@rating');
+            });
+
+            // =========================================================================================================
+            // OAuth + Store owner
+            // =========================================================================================================
+
+            $this->app['router']->group(['before' => 'check-store-owner'], function () {
+
+                // CRUD
+                $this->app['router']->get('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@show');
+                $this->app['router']->put('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@update');
+                $this->app['router']->delete('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@destroy');
+
+                // Settings
+                $this->app['router']->get('drivers/{driver}/settings', 'Paxifi\Store\Controller\DriverController@settings');
+                $this->app['router']->put('drivers/{driver}/settings', 'Paxifi\Store\Controller\DriverController@updateSettings');
+
+                // Products
+                $this->app['router']->get('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@index');
+                $this->app['router']->post('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@store');
+                $this->app['router']->get('drivers/{driver}/products/{product}', 'Paxifi\Store\Controller\ProductController@show');
+                $this->app['router']->put('drivers/{driver}/products/{product}', 'Paxifi\Store\Controller\ProductController@update');
+                $this->app['router']->delete('drivers/{driver}/products/{product}', 'Paxifi\Store\Controller\ProductController@destroy');
+
+                // sales
+                $this->app['router']->get('drivers/{driver}/sales', 'Paxifi\Sales\Controller\SalesController@index');
+                $this->app['router']->get('drivers/{driver}/sales/forecasts', 'Paxifi\Sales\Controller\SalesController@forecasts');
+
+                // taxes
+                $this->app['router']->get('drivers/{driver}/taxes', 'Paxifi\Store\Controller\TaxController@index');
+
+                // Logout the driver
+                $this->app['router']->post('drivers/logout', 'Paxifi\Store\Controller\AuthController@logout');
+
+                // @TODO Subscriptions
+                $this->app['router']->get('drivers/{driver}/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@index');
+                $this->app['router']->post('drivers/{driver}/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@store');
+                $this->app['router']->get('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@show');
+                $this->app['router']->put('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@update');
+                $this->app['router']->delete('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@cancel');
+            });
+
+        });
+
     }
 
     /**
