@@ -19,7 +19,7 @@ class OAuth2ServiceProvider extends ServiceProvider
             $ownerId = \ResourceServer::getOwnerId();
             $driver = $route->getParameter('driver');
 
-            if ($driver->id != $ownerId) {
+            if (!$driver or $driver->id != $ownerId) {
                 return \Response::json(array(
                     'status' => 403,
                     'error' => 'forbidden',

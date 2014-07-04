@@ -3,7 +3,6 @@
 use Illuminate\Auth\Reminders\PasswordBroker;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
-use Paxifi\Store\Auth\Auth;
 use Paxifi\Store\Auth\AuthManager;
 use Paxifi\Store\Exception\StoreNotFoundException;
 use Paxifi\Subscription\Exception\SubscriptionNotFoundException;
@@ -47,7 +46,7 @@ class DriverServiceProvider extends ServiceProvider
     {
         // Store
         $this->app['router']->model('driver', 'Paxifi\Store\Repository\Driver\EloquentDriverRepository', function () {
-            throw new StoreNotFoundException('Store does not exist.');
+            // throw new StoreNotFoundException('Store does not exist.');
         });
 
         $this->app->error(function (StoreNotFoundException $exception) {
@@ -98,6 +97,9 @@ class DriverServiceProvider extends ServiceProvider
             // Password reminder
             $this->app['router']->post('drivers/password/remind', 'Paxifi\Store\Controller\RemindersController@remind');
 
+            // View Store's products
+            $this->app['router']->get('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@index');
+
             // =========================================================================================================
             // OAuth + Client
             // =========================================================================================================
@@ -130,7 +132,6 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->put('drivers/{driver}/settings', 'Paxifi\Store\Controller\DriverController@updateSettings');
 
                 // Products
-                $this->app['router']->get('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@index');
                 $this->app['router']->post('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@store');
                 $this->app['router']->get('drivers/{driver}/products/{product}', 'Paxifi\Store\Controller\ProductController@show');
                 $this->app['router']->put('drivers/{driver}/products/{product}', 'Paxifi\Store\Controller\ProductController@update');
