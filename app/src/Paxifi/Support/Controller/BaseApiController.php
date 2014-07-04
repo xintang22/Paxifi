@@ -90,7 +90,6 @@ class BaseApiController extends Controller
     {
         return $this->respond(array(
             'error' => array(
-                'context' => $context,
                 'message' => $message,
                 'code' => $this->getStatusCode(),
             )
