@@ -108,6 +108,7 @@ return array(
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 
         'Paxifi\Provider\ApiServiceProvider',
+        'Paxifi\Provider\OAuth2ServiceProvider',
         'Paxifi\Provider\DriverServiceProvider',
         'Paxifi\Provider\FileUploaderServiceProvider',
         'Paxifi\Provider\ProductServiceProvider',
