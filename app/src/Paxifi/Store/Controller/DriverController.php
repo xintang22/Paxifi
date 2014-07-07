@@ -56,9 +56,19 @@ class DriverController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($driver)
+    public function show($driver = null)
     {
-        return $this->respondWithItem($driver);
+        try {
+            if (!$driver) {
+                $driverId = \ResourceServer::getOwnerId();
+                $driver = DriverRepository::find($driverId);
+            }
+
+            return $this->respondWithItem($driver);
+        } catch (\Exception $e) {
+            $this->errorInternalError();
+        }
+
     }
 
     /**

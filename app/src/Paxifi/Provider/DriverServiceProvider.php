@@ -100,6 +100,8 @@ class DriverServiceProvider extends ServiceProvider
             // View Store's products
             $this->app['router']->get('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@index');
 
+            $this->app['router']->get('drivers/me', 'Paxifi\Store\Controller\DriverController@show');
+
             // =========================================================================================================
             // OAuth + Client
             // =========================================================================================================
