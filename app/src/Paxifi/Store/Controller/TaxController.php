@@ -14,6 +14,10 @@ class TaxController extends BaseApiController
      */
     public function index(EloquentDriverRepository $driver = null)
     {
+        if (is_null($driver)) {
+            $driver = $this->getAuthenticatedDriver();
+        }
+
         $tax = [
             'enabled' => (boolean)$driver->tax_enabled,
         ];

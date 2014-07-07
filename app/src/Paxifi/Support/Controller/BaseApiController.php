@@ -1,6 +1,7 @@
 <?php namespace Paxifi\Support\Controller;
 
 use Illuminate\Routing\Controller;
+use Paxifi\Store\Repository\Driver\DriverRepository;
 
 class BaseApiController extends Controller
 {
@@ -182,4 +183,16 @@ class BaseApiController extends Controller
         });
     }
 
+    /**
+     * Get the authenticated driver model.
+     *
+     * @TODO: To be moved to dedicated class.
+     *
+     * @return \Paxifi\Store\Repository\Driver\EloquentDriverRepository
+     */
+    public function getAuthenticatedDriver()
+    {
+        $driverId = \ResourceServer::getOwnerId();
+        return DriverRepository::find($driverId);
+    }
 } 

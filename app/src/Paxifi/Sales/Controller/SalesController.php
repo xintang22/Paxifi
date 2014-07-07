@@ -17,6 +17,10 @@ class SalesController extends BaseApiController
      */
     public function index(EloquentDriverRepository $driver = null)
     {
+        if (is_null($driver)) {
+            $driver = $this->getAuthenticatedDriver();
+        }
+
         $from = ($from = (int)\Input::get('from')) ? Carbon::createFromTimestamp($from) : $driver->created_at;
         $to = ($to = (int)\Input::get('to')) ? Carbon::createFromTimestamp($to) : Carbon::now();
 
@@ -32,8 +36,12 @@ class SalesController extends BaseApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function forecasts(EloquentDriverRepository $driver)
+    public function forecasts(EloquentDriverRepository $driver = null)
     {
+        if (is_null($driver)) {
+            $driver = $this->getAuthenticatedDriver();
+        }
+
         $totalItems = 0;
         $totalSales = 0;
 

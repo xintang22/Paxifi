@@ -39,7 +39,7 @@ class DriverController extends ApiController
 
             \Event::fire('paxifi.store.created', [$driver]);
 
-            return $this->setStatusCode(201)->respondWithItem($driver);
+            return $this->setStatusCode(201)->respondWithItem(DriverRepository::find($driver->id));
 
         } catch (ValidationException $e) {
 
@@ -59,9 +59,8 @@ class DriverController extends ApiController
     public function show($driver = null)
     {
         try {
-            if (!$driver) {
-                $driverId = \ResourceServer::getOwnerId();
-                $driver = DriverRepository::find($driverId);
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
             }
 
             return $this->respondWithItem($driver);
@@ -78,9 +77,13 @@ class DriverController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update($driver)
+    public function update($driver = null)
     {
         try {
+
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
 
             with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id'));
 
@@ -103,9 +106,18 @@ class DriverController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($driver)
+    public function destroy($driver = null)
     {
         try {
+
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
+            // logout the driver
+            DB::table('oauth_sessions')
+                ->where('oauth_sessions.owner_id', '=', $driver->id)
+                ->delete();
 
             $driver->delete();
 
@@ -135,8 +147,12 @@ class DriverController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function settings($driver)
+    public function settings($driver = null)
     {
+        if (is_null($driver)) {
+            $driver = $this->getAuthenticatedDriver();
+        }
+
         return $this->respond(array(
             'data' => array(
                 'settings' => array(
@@ -157,9 +173,13 @@ class DriverController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateSettings($driver)
+    public function updateSettings($driver = null)
     {
         try {
+
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
 
             with(new SettingsValidator())->validate(\Input::all());
 
