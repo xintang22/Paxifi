@@ -31,7 +31,9 @@ class FileUploaderServiceProvider extends ServiceProvider
      */
     protected function registerRoutes()
     {
-        $this->app['router']->post('files', 'Paxifi\Support\Controller\FilesController@upload');
+        $this->app['router']->group(['before' => 'oauth'], function () {
+            $this->app['router']->post('files', 'Paxifi\Support\Controller\FilesController@upload');
+        });
     }
 
     /**

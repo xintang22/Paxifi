@@ -40,10 +40,12 @@ class ProductServiceProvider extends ServiceProvider
      */
     public function registerRoutes()
     {
-        $this->app['router']->get('products/categories', 'Paxifi\Store\Controller\CategoryController@index');
+        $this->app['router']->group(['before' => 'oauth'], function () {
+            $this->app['router']->get('products/categories', 'Paxifi\Store\Controller\CategoryController@index');
 
-        // CRUD
-        $this->app['router']->get('products', 'Paxifi\Store\Controller\ProductController@index');
+            // CRUD
+            $this->app['router']->get('products', 'Paxifi\Store\Controller\ProductController@index');
+        });
     }
 
     /**
