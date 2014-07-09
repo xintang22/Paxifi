@@ -9,7 +9,9 @@
         "itsgoingd/clockwork": "v1.5",
         "aws/aws-sdk-php": "2.*",
         "paypal/rest-api-sdk-php": "v0.8.3",
-        "lucadegasperi/oauth2-server-laravel": "1.0.x"
+        "lucadegasperi/oauth2-server-laravel": "1.0.x",
+        "intervention/image" : "*",
+        "thujohn/pdf": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
