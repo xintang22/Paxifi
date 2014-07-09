@@ -48,6 +48,16 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
+     * Driver can have one sticker object.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function sticker()
+    {
+        return $this->hasOne('Paxifi\Sticker\Repository\EloquentStickerRepository', 'driver_id', 'id');
+    }
+
+    /**
      * Returns a list of driver's sales
      *
      * @param null $from
