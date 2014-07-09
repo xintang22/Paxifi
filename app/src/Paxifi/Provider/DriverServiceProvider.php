@@ -189,6 +189,11 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->get('me/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@show');
                 $this->app['router']->put('me/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@update');
                 $this->app['router']->delete('me/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@cancel');
+
+                // Sticker
+                $this->app['router']->post('me/sticker', 'Paxifi\Sticker\Controller\StickerController@store');
+                $this->app['router']->put('me/sticker', 'Paxifi\Sticker\Controller\StickerController@update');
+                $this->app['router']->post('me/sticker/email', 'Paxifi\Sticker\Controller\StickerController@email');
             });
 
         });
