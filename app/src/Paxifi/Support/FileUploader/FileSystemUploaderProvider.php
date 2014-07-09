@@ -40,7 +40,7 @@ class FileSystemUploaderProvider implements UploaderProviderInterface
     {
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
 
-        $targetDirectory = $this->config->get('paxifi.files.uploads_directory');
+        $targetDirectory = public_path($this->config->get('paxifi.files.uploads_directory'));
 
         $file->move($targetDirectory, $filename);
 

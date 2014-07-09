@@ -55,7 +55,7 @@ class FileUploaderServiceProvider extends ServiceProvider
      */
     protected function registerUploaderConfiguration()
     {
-        $this->app['config']->set('paxifi.files.uploads_directory', 'public/uploads');
+        $this->app['config']->set('paxifi.files.uploads_directory', 'uploads');
     }
 
     /**
