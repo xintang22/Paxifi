@@ -262,7 +262,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
             $query->where($param['column'], $param['operator'], $param['value']);
         });
 
-        $models = $query->get(array('id', 'name', 'seller_id'));
+        $models = $query->get(array('id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'status'));
 
         if (!$models->isEmpty()) return $models;
 
