@@ -1,6 +1,5 @@
 <?php
 
-use Faker\Factory as Faker;
 use Paxifi\Store\Repository\Category\EloquentCategoryRepository;
 
 class CategoriesTableSeeder extends Seeder
@@ -9,12 +8,10 @@ class CategoriesTableSeeder extends Seeder
     {
         DB::table('categories')->truncate();
 
-        $faker = Faker::create();
-
         EloquentCategoryRepository::create(
             array(
                 'name' => 'food',
-                'description' => $faker->text(),
+                'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
                 'status' => 1,
             )
         );
@@ -22,7 +19,7 @@ class CategoriesTableSeeder extends Seeder
         EloquentCategoryRepository::create(
             array(
                 'name' => 'drinks',
-                'description' => $faker->text(),
+                'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
                 'status' => 1,
             )
         );
@@ -30,7 +27,7 @@ class CategoriesTableSeeder extends Seeder
         EloquentCategoryRepository::create(
             array(
                 'name' => 'tools',
-                'description' => $faker->text(),
+                'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
                 'status' => 0,
             )
         );
