@@ -5,7 +5,6 @@ use Paxifi\Sticker\Repository\Validation\CreateStickerValidator;
 use Paxifi\Sticker\Transformer\StickerTransformer;
 use Paxifi\Store\Repository\Driver\DriverRepositoryInterface;
 use Paxifi\Support\Controller\ApiController;
-use Paxifi\Sticker\Repository\StickerRepository as Sticker;
 
 class StickerController extends ApiController
 {
@@ -54,7 +53,7 @@ class StickerController extends ApiController
 
         // If sticker exist, fire update sticker event and return the updated sticker information.
         if ($driver->sticker) {
-            $response = \Event::fire('update.sticker', $driver);
+            $response = \Event::fire('update.sticker', [$driver]);
 
             return $response[0];
         }
@@ -74,7 +73,7 @@ class StickerController extends ApiController
 
             with(new CreateStickerValidator())->validate($stickerInfo);
 
-            if ($sticker = Sticker::create($stickerInfo)) {
+            if ($sticker = $driver->sticker()->create($sticker_factory->getStickerFilesPath())) {
                 \DB::commit();
 
                 return $this->setStatusCode(201)->respondWithItem($sticker);
