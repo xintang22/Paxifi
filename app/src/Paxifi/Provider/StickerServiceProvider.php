@@ -82,5 +82,7 @@ class StickerServiceProvider extends ServiceProvider
                 return false;
             }
         });
+        
+        \Event::listen('update.sticker', 'Paxifi\Sticker\Controller\StickerController@update');
     }
 }
