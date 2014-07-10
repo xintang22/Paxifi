@@ -115,7 +115,10 @@ return array(
         'Paxifi\Provider\OrderServiceProvider',
         'Paxifi\Provider\PaymentServiceProvider',
         'Paxifi\Provider\TaxServiceProvider',
+        'Paxifi\Provider\StickerServiceProvider',
 
+        'Intervention\Image\ImageServiceProvider',
+        'Thujohn\Pdf\PdfServiceProvider',
         'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
 
 	),
@@ -183,9 +186,11 @@ return array(
 		'URL'             => 'Illuminate\Support\Facades\URL',
 		'Validator'       => 'Illuminate\Support\Facades\Validator',
 		'View'            => 'Illuminate\Support\Facades\View',
-
+        'Image'           => 'Intervention\Image\Facades\Image',
+        'PDF'             => 'Thujohn\Pdf\PdfFacade',
         'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
         'ResourceServer' => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
+
 
 	),
 
