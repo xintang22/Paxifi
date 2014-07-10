@@ -48,7 +48,7 @@ class StickerServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->app['config']->set('stickers.template.name', 'free_sticker.png');
+        $this->app['config']->set('stickers.template.name', 'sticker_template.png');
 
         $config = [
             'images.stickers.img' => 'images/stickers/img/',
