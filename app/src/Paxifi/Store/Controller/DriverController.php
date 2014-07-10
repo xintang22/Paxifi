@@ -3,6 +3,7 @@
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Paxifi\Store\Repository\Driver\DriverRepository;
+use Paxifi\Store\Repository\Driver\Factory\DriverLogoFactory;
 use Paxifi\Store\Repository\Driver\Validation\CreateDriverValidator;
 use Paxifi\Store\Repository\Driver\Validation\SettingsValidator;
 use Paxifi\Store\Repository\Driver\Validation\UpdateDriverValidator;
@@ -271,5 +272,34 @@ class DriverController extends ApiController
         return $params;
     }
 
+    /**
+     * Route to generate driver logo
+     *
+     * @param $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logo($driver = null)
+    {
+        try {
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
 
+            $factory = new DriverLogoFactory();
+
+            $factory->setDriver($driver);
+
+            $response = $factory->buildDriverLogo();
+
+            return $this->setStatusCode(200)->respond($response);
+
+        } catch(\RuntimeException $e)
+        {
+            return $this->setStatusCode(404)->respondWithError($e->getMessage());
+        } catch(\Exception $e) {
+            return $this->setStatusCode(500)->respondWithError($e->getMessage());
+        }
+
+    }
 }
