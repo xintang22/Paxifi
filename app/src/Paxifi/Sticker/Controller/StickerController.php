@@ -115,7 +115,6 @@ class StickerController extends ApiController
                 return $this->setStatusCode(201)->respondWithItem($driver->sticker);
             }
         } catch (\Exception $e) {
-            dd($e->getMessage());
             return $this->errorWrongArgs($e->getErrors()->all());
         }
     }
@@ -133,8 +132,7 @@ class StickerController extends ApiController
             $email = \Input::get('email', $driver->email);
 
             $sticker_factory = with(new StickerFactory())
-                ->setLogoImage($driver->photo)
-                ->setSellerId($driver->seller_id);
+                               ->setDriver($driver);
 
             // Config email options
             $emailOptions = array(
