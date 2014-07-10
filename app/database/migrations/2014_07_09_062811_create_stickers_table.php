@@ -20,6 +20,7 @@ class CreateStickersTable extends Migration
             $table->string('image_path')->nullable();
             $table->string('pdf')->nullable();
             $table->string('pdf_path')->nullable();
+            $table->enum('status', ['Printed', 'Waiting'])->default('Waiting');
             $table->timestamps();
 
             $table->foreign('driver_id')->references('id')->on('drivers');
