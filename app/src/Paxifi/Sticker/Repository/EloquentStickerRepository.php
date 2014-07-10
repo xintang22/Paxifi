@@ -12,7 +12,7 @@ class EloquentStickerRepository extends BaseModel implements StickerRepositoryIn
     /**
      * @var array
      */
-    protected $fillable = ['driver_id', 'image', 'pdf', 'image_path', 'pdf_path'];
+    protected $fillable = ['driver_id', 'image', 'pdf', 'image_path', 'pdf_path', 'status'];
 
     /**
      * Relationship
