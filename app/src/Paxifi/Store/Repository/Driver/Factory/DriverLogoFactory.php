@@ -1,0 +1,241 @@
+<?php namespace Paxifi\Store\Repository\Driver\Factory;
+
+use Paxifi\Support\SavePdf\PdfConverter;
+
+class DriverLogoFactory
+{
+
+    /**
+     * @var
+     */
+    protected $driver;
+
+    /**
+     * The intervention driver logo.
+     *
+     * @var
+     */
+    protected $driverLogo;
+
+    /**
+     * Driver logo name
+     *
+     * @var
+     */
+    protected $driverLogoName;
+
+    /**
+     * @var
+     */
+    protected $driverLogoFolder;
+
+    /**
+     * @var string
+     */
+    protected $driverUploadFolder = 'uploads/';
+
+    /**
+     * @var int
+     */
+    protected $circleWidth = 96;
+
+    /**
+     * @var int
+     */
+    protected $circleHeight = 96;
+
+    /**
+     * @var string
+     */
+    protected $driverLogoCircleCover;
+
+
+    /**
+     * @internal param $driver
+     */
+    public function __construct()
+    {
+        $this->driverLogoFolder = \Config::get('images.drivers.logo');
+        $this->driverLogoCircleCover = \Config::get('images.drivers.template') . 'driver_logo_bg.png';
+        $this->driverLogoDefaultTemplate = \Config::get('images.drivers.template') . 'driver_logo.png';
+
+    }
+
+    /**
+     * Set the driver object.
+     *
+     * @param $driver
+     *
+     * @return $this
+     */
+    public function setDriver($driver)
+    {
+        $this->driver = $driver;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDriver()
+    {
+        return $this->driver;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDriverLogoCircleCoverPath()
+    {
+        return public_path($this->driverLogoCircleCover);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDriverLogoCircleCoverUrl()
+    {
+        return url($this->driverLogoCircleCover);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDriverLogoImageName()
+    {
+        $this->driverLogoName = basename($this->driver->photo);
+
+        return $this->driverLogoName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDriverDefaultLogo()
+    {
+        return public_path($this->driverLogoDefaultTemplate);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDriverDefaultLogoUrl()
+    {
+        return url($this->driverLogoDefaultTemplate);
+    }
+
+    /**
+     * Get driver logo path.
+     *
+     * @return string
+     */
+    public function getDriverLogoImagePath()
+    {
+        if (empty($this->driver->photo)) {
+            return $this->getDriverDefaultLogo();
+        }
+
+        return public_path($this->driverLogoFolder . $this->getDriverLogoImageName());
+    }
+
+    /**
+     * Get driver logo url.
+     *
+     * @return string
+     */
+    public function getDriverLogoImageUrl()
+    {
+        if (empty($this->driver->photo)) {
+            return $this->getDriverDefaultLogoUrl();
+        }
+
+        return url($this->driverLogoFolder . $this->getDriverLogoImageName());
+    }
+
+    /**
+     * use the uploaded driver image to generate driver circle image.
+     *
+     * @throws \Exception
+     * @return $this
+     */
+    public function setDriveLogoInterventionCanvas()
+    {
+        $file = $this->driver->photo ? $this->getDriverLogoImagePath() : $this->getDriverDefaultLogo();
+
+        if (!file_exists($file) || empty($file)) {
+            throw new \RuntimeException('Driver logo image is not exist');
+        }
+
+        $this->driverLogo = \Image::make($file);
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function resizeDriverLogo()
+    {
+        $this->driverLogo->resize(96, 96)->save($this->getDriverLogoImagePath());
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function insertDriverCircleTemplate()
+    {
+
+        $this->driverLogo->insert(
+            $this->getDriverLogoCircleCoverPath(),
+            '',
+            0,
+            0,
+            'center'
+        )->save($this->getDriverLogoImagePath());
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDriverLogoTransparentCircleInterventionTemplate()
+    {
+        return \Image::make($this->getDriverLogoCircleCoverPath());
+    }
+
+    /**
+     * Build driver logo image according to driver "seller_id".
+     */
+    public function buildDriverLogo()
+    {
+        $this->resizeCircleTemplate();
+
+        if (!empty($this->driver->photo)) {
+            $this->setDriveLogoInterventionCanvas()
+                ->resizeDriverLogo()
+                ->insertDriverCircleTemplate();
+        }
+
+        return array(
+            "logo_path" => $this->getDriverLogoImagePath(),
+            "logo_url" => $this->getDriverLogoImageUrl()
+        );
+    }
+
+    /**
+     * Resize the circle template.
+     */
+    public function resizeCircleTemplate($x = null, $y = null)
+    {
+        $this->circleWidth = $x ? : $this->circleWidth;
+        $this->circleHeight = $y ? : $this->circleHeight;
+
+        $circle = $this->getDriverLogoTransparentCircleInterventionTemplate();
+
+        $circle->resize($this->circleWidth, $this->circleHeight)->save($this->getDriverLogoCircleCoverPath());
+    }
+} 
