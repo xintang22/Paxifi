@@ -18,6 +18,8 @@ class DriverServiceProvider extends ServiceProvider
     {
         $this->registerRouteModelBindings();
 
+        $this->registerDriverConfiguration();
+
         $this->registerRoutes();
 
         $this->registerDriverRepository();
@@ -25,6 +27,18 @@ class DriverServiceProvider extends ServiceProvider
         $this->registerAuthManager();
 
         $this->registerPasswordBroker();
+
+        $this->registerEvents();
+    }
+
+    /**
+     * Register the driver configuration.
+     */
+    protected function registerDriverConfiguration()
+    {
+        $this->app['config']->set('images.drivers.logo', 'uploads/');
+        $this->app['config']->set('images.drivers.template', 'images/drivers/template/');
+        $this->app['config']->set('images.drivers.defaultlogo', 'driver_logo.png');
     }
 
     /**
@@ -250,5 +264,15 @@ class DriverServiceProvider extends ServiceProvider
     public function provides()
     {
         return array('paxifi.repository.driver', 'driver.auth', 'driver.auth.reminder');
+    }
+
+    /**
+     * Bind the events listener
+     */
+    public function registerEvents()
+    {
+        // fire driver logo generate event.
+        $this->app['events']->listen(['paxifi.store.created', 'paxifi.store.updated'], 'Paxifi\Store\Controller\DriverController@logo');
+
     }
 }
