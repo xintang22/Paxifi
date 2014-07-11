@@ -104,7 +104,7 @@ class DriverLogoFactory
      */
     public function getDriverLogoImageName()
     {
-        $this->driverLogoName = basename($this->driver->photo);
+        $this->driverLogoName = empty($this->driver->photo) ? $this->driver->seller_id . '.jpg' : basename($this->driver->photo);
 
         return $this->driverLogoName;
     }
@@ -161,7 +161,7 @@ class DriverLogoFactory
      */
     public function setDriveLogoInterventionCanvas()
     {
-        $file = $this->driver->photo ? $this->getDriverLogoImagePath() : $this->getDriverDefaultLogo();
+        $file = !empty($this->driver->photo) ? $this->getDriverLogoImagePath() : $this->getDriverDefaultLogo();
 
         if (!file_exists($file) || empty($file)) {
             throw new \RuntimeException('Driver logo image is not exist');
@@ -177,6 +177,7 @@ class DriverLogoFactory
      */
     public function resizeDriverLogo()
     {
+
         $this->driverLogo->resize(96, 96)->save($this->getDriverLogoImagePath());
 
         return $this;
@@ -187,7 +188,6 @@ class DriverLogoFactory
      */
     public function insertDriverCircleTemplate()
     {
-
         $this->driverLogo->insert(
             $this->getDriverLogoCircleCoverPath(),
             '',
@@ -214,11 +214,10 @@ class DriverLogoFactory
     {
         $this->resizeCircleTemplate();
 
-        if (!empty($this->driver->photo)) {
-            $this->setDriveLogoInterventionCanvas()
-                ->resizeDriverLogo()
-                ->insertDriverCircleTemplate();
-        }
+        $this->setDriveLogoInterventionCanvas()
+            ->resizeDriverLogo()
+            ->insertDriverCircleTemplate();
+
 
         return array(
             "logo_path" => $this->getDriverLogoImagePath(),
