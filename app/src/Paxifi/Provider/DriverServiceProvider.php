@@ -272,7 +272,6 @@ class DriverServiceProvider extends ServiceProvider
     public function registerEvents()
     {
         // fire driver logo generate event.
-        $this->app['events']->listen(['paxifi.store.created', 'paxifi.store.updated'], 'Paxifi\Store\Controller\DriverController@logo');
-
+        $this->app['events']->listen(['paxifi.store.created','paxifi.store.updated'], 'Paxifi\Store\Controller\DriverController@logo');
     }
 }
