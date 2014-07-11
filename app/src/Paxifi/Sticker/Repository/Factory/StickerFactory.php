@@ -234,7 +234,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function getStickerFileUrl()
     {
-        return url(\Config::get('images.stickers.img') . $this->getDriverLogoImageName());
+        return url(\Config::get('images.stickers.img') . $this->driver->seller_id . '.jpg');
     }
 
     /**
