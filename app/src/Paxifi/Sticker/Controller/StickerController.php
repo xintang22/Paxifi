@@ -20,19 +20,11 @@ class StickerController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            $sticker_factory = with(new StickerFactory())
-                ->setLogoImage($driver->photo)
-                ->setSellerId($driver->seller_id);
-
-            $sticker_factory->buildSticker();
-
-            $sticker_factory->saveStickerToPdf();
-
             if ($sticker = $driver->sticker) {
                 return $this->setStatusCode(200)->respondWithItem($sticker);
             }
 
-            return $this->setStatusCode(404)->respondWithError('Sticker not exist for driver.');
+            return $this->setStatusCode(404)->respondWithError('Sticker is not exist.');
         } catch(\Exception $e) {
             return $this->errorInternalError('Internal error.');
         }
@@ -144,8 +136,7 @@ class StickerController extends ApiController
 
             if (\Event::fire('email.sticker', array($emailOptions))) {
                 return $this->respond([
-                    "success" => true,
-                    "message" => ""
+                    "success" => true
                 ]);
             }
 
