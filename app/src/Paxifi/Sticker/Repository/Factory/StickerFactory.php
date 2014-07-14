@@ -206,17 +206,6 @@ class StickerFactory extends DriverLogoFactory
         return ($this->driver->photo) ? : $this->getDefaultLogo();
     }
 
-
-    /**
-     * Get the intervention image instance of driver store logo
-     *
-     * @return mixed
-     */
-    public function getInterventionLogo()
-    {
-        return \Image::make($this->getDriverLogoImagePath());
-    }
-
     /**
      * Get the intervention image instance of sticker canvas template
      *
