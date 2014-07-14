@@ -205,6 +205,7 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->delete('me/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@cancel');
 
                 // Sticker
+                $this->app['router']->get('me/sticker', 'Paxifi\Sticker\Controller\StickerController@show');
                 $this->app['router']->post('me/sticker', 'Paxifi\Sticker\Controller\StickerController@store');
                 $this->app['router']->put('me/sticker', 'Paxifi\Sticker\Controller\StickerController@update');
                 $this->app['router']->post('me/sticker/email', 'Paxifi\Sticker\Controller\StickerController@email');
@@ -272,6 +273,7 @@ class DriverServiceProvider extends ServiceProvider
     public function registerEvents()
     {
         // fire driver logo generate event.
-        $this->app['events']->listen(['paxifi.store.created','paxifi.store.updated'], 'Paxifi\Store\Controller\DriverController@logo');
+        $this->app['events']->listen('paxifi.store.created', 'Paxifi\Store\Controller\DriverController@logo');
+        $this->app['events']->listen('paxifi.store.updated', 'Paxifi\Store\Controller\DriverController@logo');
     }
 }
