@@ -45,6 +45,16 @@ class DriverLogoFactory
     protected $circleHeight = 96;
 
     /**
+     * @var int
+     */
+    protected $driverLogoWidth = 96;
+
+    /**
+     * @var int
+     */
+    protected $driverLogoHeight = 96;
+
+    /**
      * @var string
      */
     protected $driverLogoCircleCover;
@@ -154,6 +164,16 @@ class DriverLogoFactory
     }
 
     /**
+     * Get the intervention image instance of driver store logo
+     *
+     * @return mixed
+     */
+    public function getInterventionLogo()
+    {
+        return \Image::make($this->getDriverLogoImagePath());
+    }
+
+    /**
      * use the uploaded driver image to generate driver circle image.
      *
      * @throws \Exception
@@ -173,12 +193,15 @@ class DriverLogoFactory
     }
 
     /**
+     * @param null $width
+     * @param null $height
+     *
      * @return $this
      */
-    public function resizeDriverLogo()
+    public function resizeDriverLogo($width = null, $height = null)
     {
 
-        $this->driverLogo->resize(96, 96)->save($this->getDriverLogoImagePath());
+        $this->driverLogo->resize($width, $height)->save($this->getDriverLogoImagePath());
 
         return $this;
     }
@@ -215,7 +238,7 @@ class DriverLogoFactory
         $this->resizeCircleTemplate();
 
         $this->setDriveLogoInterventionCanvas()
-            ->resizeDriverLogo()
+            ->resizeDriverLogo($this->driverLogoWidth, $this->driverLogoHeight)
             ->insertDriverCircleTemplate();
 
 
