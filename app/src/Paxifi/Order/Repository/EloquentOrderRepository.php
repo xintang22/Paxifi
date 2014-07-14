@@ -145,4 +145,50 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
 
         return $this;
     }
+
+
+    /**
+     * Set buyer email for send the invoice.
+     *
+     * @param email $email
+     *
+     * @return $this
+     */
+    public function setBuyerEmail($email = NULL)
+    {
+        $this->buyer_email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Format response order update time in (F, d, Y)
+     *
+     * @param $updated_at
+     * @return bool|string
+     */
+    public function getUpdatedAtAttribute($updated_at)
+    {
+        return date('F d, Y' ,strtotime($updated_at));
+    }
+
+    /**
+     * Get the products collections related to the order
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function OrderProducts()
+    {
+        return $this->products()->wherePivot('order_id', '=', $this->id)->get();
+    }
+
+    /**
+     * Get the driver which the order belongs to.
+     *
+     * @return mixed
+     */
+    public function OrderDriver()
+    {
+        return $this->products()->first()->driver()->get()->first();
+    }
 }
