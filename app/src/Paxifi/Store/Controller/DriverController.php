@@ -230,12 +230,16 @@ class DriverController extends ApiController
                 return $this->errorWrongArgs('Missing or invalid search arguments.');
             }
 
-            $results = DriverRepository::search($searchParams);
+            $results = DriverRepository::search($searchParams)->toArray();
+
+            if (empty($results[0]['photo'])) {
+                $results[0]['photo'] = url('images/drivers/template/driver_logo.png');
+            }
 
             return $this->respond(array(
                 'success' => true,
-                'count' => $results->count(),
-                'results' => $results->toArray(),
+                'count' => count($results),
+                'results' => $results,
             ));
 
         } catch (ModelNotFoundException $e) {
