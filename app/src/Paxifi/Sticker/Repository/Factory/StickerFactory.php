@@ -223,7 +223,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function getStickerFileUrl()
     {
-        return url(\Config::get('images.stickers.img') . $this->driver->seller_id . '.jpg');
+        return url(\Config::get('images.stickers.img') . $this->getDriverLogoImageName());
     }
 
     /**
@@ -311,7 +311,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function saveStickerToImage()
     {
-        $this->sticker->save($this->stickerDir . $this->getDriverLogoImageName());
+        $this->sticker->save($this->getStickerFilePath());
     }
 
     /**
