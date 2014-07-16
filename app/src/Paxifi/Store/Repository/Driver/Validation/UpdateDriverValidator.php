@@ -6,6 +6,7 @@ class UpdateDriverValidator extends Validator
 {
     protected $rules = [
         'name' => 'sometimes|required',
+        'seller_id' => 'unique:drivers|alpha_dash|max:12|sometimes|required',
         'password' => 'sometimes|required',
         'photo' => 'sometimes|url',
         'address' => 'sometimes|required',
