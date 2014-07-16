@@ -86,11 +86,25 @@ class DriverController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id'));
+            // When the update information has seller_id, validate seller_id
+            if (\Input::has('seller_id')) {
 
-            $driver->update(\Input::all());
+                if (\Input::get('seller_id') != $driver->seller_id) {
+                    with(new UpdateDriverValidator())->validate(\Input::only('seller_id'));
+                }
 
-            \Event::fire('paxifi.store.updated', [$driver]);
+                $driver->update(\Input::only('seller_id'));
+            } else {
+
+                with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id'));
+
+                $driver->update(\Input::all());
+
+            }
+
+            // file event to update sticker when field contains seller_id or photo
+            if (\Input::has('seller_id') || \Input::has('photo'))
+                \Event::fire('paxifi.store.updated', [$driver]);
 
             return $this->respondWithItem(DriverRepository::find($driver->id));
 
@@ -243,7 +257,7 @@ class DriverController extends ApiController
             ));
 
         } catch (ModelNotFoundException $e) {
-            return $this->setStatusCode(200)->respond([
+            return $this->setStatusCode(404)->respond([
                 'error' => true,
                 'message' => 'Store not found.'
             ]);
