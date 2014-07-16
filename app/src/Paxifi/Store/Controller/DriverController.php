@@ -243,7 +243,10 @@ class DriverController extends ApiController
             ));
 
         } catch (ModelNotFoundException $e) {
-            return $this->errorNotFound('Store not found');
+            return $this->setStatusCode(200)->respond([
+                'error' => true,
+                'message' => 'Store not found.'
+            ]);
         }
 
     }
