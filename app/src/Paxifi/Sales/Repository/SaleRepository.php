@@ -117,7 +117,10 @@ class SaleRepository implements ArrayableInterface
         return $order->products()->get()->map(function ($product) {
             return array(
                 'id' => $product->id,
+                'name' => $product->name,
+                'unit_price' => $product->unit_price,
                 'quantity' => $product->pivot->quantity,
+                'updated_at' => date('H:s m/d/Y' ,strtotime($product->updated_at)),
             );
         });
     }
