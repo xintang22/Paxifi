@@ -16,17 +16,17 @@ class CreatePaymentsTable extends Migration {
 		{
 			$table->increments('id');
             $table->unsignedInteger('payment_method_id');
+            $table->unsignedInteger('order_id');
 
-            $table->string('currency', 3)->default('USD');
-            $table->decimal('amount');
-
-            $table->boolean('status');
+            $table->enum('status', ['Waiting', 'Received', 'Canceled', 'Completed']);
             $table->longText('details');
 
             $table->timestamps();
             $table->softDeletes();
 
+            // Relationships.
             $table->foreign('payment_method_id')->references('id')->on('payment_methods');
+            $table->foreign('order_id')->references('id')->on('orders');
 		});
 	}
 

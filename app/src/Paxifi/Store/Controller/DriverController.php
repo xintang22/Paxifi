@@ -6,6 +6,7 @@ use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Store\Repository\Driver\Factory\DriverLogoFactory;
 use Paxifi\Store\Repository\Driver\Validation\CreateDriverValidator;
 use Paxifi\Store\Repository\Driver\Validation\SettingsValidator;
+use Paxifi\Store\Repository\Driver\Validation\UpdateDriverSellerIdValidator;
 use Paxifi\Store\Repository\Driver\Validation\UpdateDriverValidator;
 use Paxifi\Store\Transformer\DriverTransformer;
 use Paxifi\Support\Controller\ApiController;
@@ -33,12 +34,13 @@ class DriverController extends ApiController
     public function store()
     {
         try {
+            \DB::beginTransaction();
 
             with(new CreateDriverValidator())->validate(\Input::all());
 
             $driver = DriverRepository::create(\Input::all());
 
-            \Event::fire('paxifi.store.created', [$driver]);
+            \DB::commit();
 
             return $this->setStatusCode(201)->respondWithItem(DriverRepository::find($driver->id));
 
@@ -81,35 +83,66 @@ class DriverController extends ApiController
     public function update($driver = null)
     {
         try {
+            \DB::beginTransaction();
 
             if (is_null($driver)) {
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            // When the update information has seller_id, validate seller_id
-            if (\Input::has('seller_id')) {
+            with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id'));
 
-                if (\Input::get('seller_id') != $driver->seller_id) {
-                    with(new UpdateDriverValidator())->validate(\Input::only('seller_id'));
-                }
+            $driver->update(\Input::all());
 
-                $driver->update(\Input::only('seller_id'));
-            } else {
-
-                with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id'));
-
-                $driver->update(\Input::all());
-
-            }
+            \DB::commit();
 
             // file event to update sticker when field contains seller_id or photo
-            if (\Input::has('seller_id') || \Input::has('photo'))
-                \Event::fire('paxifi.store.updated', [$driver]);
+            if (\Input::has('photo'))
+                \Event::fire('paxifi.store.seller_id.updated', [$driver]);
 
             return $this->respondWithItem(DriverRepository::find($driver->id));
 
         } catch (ValidationException $e) {
 
+            return $this->errorWrongArgs($e->getErrors()->all());
+        }
+    }
+
+    /**
+     * update the seller id
+     *
+     * @param null $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function seller($driver = NULL)
+    {
+        try {
+            \DB::beginTransaction();
+
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
+            if (!empty($driver->seller_id))
+            {
+                return $this->errorWrongArgs('Seller id can be filled one time only.');
+            }
+
+            $seller_id = \Input::get('seller_id');
+
+            with(new UpdateDriverSellerIdValidator())->validate(\Input::only('seller_id'));
+
+            $driver->seller_id = $seller_id;
+
+            $driver->update();
+
+            \DB::commit();
+
+            \Event::fire('paxifi.store.seller_id.updated', [$driver]);
+
+            return $this->respondWithItem($driver);
+
+        } catch (\Exception $e) {
             return $this->errorWrongArgs($e->getErrors()->all());
         }
     }
@@ -124,6 +157,7 @@ class DriverController extends ApiController
     public function destroy($driver = null)
     {
         try {
+            \DB::beginTransaction();
 
             if (is_null($driver)) {
                 $driver = $this->getAuthenticatedDriver();
@@ -135,6 +169,8 @@ class DriverController extends ApiController
                 ->delete();
 
             $driver->delete();
+
+            \DB::commit();
 
             return $this->setStatusCode(204)->respond(array());
 
@@ -191,6 +227,7 @@ class DriverController extends ApiController
     public function updateSettings($driver = null)
     {
         try {
+            \DB::beginTransaction();
 
             if (is_null($driver)) {
                 $driver = $this->getAuthenticatedDriver();
@@ -205,6 +242,8 @@ class DriverController extends ApiController
             $driver->notify_others = \Input::get('notify_others', $driver->notify_others);
 
             $driver->save();
+
+            \DB::commit();
 
             \Event::fire('paxifi.store.settings.updated', [$driver]);
 
@@ -315,10 +354,9 @@ class DriverController extends ApiController
 
             return $this->setStatusCode(200)->respond($response);
 
-        } catch(\RuntimeException $e)
-        {
+        } catch (\RuntimeException $e) {
             return $this->setStatusCode(404)->respondWithError($e->getMessage());
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return $this->setStatusCode(500)->respondWithError($e->getMessage());
         }
 
