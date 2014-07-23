@@ -174,6 +174,7 @@ class DriverServiceProvider extends ServiceProvider
                 // CRUD
                 $this->app['router']->get('me', 'Paxifi\Store\Controller\DriverController@show');
                 $this->app['router']->put('me', 'Paxifi\Store\Controller\DriverController@update');
+                $this->app['router']->put('me/seller', 'Paxifi\Store\Controller\DriverController@seller');
                 $this->app['router']->delete('me', 'Paxifi\Store\Controller\DriverController@destroy');
 
                 // Settings
@@ -209,6 +210,13 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->post('me/sticker', 'Paxifi\Sticker\Controller\StickerController@store');
                 $this->app['router']->put('me/sticker', 'Paxifi\Sticker\Controller\StickerController@update');
                 $this->app['router']->post('me/sticker/email', 'Paxifi\Sticker\Controller\StickerController@email');
+
+                // Notification
+                $this->app['router']->get('me/notifications', 'Paxifi\Notification\Controller\NotificationController@show');
+                $this->app['router']->delete('me/notifications', 'Paxifi\Notification\Controller\NotificationController@destroy');
+
+                // Payment
+                $this->app['router']->put('me/payments/{payment}', 'Paxifi\Payment\Controller\PaymentController@updateCashStatus');
             });
 
         });
@@ -272,8 +280,12 @@ class DriverServiceProvider extends ServiceProvider
      */
     public function registerEvents()
     {
+        // fire email event.
+        $this->app['events']->listen('paxifi.email', function ($emailOptions) {
+            \Queue::push('Paxifi\Support\Queues\Queues@email', $emailOptions);
+        });
+
         // fire driver logo generate event.
-        $this->app['events']->listen('paxifi.store.created', 'Paxifi\Store\Controller\DriverController@logo');
-        $this->app['events']->listen('paxifi.store.updated', 'Paxifi\Store\Controller\DriverController@logo');
+        $this->app['events']->listen('paxifi.store.seller_id.updated', 'Paxifi\Store\Controller\DriverController@logo');
     }
 }
