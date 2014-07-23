@@ -16,8 +16,6 @@ class CreateOrdersTable extends Migration {
 		{
             $table->increments('id');
 
-            $table->unsignedInteger('payment_id')->nullable();
-
             $table->unsignedInteger('total_items')->default(0);
             $table->decimal('total_costs')->default(0);
             $table->decimal('total_sales')->default(0);
@@ -33,8 +31,6 @@ class CreateOrdersTable extends Migration {
 
             $table->timestamps();
             $table->softDeletes();
-
-            $table->foreign('payment_id')->references('id')->on('payments');
 		});
 	}
 
