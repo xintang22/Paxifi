@@ -18,8 +18,10 @@ class CreatePaymentsTable extends Migration {
             $table->unsignedInteger('payment_method_id');
             $table->unsignedInteger('order_id');
 
-            $table->enum('status', ['Waiting', 'Received', 'Canceled', 'Completed']);
+            $table->tinyInteger('status');
             $table->longText('details');
+            $table->string('paypal_transaction_id')->nullable()->default(NULL);
+            $table->boolean('paypal_transaction_status');
 
             $table->timestamps();
             $table->softDeletes();
