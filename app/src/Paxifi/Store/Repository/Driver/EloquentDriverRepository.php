@@ -72,12 +72,15 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @param $from
      *
+     * @param $to
+     *
      * @return mixed
      */
-    public function with_notifications($from)
+    public function with_notifications($from, $to)
     {
         return $this->notifications()
                     ->where('created_at', '>=', $from)
+                    ->where('created_at', '<=', $to)
                     ->get();
     }
 
