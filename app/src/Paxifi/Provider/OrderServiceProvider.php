@@ -50,8 +50,17 @@ class OrderServiceProvider extends ServiceProvider
         $this->app['router']->group(['before' => 'oauth'], function () {
             $this->app['router']->post('orders', 'Paxifi\Order\Controller\OrderController@store');
 
+            // Cash Payment
+            $this->app['router']->post('orders/{order}', 'Paxifi\Order\Controller\OrderController@payByCash');
+
+            // Feedback
+            $this->app['router']->put('orders/{order}/feedback', 'Paxifi\Order\Controller\OrderController@feedback');
+
             // Invoice
             $this->app['router']->post('orders/{order}/email', 'Paxifi\Order\Controller\OrderController@email');
+
+            // Payment
+            $this->app['router']->post('orders/{order}/cash', 'Paxifi\Payment\Controller\PaymentController@cash');
         });
     }
 
