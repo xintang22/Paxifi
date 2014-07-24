@@ -36,4 +36,7 @@ return array(
 
     ),
 
+    "exceptions" => array(
+        'system_error' => 'System error. Please try it later.'
+    ),
 );
