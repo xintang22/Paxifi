@@ -114,6 +114,8 @@ class DriverServiceProvider extends ServiceProvider
             // View Store's products
             $this->app['router']->get('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@index');
 
+//            $this->app['router']->get('drivers/{driver}/comments', 'Paxifi\Store\Repository\Driver\EloquentDriverRepository@comments');
+
             // =========================================================================================================
             // OAuth + Client
             // =========================================================================================================
@@ -216,7 +218,7 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->delete('me/notifications', 'Paxifi\Notification\Controller\NotificationController@destroy');
 
                 // Payment
-                $this->app['router']->put('me/payments/{payment}', 'Paxifi\Payment\Controller\PaymentController@updateCashStatus');
+                $this->app['router']->put('me/payments/{payment}', 'Paxifi\Payment\Controller\PaymentController@updatePayment');
             });
 
         });
