@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Order\Repository\Factory\OrderInvoiceFactory;
+use Paxifi\Order\Repository\Validation\UpdateOrderValidator;
 use Paxifi\Order\Transformer\OrderTransformer;
 use Paxifi\Support\Controller\ApiController;
 
@@ -49,6 +50,47 @@ class OrderController extends ApiController
     }
 
     /**
+     * Update feedback after the passenger paid the order by cash.
+     *
+     * @param $order
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function feedback($order)
+    {
+        try {
+            \DB::beginTransaction();
+
+            if (\Input::has('feedback')) {
+                $feedback = \Input::get('feedback');
+
+                if (!empty($order->feedback)) {
+                    return $this->setStatusCode(400)->respondWithError('Can only rating once.');
+                }
+
+                with(new UpdateOrderValidator)->validate(\Input::only('feedback'));
+
+                $order->feedback = $feedback;
+
+                $order->save();
+
+                \Event::fire('paxifi.notifications.ranking', [$order]);
+
+                \DB::commit();
+
+                return $this->setStatusCode(200)->respondWithItem($order);
+
+            }
+
+            return $this->setStatusCode(400)->respondWithError("Missing argument feedback field.");
+
+        } catch (\Exception $e)
+        {
+            return $this->errorWrongArgs($e->getMessage());
+        }
+    }
+
+    /**
      * Get order invoice email with a copy of invoice pdf file.
      *
      * @param $order
@@ -67,7 +109,7 @@ class OrderController extends ApiController
 
                 return;
 
-            if ($order->status) {
+            if ($order->payment->status) {
 
                 $order->setBuyerEmail($buyer_email)
                     ->save();
@@ -78,6 +120,7 @@ class OrderController extends ApiController
 
                 // Config email options
                 $emailOptions = array(
+                    'template' => 'invoice.email',
                     'context' => $this->translator->trans('email.invoice'),
                     'to' => $buyer_email,
                     'data' => $invoiceFactory->getInvoiceData(),
@@ -87,7 +130,7 @@ class OrderController extends ApiController
                 );
 
                 // Fire email invoice pdf event.
-                \Event::fire('email.invoice', array($emailOptions));
+                \Event::fire('paxifi.email', array($emailOptions));
 
                 \DB::commit();
 
