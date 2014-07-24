@@ -8,16 +8,16 @@ return array(
     'stock_reminder' => ':product_name out of stock!',
     'sales' => [
         "cash" => [
-            'waiting' => ':currency :amount cash is waiting for confirmation',
+            'waiting' => ':currency :amount cash is waiting for confirmation.',
             'received' => ':currency :amount cash sales was received.',
             'canceled' => ':currency :amount cash sales was canceled.'
         ],
         "paypal" => [
-            'completed' => ':amount of :product_name sold. Payment is complete',
+            'completed' => ':amount of :product_name sold. Payment is complete.',
         ]
     ],
-    'emails' => ':email has sent you a email.',
-    'no_new_notifications' => 'You don\'t have new notifications',
+    'emails' => 'You got a new email.',
+    'no_new_notifications' => 'You don\'t have new notifications.',
 
     // CRUD
     'created' => ':type notification has been created.',
