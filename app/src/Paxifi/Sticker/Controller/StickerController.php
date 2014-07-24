@@ -5,6 +5,7 @@ use Paxifi\Sticker\Repository\Validation\CreateStickerValidator;
 use Paxifi\Sticker\Transformer\StickerTransformer;
 use Paxifi\Store\Repository\Driver\DriverRepositoryInterface;
 use Paxifi\Support\Controller\ApiController;
+use Paxifi\Support\Validation\ValidationException;
 
 class StickerController extends ApiController
 {
@@ -25,7 +26,7 @@ class StickerController extends ApiController
             }
 
             return $this->setStatusCode(404)->respondWithError('Sticker is not exist.');
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorInternalError('Internal error.');
         }
     }
@@ -70,9 +71,10 @@ class StickerController extends ApiController
 
                 return $this->setStatusCode(201)->respondWithItem($sticker);
             }
-        } catch (\Exception $e) {
-            dd($e->getMessage());
+        } catch (ValidationException $e) {
             return $this->errorWrongArgs($e->getErrors());
+        } catch (\Exception $e) {
+            return $this->errorWrongArgs($e->getMessage());
         }
     }
 
@@ -106,7 +108,7 @@ class StickerController extends ApiController
                 return $this->setStatusCode(201)->respondWithItem($driver->sticker);
             }
         } catch (\Exception $e) {
-            return $this->errorWrongArgs($e->getErrors());
+            return $this->errorWrongArgs($e->getMessage());
         }
     }
 
@@ -123,7 +125,7 @@ class StickerController extends ApiController
             $email = \Input::get('email', $driver->email);
 
             $sticker_factory = with(new StickerFactory())
-                               ->setDriver($driver);
+                ->setDriver($driver);
 
             // Config email options
             $emailOptions = array(
@@ -142,8 +144,7 @@ class StickerController extends ApiController
             }
 
         } catch (\Exception $e) {
-            dd($e->getMessage());
-            return $this->errorWrongArgs($e->getErrors());
+            return $this->errorWrongArgs($e->getMessage());
         }
     }
 
