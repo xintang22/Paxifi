@@ -58,6 +58,30 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
+     * Driver-Notifications relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function notifications()
+    {
+        return $this->hasMany('Paxifi\Notification\Repository\EloquentNotificationRepository', 'driver_id', 'id');
+    }
+
+    /**
+     * Get driver notifications with conditions
+     *
+     * @param $from
+     *
+     * @return mixed
+     */
+    public function with_notifications($from)
+    {
+        return $this->notifications()
+                    ->where('created_at', '>=', $from)
+                    ->get();
+    }
+
+    /**
      * Returns a list of driver's sales
      *
      * @param null $from
@@ -231,6 +255,16 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public function findBySellerId($sellerId)
     {
         return $this->where('seller_id', '=', $sellerId)->take(1)->get();
+    }
+
+    /**
+     * @param $email
+     *
+     * @return mixed
+     */
+    public static function findByEmail($email)
+    {
+        return self::where('email', '=', $email)->get()->first();
     }
 
     /**
