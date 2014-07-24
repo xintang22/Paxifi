@@ -70,7 +70,7 @@ class ProductController extends ApiController
 
         } catch (ValidationException $e) {
 
-            return $this->errorWrongArgs($e->getErrors()->all());
+            return $this->errorWrongArgs($e->getErrors());
 
         } catch (\Exception $e) {
 
@@ -179,7 +179,7 @@ class ProductController extends ApiController
 
         } catch (ValidationException $e) {
 
-            return $this->errorWrongArgs($e->getErrors()->all());
+            return $this->errorWrongArgs($e->getErrors());
 
         } catch (\Exception $e) {
 
@@ -240,7 +240,7 @@ class ProductController extends ApiController
 
         } catch (ValidationException $e) {
 
-            return $this->errorWrongArgs($e->getErrors()->all());
+            return $this->errorWrongArgs($e->getErrors());
 
         } catch (\Exception $e) {
 

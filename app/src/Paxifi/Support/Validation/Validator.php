@@ -79,11 +79,21 @@ abstract class Validator
     }
 
     /**
+     * Return the validation errors with :field-:message format
+     *
      * @return mixed
      */
     public function getValidationErrors()
     {
-        return $this->validation->errors();
+        $errors = [];
+
+        $messages = $this->validation->messages();
+
+        foreach ($messages->getMessages() as $key => $message) {
+            $errors[$key] = $message[0];
+        }
+
+        return $errors;
     }
 
     /**

@@ -45,9 +45,7 @@ class DriverController extends ApiController
             return $this->setStatusCode(201)->respondWithItem(DriverRepository::find($driver->id));
 
         } catch (ValidationException $e) {
-
-            return $this->errorWrongArgs($e->getErrors()->all());
-
+            return $this->errorWrongArgs($e->getErrors());
         }
 
     }
@@ -105,7 +103,7 @@ class DriverController extends ApiController
 
         } catch (ValidationException $e) {
 
-            return $this->errorWrongArgs($e->getErrors()->all());
+            return $this->errorWrongArgs($e->getErrors());
         }
     }
 
@@ -145,7 +143,7 @@ class DriverController extends ApiController
             return $this->respondWithItem($driver);
 
         } catch (\Exception $e) {
-            return $this->errorWrongArgs($e->getErrors()->all());
+            return $this->errorWrongArgs($e->getErrors());
         }
     }
 
@@ -263,7 +261,7 @@ class DriverController extends ApiController
 
         } catch (ValidationException $e) {
 
-            return $this->errorWrongArgs($e->getErrors()->all());
+            return $this->errorWrongArgs($e->getErrors());
         }
 
     }

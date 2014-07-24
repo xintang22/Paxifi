@@ -72,7 +72,7 @@ class StickerController extends ApiController
             }
         } catch (\Exception $e) {
             dd($e->getMessage());
-            return $this->errorWrongArgs($e->getErrors()->all());
+            return $this->errorWrongArgs($e->getErrors());
         }
     }
 
@@ -106,7 +106,7 @@ class StickerController extends ApiController
                 return $this->setStatusCode(201)->respondWithItem($driver->sticker);
             }
         } catch (\Exception $e) {
-            return $this->errorWrongArgs($e->getErrors()->all());
+            return $this->errorWrongArgs($e->getErrors());
         }
     }
 
@@ -127,6 +127,7 @@ class StickerController extends ApiController
 
             // Config email options
             $emailOptions = array(
+                'template' => 'sticker.email',
                 'context' => $this->translator->trans('email.sticker'),
                 'to' => $email,
                 'attach' => $sticker_factory->getStickerPdfFilePath(),
@@ -134,14 +135,15 @@ class StickerController extends ApiController
                 'mime' => 'application/pdf'
             );
 
-            if (\Event::fire('email.sticker', array($emailOptions))) {
+            if (\Event::fire('paxifi.email', array($emailOptions))) {
                 return $this->respond([
                     "success" => true
                 ]);
             }
 
         } catch (\Exception $e) {
-            return $this->errorWrongArgs($e->getErrors()->all());
+            dd($e->getMessage());
+            return $this->errorWrongArgs($e->getErrors());
         }
     }
 
