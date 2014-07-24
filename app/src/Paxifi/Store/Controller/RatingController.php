@@ -18,11 +18,15 @@ class RatingController extends BaseApiController
             case 'down':
                 $driver->thumbsDown();
 
+                \Event::fire('paxifi.notifications.ranking', [\Input::get('type')]);
+
                 return $this->respond(array('success' => true));
 
             case 'up':
             default:
                 $driver->thumbsUp();
+
+                \Event::fire('paxifi.notifications.ranking', [\Input::get('type')]);
 
                 return $this->respond(array('success' => true));
 
