@@ -120,7 +120,7 @@ class SaleRepository implements ArrayableInterface
                 'name' => $product->name,
                 'unit_price' => $product->unit_price,
                 'quantity' => $product->pivot->quantity,
-                'updated_at' => date('H:s m/d/Y' ,strtotime($product->updated_at)),
+                'updated_at' => $product->updated_at->format('H:s m/d/Y'),
             );
         });
     }
