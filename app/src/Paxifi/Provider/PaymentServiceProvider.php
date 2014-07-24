@@ -1,6 +1,7 @@
 <?php namespace Paxifi\Provider;
 
 use Illuminate\Support\ServiceProvider;
+use Paxifi\Payment\Exception\PaymentNotFoundException;
 use Paxifi\Support\Commission\Calculator;
 
 class PaymentServiceProvider extends ServiceProvider
@@ -16,6 +17,31 @@ class PaymentServiceProvider extends ServiceProvider
         $this->registerCommissionRate();
 
         $this->registerCommissionCalculator();
+
+        $this->registerPaymentRepository();
+
+        $this->registerRouteModelBindings();
+    }
+
+    /**
+     * Register model binding.
+     *
+     * @return void
+     */
+    protected function registerRouteModelBindings()
+    {
+        // Notification
+        $this->app['router']->model('payment', 'Paxifi\Payment\Repository\EloquentPaymentRepository', function () {
+            throw new PaymentNotFoundException('Payment does not exist.');
+        });
+
+        $this->app->error(function (PaymentNotFoundException $exception) {
+            return Response::json(array('error' => array(
+                'context' => null,
+                'message' => $exception->getMessage(),
+                'code' => 404,
+            )), 404);
+        });
     }
 
     /**
@@ -42,5 +68,26 @@ class PaymentServiceProvider extends ServiceProvider
             return new Calculator($commissionRate);
 
         });
+    }
+
+    /**
+     * Register the payment repository implementation.
+     *
+     * @return void
+     */
+    protected function registerPaymentRepository()
+    {
+        $this->app->bind('paxifi.repository.payment', 'Paxifi\Payment\Repository\EloquentPaymentRepository', true);
+        $this->app->bind('paxifi.repository.payment_methods', 'Paxifi\Payment\Repository\EloquentPaymentMethodsRepository', true);
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return array('paxifi.repository.payment', 'paxifi.repository.payment_methods');
     }
 }
