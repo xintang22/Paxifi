@@ -39,11 +39,16 @@ class NotificationController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            $interval = \Input::get('interval', 0);
+            $to = Carbon::createFromTimestamp(Carbon::now()->setTimezone(\Config::get('app.timezone'))->format('U'));
 
-            $from = Carbon::createFromTimestamp(Carbon::now()->setTimezone(\Config::get('app.timezone'))->format('U') - ($interval * 60));
+            $from = (empty($driver->notification_pull_time)) ? $driver->created_at : $driver->notification_pull_time;
 
-            if ($notifications = $driver->with_notifications($from)) {
+            if ($notifications = $driver->with_notifications($from, $to)) {
+
+                $driver->notification_pull_time = $to;
+
+                $driver->save();
+
                 return $this->setStatusCode(200)->respondWithCollection($notifications);
             }
 
