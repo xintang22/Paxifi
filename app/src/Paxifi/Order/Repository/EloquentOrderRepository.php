@@ -44,6 +44,16 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
     }
 
     /**
+     * Order - Payment one to one relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function payment()
+    {
+        return $this->belongsTo('Paxifi\Payment\Repository\EloquentPaymentRepository', 'order_id');
+    }
+
+    /***
      * Setup event bindings.
      *
      * @return void
@@ -114,6 +124,11 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
 
         // Fires an event to update the inventory.
         static::$dispatcher->fire('paxifi.product.ordered', array($product, $item['quantity']));
+
+        // Fires an event to notification the driver that the product is in low inventory.
+        if (EloquentProductRepository::find($item['product_id'])->inventory <= 5) {
+            static::$dispatcher->fire('paxifi.notifications.stock', array($product));
+        }
 
         return $this;
     }
