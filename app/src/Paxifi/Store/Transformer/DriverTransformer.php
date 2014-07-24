@@ -30,6 +30,11 @@ class DriverTransformer extends TransformerAbstract
         return $transformer;
     }
 
+    /**
+     * @param $driver
+     *
+     * @return array
+     */
     protected function transformTaxConfiguration($driver)
     {
         $tax = [
@@ -38,6 +43,7 @@ class DriverTransformer extends TransformerAbstract
 
         if ($driver->tax_enabled) {
             $tax['included_in_price'] = (boolean)$driver->tax_included_in_price;
+            $tax['amount'] = $driver->tax_global_amount;
             $tax['rates'] = $driver->getTaxRates();
         }
 
