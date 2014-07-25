@@ -41,7 +41,7 @@ class NotificationController extends ApiController
 
             $to = Carbon::createFromTimestamp(Carbon::now()->setTimezone(\Config::get('app.timezone'))->format('U'));
 
-            $from = (empty($driver->notification_pull_time)) ? $driver->created_at : $driver->notification_pull_time;
+            $from = Carbon::createFromTimestamp(Carbon::now()->setTimezone(\Config::get('app.timezone'))->format('U') - (60 * 60 * 72));
 
             if ($notifications = $driver->with_notifications($from, $to)) {
 
