@@ -64,4 +64,14 @@ class NotificationServiceProvider extends ServiceProvider {
     {
         return array('paxifi.repository.notifications');
     }
+
+    /**
+     * Setting up the notification configuration for notification keep hours.
+     */
+    public function boot()
+    {
+        parent:: boot();
+
+        $this->app['config']->set('notification_hours', 72);
+    }
 }
