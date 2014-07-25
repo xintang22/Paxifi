@@ -261,17 +261,11 @@ class NotificationController extends ApiController
                     'success' => true,
                     'message' => $this->translator->trans('notifications.deleted')
                 ]);
-
-//                return $this->setStatusCode(404)->respond([
-//                    'error' => true,
-//                    'message' => $this->translator->trans('notifications.no_available_resources')
-//                ]);
-
             }
 
-            return $this->setStatusCode(400)->respond([
+            return $this->setStatusCode(404)->respond([
                 'error' => true,
-                'message' => 'Notification deleted failed, please try it later.'
+                'message' => $this->translator->trans('notifications.no_available_resources')
             ]);
         } catch (\Exception $e) {
             return $this->errorInternalError();
