@@ -78,10 +78,24 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      */
     public function with_notifications($from, $to)
     {
-        return $this->notifications()
-                    ->where('created_at', '>=', $from)
-                    ->where('created_at', '<=', $to)
-                    ->get();
+        $query = $this->notifications();
+
+        if (!$this->notify_sale)
+            $query->where('sales', '=', 0);
+
+        if (!$this->notify_inventory)
+            $query->where('stock_reminder', '=', 0);
+
+        if (!$this->notify_feedback)
+            $query->where('ranking', '=', NULL);
+
+        if (!$this->others)
+            $query->where('emails', '=', NULL);
+
+        return $query
+            ->where('created_at', '>=', $from)
+            ->where('created_at', '<=', $to)
+            ->get();
     }
 
     /**
@@ -331,7 +345,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
             $rates = OfficialTaxRate::country('UK')->get(array('category', 'amount', 'included_in_price'));
         }
 
-        return $rates->map(function($rate) {
+        return $rates->map(function ($rate) {
             return [
                 'amount' => $rate->amount,
                 'category' => $rate->category,
