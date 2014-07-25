@@ -5,6 +5,7 @@ use Paxifi\Notification\Repository\NotificationRepository;
 use Paxifi\Notification\Transformer\NotificationTransformer;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
+use Paxifi\Payment\Repository\EloquentPaymentRepository as Payment;
 
 class NotificationController extends ApiController
 {
@@ -41,14 +42,9 @@ class NotificationController extends ApiController
 
             $to = Carbon::createFromTimestamp(Carbon::now()->setTimezone(\Config::get('app.timezone'))->format('U'));
 
-            $from = Carbon::createFromTimestamp(Carbon::now()->setTimezone(\Config::get('app.timezone'))->format('U') - (60 * 60 * 72));
+            $from = Carbon::createFromTimestamp(Carbon::now()->setTimezone(\Config::get('app.timezone'))->format('U') - (60 * 60 * \Config::get('notification_hours')));
 
             if ($notifications = $driver->with_notifications($from, $to)) {
-
-                $driver->notification_pull_time = $to;
-
-                $driver->save();
-
                 return $this->setStatusCode(200)->respondWithCollection($notifications);
             }
 
@@ -247,24 +243,29 @@ class NotificationController extends ApiController
 
             if ($notifications = $driver->notifications) {
 
-                if (!empty($notifications->items)) {
+                $notifications->map(function ($notification) {
 
-                    $notifications->map(function ($notification) {
-                        $notification->delete();
-                    });
+                    if ($notification['sales']) {
+                        $payment = Payment::find($notification['sales']);
+                        if ($payment->status == 0) {
+                            return;
+                        }
+                    }
 
-                    \DB::commit();
+                    $notification->delete();
+                });
 
-                    return $this->setStatusCode(204)->respond([
-                        'success' => true,
-                        'message' => $this->translator->trans('notifications.deleted')
-                    ]);
-                }
+                \DB::commit();
 
-                return $this->setStatusCode(404)->respond([
-                    'error' => true,
-                    'message' => $this->translator->trans('notifications.no_available_resources')
+                return $this->setStatusCode(204)->respond([
+                    'success' => true,
+                    'message' => $this->translator->trans('notifications.deleted')
                 ]);
+
+//                return $this->setStatusCode(404)->respond([
+//                    'error' => true,
+//                    'message' => $this->translator->trans('notifications.no_available_resources')
+//                ]);
 
             }
 
