@@ -17,6 +17,7 @@ class CreateCountiesTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('iso', 2);
+            $table->string('currency');
         });
     }
 
