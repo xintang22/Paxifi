@@ -89,7 +89,7 @@ class DriverController extends ApiController
 
             with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id'));
 
-            $driver->update(\Input::all());
+            $driver->update(\Input::except('email', 'seller_id'));
 
             \DB::commit();
 
@@ -104,6 +104,9 @@ class DriverController extends ApiController
         } catch (ValidationException $e) {
 
             return $this->errorWrongArgs($e->getErrors());
+        } catch (\Exception $e)
+        {
+            return $this->errorWrongArgs($e->getMessage());
         }
     }
 
