@@ -18,7 +18,7 @@ class CreatePaymentsTable extends Migration {
             $table->unsignedInteger('payment_method_id');
             $table->unsignedInteger('order_id');
 
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->default(0);
             $table->longText('details');
             $table->string('paypal_transaction_id')->nullable()->default(NULL);
             $table->boolean('paypal_transaction_status')->nullable()->default(0);
