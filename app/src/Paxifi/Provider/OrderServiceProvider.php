@@ -32,7 +32,7 @@ class OrderServiceProvider extends ServiceProvider
         });
 
         $this->app->error(function (OrderNotFoundException $exception) {
-            return Response::json(array('error' => array(
+            return \Response::json(array('error' => array(
                 'context' => null,
                 'message' => 'Invalid order id.',
                 'code' => 400,
