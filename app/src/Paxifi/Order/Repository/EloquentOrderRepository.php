@@ -50,7 +50,7 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
      */
     public function payment()
     {
-        return $this->belongsTo('Paxifi\Payment\Repository\EloquentPaymentRepository', 'order_id');
+        return $this->hasOne('Paxifi\Payment\Repository\EloquentPaymentRepository', 'order_id', 'id');
     }
 
     /***

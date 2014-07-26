@@ -16,7 +16,7 @@ class EloquentPaymentRepository extends BaseModel {
      */
     public function order()
     {
-        return $this->hasOne('Paxifi\Order\Repository\EloquentOrderRepository', 'id', 'order_id');
+        return $this->belongsTo('Paxifi\Order\Repository\EloquentOrderRepository', 'order_id');
     }
 
     /**
