@@ -13,11 +13,9 @@ class PaymentController extends ApiController
      *
      * @param $order
      *
-     * @param int $status
-     *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function cash($order, $status = 0)
+    public function cash($order)
     {
         try {
             \DB::beginTransaction();
@@ -25,11 +23,11 @@ class PaymentController extends ApiController
             $new_payment = [
                 'payment_method_id' => 1,
                 'order_id' => $order->id,
-                'status' => $status,
-                'details' => "Some details"
+                'details' => "A new cash payment"
             ];
 
             if ($payment = Payment::create($new_payment)) {
+
                 \DB::commit();
 
                 return $this->setStatusCode(200)->respond([
@@ -56,7 +54,7 @@ class PaymentController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updatePayment($payment)
+    public function pay($payment)
     {
 
         try {
@@ -71,6 +69,11 @@ class PaymentController extends ApiController
             $payment->save();
 
             \DB::commit();
+
+            return $this->setStatusCode(200)->respond([
+                "success" => true,
+                "message" => "Payment success."
+            ]);
 
         } catch (\Exception $e) {
             return $this->errorInternalError();
