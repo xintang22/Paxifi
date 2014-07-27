@@ -45,6 +45,7 @@ class NotificationController extends ApiController
             $from = Carbon::createFromTimestamp(Carbon::now()->setTimezone(\Config::get('app.timezone'))->format('U') - (60 * 60 * \Config::get('notification_hours')));
 
             if ($notifications = $driver->with_notifications($from, $to)) {
+
                 return $this->setStatusCode(200)->respondWithCollection($notifications);
             }
 
@@ -222,7 +223,7 @@ class NotificationController extends ApiController
 
         } catch (ValidationException $e) {
 
-            return $this->errorWrongArgs($e->getErrors()->all());
+            return $this->errorWrongArgs($e->getErrors());
 
         }
     }
