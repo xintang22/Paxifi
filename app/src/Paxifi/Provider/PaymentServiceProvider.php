@@ -21,6 +21,21 @@ class PaymentServiceProvider extends ServiceProvider
         $this->registerPaymentRepository();
 
         $this->registerRouteModelBindings();
+
+        $this->registerRoutes();
+    }
+
+    /**
+     * Register Payment resource Routes
+     *
+     * @return void
+     */
+    public function registerRoutes()
+    {
+        $this->app['router']->group(['before' => 'oauth'], function () {
+            // Invoice
+            $this->app['router']->post('payments/{payment}/email', 'Paxifi\Payment\Controller\PaymentController@email');
+        });
     }
 
     /**
