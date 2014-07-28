@@ -1,4 +1,4 @@
-<?php namespace Paxifi\Order\Repository\Factory;
+<?php namespace Paxifi\Payment\Repository\Factory;
 
 use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Store\Repository\Driver\Factory\DriverLogoFactory;
@@ -8,7 +8,7 @@ use Paxifi\Support\SavePdf\PdfConverter;
  * Class OrderInvoiceFactory
  * @package Paxifi\Order\Repository\Factory
  */
-class OrderInvoiceFactory extends DriverLogoFactory
+class PaymentInvoiceFactory extends DriverLogoFactory
 {
 
     /**
