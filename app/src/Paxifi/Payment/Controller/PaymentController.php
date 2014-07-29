@@ -1,6 +1,7 @@
 <?php namespace Paxifi\Payment\Controller;
 
 use Paxifi\Order\Repository\Validation\UpdateOrderValidator;
+use Paxifi\Payment\Exception\PaymentNotMatchException;
 use Paxifi\Payment\Repository\PaymentRepository as Payment;
 use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository as PaymentMethods;
 use Paxifi\Payment\Repository\Validation\CreatePaymentValidator;
@@ -66,19 +67,20 @@ class PaymentController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function pay($payment)
+    public function confirm($payment)
     {
-
         try {
             \DB::beginTransaction();
 
             $driver = $this->getAuthenticatedDriver();
 
-            dd($payment);
+            $payment_driver = $payment->order->OrderDriver();
 
-            $inputs = \Input::only('status');
+            if ($driver->email != $payment_driver->email) {
+                throw new PaymentNotMatchException('Payment owner not match');
+            }
 
-            $payment->status = $inputs['status'];
+            $payment->status = 1;
 
             $payment->save();
 
@@ -86,10 +88,13 @@ class PaymentController extends ApiController
 
             return $this->setStatusCode(200)->respond([
                 "success" => true,
-                "message" => "Payment success."
+                "message" => "Cash has been received."
             ]);
 
-        } catch (\Exception $e) {
+        } catch(PaymentNotMatchException $e) {
+            return $this->errorForbidden($e->getMessage());
+        }
+        catch (\Exception $e) {
             return $this->errorInternalError();
         }
     }
