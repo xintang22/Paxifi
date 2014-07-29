@@ -219,7 +219,7 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->delete('me/notifications', 'Paxifi\Notification\Controller\NotificationController@destroy');
 
                 // Payment
-                $this->app['router']->put('me/payments/{payment}', 'Paxifi\Payment\Controller\PaymentController@pay');
+                $this->app['router']->put('me/payments/{payment}', 'Paxifi\Payment\Controller\PaymentController@confirm');
             });
 
         });
