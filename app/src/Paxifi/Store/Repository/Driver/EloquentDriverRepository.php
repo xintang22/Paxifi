@@ -89,7 +89,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         if (!$this->notify_feedback)
             $query->where('ranking', '=', NULL);
 
-        if (!$this->others)
+        if (!$this->notify_others)
             $query->where('emails', '=', NULL);
 
         return $query
