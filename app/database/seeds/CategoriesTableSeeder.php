@@ -10,7 +10,7 @@ class CategoriesTableSeeder extends Seeder
 
         EloquentCategoryRepository::create(
             array(
-                'name' => 'food',
+                'name' => 'Snacks',
                 'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
                 'status' => 1,
             )
@@ -18,7 +18,7 @@ class CategoriesTableSeeder extends Seeder
 
         EloquentCategoryRepository::create(
             array(
-                'name' => 'drinks',
+                'name' => 'Drinks',
                 'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
                 'status' => 1,
             )
@@ -26,9 +26,25 @@ class CategoriesTableSeeder extends Seeder
 
         EloquentCategoryRepository::create(
             array(
-                'name' => 'tools',
+                'name' => 'Health',
                 'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
-                'status' => 0,
+                'status' => 1,
+            )
+        );
+
+        EloquentCategoryRepository::create(
+            array(
+                'name' => 'Medicine',
+                'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
+                'status' => 1,
+            )
+        );
+
+        EloquentCategoryRepository::create(
+            array(
+                'name' => 'Tourism',
+                'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
+                'status' => 1,
             )
         );
 
