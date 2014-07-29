@@ -5,6 +5,7 @@ use Paxifi\Payment\Exception\PaymentNotMatchException;
 use Paxifi\Payment\Repository\PaymentRepository as Payment;
 use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository as PaymentMethods;
 use Paxifi\Payment\Repository\Validation\CreatePaymentValidator;
+use Paxifi\Payment\Repository\Validation\UpdatePaymentValidator;
 use Paxifi\Payment\Transformer\PaymentTransformer;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
@@ -45,6 +46,8 @@ class PaymentController extends ApiController
                     'payment_id' => $payment->id
                 ]);
             }
+
+            return $this->respondWithError('Payment create failed, please try it later.');
         } catch (ValidationException $e) {
 
             return $this->errorWrongArgs($e->getErrors());
@@ -56,10 +59,39 @@ class PaymentController extends ApiController
         }
     }
 
-
-    public function cancelCash($driver = null)
+    /**
+     * @param $payment
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cancelCash($payment)
     {
+        try {
+            \DB::beginTransaction();
 
+            $payment->status = -1;
+
+            with(new UpdatePaymentValidator())->validate($payment->toArray());
+
+            $payment->save();
+
+            \DB::commit();
+
+            return $this->setStatusCode(200)->respond([
+                'success' => true,
+                'message' => 'Payment canceled successfully.',
+                'payment_id' => $payment->id
+            ]);
+
+        } catch (ValidationException $e) {
+
+            return $this->errorWrongArgs($e->getErrors());
+
+        } catch (\Exception $e) {
+
+            return $this->errorInternalError();
+
+        }
     }
 
     /**
@@ -72,15 +104,13 @@ class PaymentController extends ApiController
         try {
             \DB::beginTransaction();
 
-            $driver = $this->getAuthenticatedDriver();
-
-            $payment_driver = $payment->order->OrderDriver();
-
-            if ($driver->email != $payment_driver->email) {
+            if ($this->getAuthenticatedDriver()->email != $payment->order->OrderDriver()->email) {
                 throw new PaymentNotMatchException('Payment owner not match');
             }
 
-            $payment->status = 1;
+            $payment->status = -1;
+
+            with(new UpdatePaymentValidator())->validate($payment->toArray());
 
             $payment->save();
 
@@ -93,8 +123,9 @@ class PaymentController extends ApiController
 
         } catch(PaymentNotMatchException $e) {
             return $this->errorForbidden($e->getMessage());
-        }
-        catch (\Exception $e) {
+        } catch(ValidationException $e) {
+            return $this->errorWrongArgs($e->getErrors());
+        } catch (\Exception $e) {
             return $this->errorInternalError();
         }
     }
