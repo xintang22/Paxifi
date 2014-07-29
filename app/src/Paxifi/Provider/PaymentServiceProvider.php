@@ -35,6 +35,9 @@ class PaymentServiceProvider extends ServiceProvider
         $this->app['router']->group(['before' => 'oauth'], function () {
             // Invoice
             $this->app['router']->post('payments/{payment}/email', 'Paxifi\Payment\Controller\PaymentController@email');
+
+            // Feedback
+            $this->app['router']->put('payments/{payment}/feedback', 'Paxifi\Payment\Controller\PaymentController@feedback');
         });
     }
 
@@ -51,7 +54,7 @@ class PaymentServiceProvider extends ServiceProvider
         });
 
         $this->app->error(function (PaymentNotFoundException $exception) {
-            return Response::json(array('error' => array(
+            return \Response::json(array('error' => array(
                 'context' => null,
                 'message' => $exception->getMessage(),
                 'code' => 404,
