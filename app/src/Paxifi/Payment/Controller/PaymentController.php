@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Payment\Controller;
 
+use Paxifi\Order\Repository\Validation\UpdateOrderValidator;
 use Paxifi\Payment\Repository\PaymentRepository as Payment;
 use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository as PaymentMethods;
 use Paxifi\Payment\Repository\Validation\CreatePaymentValidator;
@@ -23,7 +24,7 @@ class PaymentController extends ApiController
         try {
             \DB::beginTransaction();
 
-            $type = \Input::get('type');
+            $type = \Input::get('type', 'cash');
 
             $new_payment = [
                 'payment_method_id' => PaymentMethods::getMethodIdByName($type),
@@ -92,6 +93,53 @@ class PaymentController extends ApiController
             return $this->errorInternalError();
         }
     }
+
+    /**
+     * Update feedback after the passenger paid the order by cash.
+     *
+     * @param $payment
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function feedback($payment)
+    {
+        try {
+            \DB::beginTransaction();
+
+            if (\Input::has('feedback')) {
+                $feedback = \Input::get('feedback');
+
+                if (!empty($payment->order->feedback)) {
+                    return $this->setStatusCode(400)->respondWithError('Can only rating once.');
+                }
+
+                with(new UpdateOrderValidator)->validate(\Input::only('feedback'));
+
+                $payment->order->feedback = $feedback;
+
+                $payment->order->save();
+
+                \Event::fire('paxifi.drivers.rating', [$payment->order]);
+
+                \DB::commit();
+
+                return $this->setStatusCode(200)->respondWithItem($payment);
+
+            }
+
+            return $this->setStatusCode(400)->respondWithError("Missing argument feedback field.");
+
+        } catch (ValidationException $e) {
+
+            return $this->errorWrongArgs($e->getErrors());
+
+        } catch (\Exception $e) {
+
+            return $this->errorWrongArgs($e->getMessage());
+
+        }
+    }
+
 
     /**
      * Get order invoice email with a copy of invoice pdf file.

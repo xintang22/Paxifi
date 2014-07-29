@@ -6,6 +6,7 @@ use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Order\Repository\Validation\UpdateOrderValidator;
 use Paxifi\Order\Transformer\OrderTransformer;
 use Paxifi\Support\Controller\ApiController;
+use Paxifi\Store\Controller\RatingController;
 
 class OrderController extends ApiController
 {
@@ -47,49 +48,6 @@ class OrderController extends ApiController
             return $this->errorWrongArgs($e->getMessage());
         }
     }
-
-    /**
-     * Update feedback after the passenger paid the order by cash.
-     *
-     * @param $order
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function feedback($order)
-    {
-        try {
-            \DB::beginTransaction();
-
-            if (\Input::has('feedback')) {
-                $feedback = \Input::get('feedback');
-
-                if (!empty($order->feedback)) {
-                    return $this->setStatusCode(400)->respondWithError('Can only rating once.');
-                }
-
-                with(new UpdateOrderValidator)->validate(\Input::only('feedback'));
-
-                $order->feedback = $feedback;
-
-                $order->save();
-
-                \Event::fire('paxifi.notifications.ranking', [$order]);
-
-                \DB::commit();
-
-                return $this->setStatusCode(200)->respondWithItem($order);
-
-            }
-
-            return $this->setStatusCode(400)->respondWithError("Missing argument feedback field.");
-
-        } catch (\Exception $e)
-        {
-            return $this->errorWrongArgs($e->getMessage());
-        }
-    }
-
-
 
     /**
      * Retrieves the Data Transformer
