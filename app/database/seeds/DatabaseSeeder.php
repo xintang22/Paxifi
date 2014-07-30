@@ -14,13 +14,13 @@ class DatabaseSeeder extends Seeder
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
 
-        $this->call('DriversTableSeeder');
+//        $this->call('DriversTableSeeder');
 
-        $this->call('ProductsTableSeeder');
+//        $this->call('ProductsTableSeeder');
 
         $this->call('CategoriesTableSeeder');
 
-        $this->call('CountriesTableSeeder');
+//        $this->call('CountriesTableSeeder');
 
         $this->call('TaxRatesTableSeeder');
 
@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
         $this->call('SubscriptionPlansTableSeeder');
 
         $this->call('OAuthSeeder');
+
+//        $this->call('IssueTypesTableSeeder');
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         // $this->call('UserTableSeeder');

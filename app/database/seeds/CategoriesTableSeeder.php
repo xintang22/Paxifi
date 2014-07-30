@@ -12,7 +12,7 @@ class CategoriesTableSeeder extends Seeder
             array(
                 'name' => 'Snacks',
                 'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
-                'status' => 1,
+                'enabled' => 1,
             )
         );
 
@@ -20,7 +20,7 @@ class CategoriesTableSeeder extends Seeder
             array(
                 'name' => 'Drinks',
                 'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
-                'status' => 1,
+                'enabled' => 1,
             )
         );
 
@@ -28,7 +28,7 @@ class CategoriesTableSeeder extends Seeder
             array(
                 'name' => 'Health',
                 'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
-                'status' => 1,
+                'enabled' => 1,
             )
         );
 
@@ -36,7 +36,7 @@ class CategoriesTableSeeder extends Seeder
             array(
                 'name' => 'Medicine',
                 'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
-                'status' => 1,
+                'enabled' => 1,
             )
         );
 
@@ -44,7 +44,7 @@ class CategoriesTableSeeder extends Seeder
             array(
                 'name' => 'Tourism',
                 'description' => 'Quae voluptatibus molestiae fugiat error deserunt. Voluptatem quia distinctio in. Similique ducimus pariatur est quo.',
-                'status' => 1,
+                'enabled' => 1,
             )
         );
 
