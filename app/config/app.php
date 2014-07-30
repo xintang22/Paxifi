@@ -117,6 +117,7 @@ return array(
         'Paxifi\Provider\TaxServiceProvider',
         'Paxifi\Provider\StickerServiceProvider',
         'Paxifi\Provider\NotificationServiceProvider',
+        'Paxifi\Provider\ShipmentServiceProvider',
 
         'Intervention\Image\ImageServiceProvider',
         'Thujohn\Pdf\PdfServiceProvider',
