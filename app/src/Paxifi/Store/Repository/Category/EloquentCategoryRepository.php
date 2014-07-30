@@ -12,7 +12,7 @@ class EloquentCategoryRepository extends BaseModel implements CategoryRepository
      *
      * @var array
      */
-    protected $fillable = array('name', 'description', 'status');
+    protected $fillable = array('name', 'description', 'enabled');
 
     /**
      * Return categories with active status.
@@ -21,6 +21,6 @@ class EloquentCategoryRepository extends BaseModel implements CategoryRepository
      */
     public function enabled()
     {
-        return $this->where('status', '=', 1)->get();
+        return $this->where('enabled', '=', 1)->get();
     }
 }
