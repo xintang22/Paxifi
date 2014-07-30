@@ -8,7 +8,7 @@ class CreateDriverValidator extends Validator
         'name' => 'required',
         'seller_id' => 'unique:drivers|alpha_dash|max:12',
         'email' => 'required|email|unique:drivers',
-        'password' => 'required',
+        'password' => 'required|min:6|alpha_dash',
         'photo' => 'url',
         'address' => 'required',
         'currency' => 'required',
