@@ -64,41 +64,6 @@ class PaymentController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function cancelCash($payment)
-    {
-        try {
-            \DB::beginTransaction();
-
-            $payment->status = -1;
-
-            with(new UpdatePaymentValidator())->validate($payment->toArray());
-
-            $payment->save();
-
-            \DB::commit();
-
-            return $this->setStatusCode(200)->respond([
-                'success' => true,
-                'message' => 'Payment canceled successfully.',
-                'payment_id' => $payment->id
-            ]);
-
-        } catch (ValidationException $e) {
-
-            return $this->errorWrongArgs($e->getErrors());
-
-        } catch (\Exception $e) {
-
-            return $this->errorInternalError();
-
-        }
-    }
-
-    /**
-     * @param $payment
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function confirm($payment)
     {
         try {
@@ -108,17 +73,16 @@ class PaymentController extends ApiController
                 throw new PaymentNotMatchException('Payment owner not match');
             }
 
-            $payment->status = -1;
+            with(new UpdatePaymentValidator())->validate(\Input::only('confirm'));
 
-            with(new UpdatePaymentValidator())->validate($payment->toArray());
+            $payment->status = \Input::get('confirm', 1);
 
             $payment->save();
 
             \DB::commit();
 
             return $this->setStatusCode(200)->respond([
-                "success" => true,
-                "message" => "Cash has been received."
+                "success" => true
             ]);
 
         } catch(PaymentNotMatchException $e) {
