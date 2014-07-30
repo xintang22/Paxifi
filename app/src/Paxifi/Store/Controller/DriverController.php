@@ -8,6 +8,7 @@ use Paxifi\Store\Repository\Driver\Validation\CreateDriverValidator;
 use Paxifi\Store\Repository\Driver\Validation\SettingsValidator;
 use Paxifi\Store\Repository\Driver\Validation\UpdateDriverSellerIdValidator;
 use Paxifi\Store\Repository\Driver\Validation\UpdateDriverValidator;
+use Paxifi\Store\Repository\Driver\Validation\UpdatePasswordValidator;
 use Paxifi\Store\Transformer\DriverTransformer;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
@@ -104,8 +105,7 @@ class DriverController extends ApiController
         } catch (ValidationException $e) {
 
             return $this->errorWrongArgs($e->getErrors());
-        } catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return $this->errorWrongArgs($e->getMessage());
         }
     }
@@ -126,8 +126,7 @@ class DriverController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            if (!empty($driver->seller_id))
-            {
+            if (!empty($driver->seller_id)) {
                 return $this->errorWrongArgs('Seller id can be filled one time only.');
             }
 
@@ -167,7 +166,7 @@ class DriverController extends ApiController
             }
 
             // logout the driver
-            DB::table('oauth_sessions')
+            \DB::table('oauth_sessions')
                 ->where('oauth_sessions.owner_id', '=', $driver->id)
                 ->delete();
 
@@ -362,6 +361,40 @@ class DriverController extends ApiController
         } catch (\Exception $e) {
             return $this->setStatusCode(500)->respondWithError($e->getMessage());
         }
+    }
 
+    /**
+     * @param null $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changePassword($driver = null)
+    {
+        try {
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
+            if (\Hash::check(\Input::get('origin_password'), $driver->getAuthPassword())) {
+
+                with(new UpdatePasswordValidator())->validate(\Input::all());
+
+                $driver->password = \Input::get('password');
+
+                $driver->save();
+
+                return $this->setStatusCode(200)->respond([
+                    'success' => true,
+                    'message' => 'Password updated successfully.'
+                ]);
+            }
+
+            return $this->errorWrongArgs('The password is not correct');
+
+        } catch (ValidationException $e) {
+            return $this->errorWrongArgs($e->getErrors());
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
+        }
     }
 }
