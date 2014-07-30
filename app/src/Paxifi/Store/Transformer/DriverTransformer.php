@@ -25,6 +25,18 @@ class DriverTransformer extends TransformerAbstract
                 'notify_billing' => (boolean)$driver->notify_billing,
                 'notify_others' => (boolean)$driver->notify_others,
             ),
+            'thumbs_up' => $driver->thumbs_up,
+            'thumbs_down' => $driver->thumbs_down,
+            'achievements' => [
+                [
+                    "id" => 1,
+                    "name" => "Best Seller in NY, 2012"
+                ],
+                [
+                    "id" => 2,
+                    "name" => "Best Seller of the Year 2014"
+                ]
+            ]
         );
 
         return $transformer;
