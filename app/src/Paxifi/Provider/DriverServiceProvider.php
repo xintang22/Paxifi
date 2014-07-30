@@ -200,6 +200,9 @@ class DriverServiceProvider extends ServiceProvider
                 // Logout the driver
                 $this->app['router']->post('me/logout', 'Paxifi\Store\Controller\AuthController@logout');
 
+                // Password change
+                $this->app['router']->put('me/password/change', 'Paxifi\Store\Controller\DriverController@changePassword');
+
                 // @TODO Subscriptions
                 $this->app['router']->get('me/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@index');
                 $this->app['router']->post('me/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@store');
