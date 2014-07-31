@@ -13,4 +13,7 @@ return array(
         "body" => "Dear :name, the invoice pdf is in attachment.",
         "name" => "Paxifi Invoice"
     ),
+    "issue" => array(
+        "name" => "Paxifi Message Center"
+    )
 );
