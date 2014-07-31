@@ -10,7 +10,7 @@ class EloquentShipmentRepository extends BaseModel {
     // Relationship
     public function sticker()
     {
-        return $this->belongsTo('Paxifi\Sticker\Repository\EloquentStickerRepository', 'sticker_id');
+        return $this->belongsto('Paxifi\Sticker\Repository\EloquentStickerRepository', 'sticker_id');
     }
 
     /**
