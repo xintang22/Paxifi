@@ -13,8 +13,6 @@ class Queues
      */
     public function email($job, $data)
     {
-        $view_data = [];
-
         $view_data = !empty($data['data']) ? $data['data'] : [];
 
         // Process the send sticker pdf to user email event...
