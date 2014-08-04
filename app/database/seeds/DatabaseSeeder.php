@@ -26,13 +26,15 @@ class DatabaseSeeder extends Seeder
 
         $this->call('PaymentMethodsTableSeeder');
 
-        $this->call('OrdersTableSeeder');
+//        $this->call('OrdersTableSeeder');
 
         $this->call('SubscriptionPlansTableSeeder');
 
         $this->call('OAuthSeeder');
 
-//        $this->call('IssueTypesTableSeeder');
+        $this->call('IssueTypesTableSeeder');
+
+        $this->call('ProblemTypesTableSeeder');
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         // $this->call('UserTableSeeder');
