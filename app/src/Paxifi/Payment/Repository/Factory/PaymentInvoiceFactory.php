@@ -182,7 +182,7 @@ class PaymentInvoiceFactory extends DriverLogoFactory
         $invoice = [];
 
         $invoice['order'] = $this->order->toArray();
-        $invoice['products'] = $this->getOrderProducts()->toArray();
+        $invoice['products'] = $this->order->products->toArray();
         $invoice['driver'] = $this->getOrderDriver()->toArray();
         $invoice['content'] = $this->translation;
         $invoice['template'] = [
