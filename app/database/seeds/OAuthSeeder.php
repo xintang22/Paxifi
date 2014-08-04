@@ -5,8 +5,6 @@ class OAuthSeeder extends Seeder
 
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-
         DB::table('oauth_client_metadata')->truncate();
         DB::table('oauth_grant_scopes')->truncate();
         DB::table('oauth_client_scopes')->truncate();
@@ -77,8 +75,6 @@ class OAuthSeeder extends Seeder
         );
 
         DB::table('oauth_clients')->insert($clients);
-
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 
 
