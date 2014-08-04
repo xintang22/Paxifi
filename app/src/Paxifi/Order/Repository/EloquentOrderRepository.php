@@ -122,9 +122,6 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
 
         $this->products()->attach($product->id, array('quantity' => $item['quantity']));
 
-        // Fires an event to update the inventory.
-        static::$dispatcher->fire('paxifi.product.ordered', array($product, $item['quantity']));
-
         // Fires an event to notification the driver that the product is in low inventory.
         if (EloquentProductRepository::find($item['product_id'])->inventory <= 5) {
             static::$dispatcher->fire('paxifi.notifications.stock', array($product));

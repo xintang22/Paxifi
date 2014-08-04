@@ -75,9 +75,21 @@ class PaymentController extends ApiController
 
             with(new UpdatePaymentValidator())->validate(\Input::only('confirm'));
 
-            $payment->status = \Input::get('confirm', 1);
+            $confirm = \Input::get('confirm', 1);
+
+            $payment->status = $confirm;
 
             $payment->save();
+
+            if ($confirm == 1) {
+                $products = $payment->order->products;
+
+                $products->map(function($product) {
+                    // Fires an event to update the inventory.
+                    \Event::fire('paxifi.product.ordered', array($product, $product['pivot']['quantity']));
+                });
+            }
+//            die;
 
             \DB::commit();
 
