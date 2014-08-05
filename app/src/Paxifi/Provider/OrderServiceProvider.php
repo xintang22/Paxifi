@@ -48,6 +48,9 @@ class OrderServiceProvider extends ServiceProvider
     public function registerRoutes()
     {
         $this->app['router']->group(['before' => 'oauth'], function () {
+            // get all the soldout order and products.
+            $this->app['router']->get('soldouts', 'Paxifi\Order\Controller\OrderController@soldouts');
+
             $this->app['router']->post('orders', 'Paxifi\Order\Controller\OrderController@store');
 
             // Feedback
