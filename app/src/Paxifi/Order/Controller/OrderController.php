@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Order\Controller;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Paxifi\Order\Repository\EloquentOrderRepository;
@@ -47,6 +48,51 @@ class OrderController extends ApiController
 
             return $this->errorWrongArgs($e->getMessage());
         }
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function soldouts()
+    {
+        $this->soldouts = [];
+        $this->orders = [];
+
+        $refresh_time = \Input::get('refresh_time');
+
+        $from =  $refresh_time ? Carbon::createFromTimestamp($refresh_time) : 0;;
+
+        $orders = EloquentOrderRepository::take(5)->where('updated_at', '>', $from)->get();
+
+        $orders->map(function ($order) {
+
+            if ($order->payment && $order->payment->status) {
+
+                $order->products->map(function ($product) use ($order) {
+
+                    $this->soldouts[] = [
+                        "product" => $product->toArray(),
+                        "driver" => $product->driver,
+                        "time" => Carbon::createFromTimeStamp($order->payment->updated_at->format('U'))->diffForHumans()
+                    ];
+
+                });
+
+            }
+
+        });
+
+        $this->soldouts = (count($this->soldouts) > 5) ? array_slice($this->soldouts, 0, 5) : $this->soldouts;
+
+        return $this->setStatusCode(200)->respond($this->soldouts);
+    }
+
+    /**
+     * @param $order
+     */
+    public function getSoldOutProducts($order)
+    {
+
     }
 
     /**
