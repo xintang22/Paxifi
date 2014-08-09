@@ -27,7 +27,7 @@ return array(
 
     "store" => array(
 
-        "not_found" => 'Store with ID :id was not found.',
+        "not_found" => "Store with ID :id was not found.",
     ),
 
     "product" => array(
@@ -37,6 +37,10 @@ return array(
     ),
 
     "exceptions" => array(
-        'system_error' => 'System error. Please try it later.'
+        "system_error" => "System error. Please try it later.",
+    ),
+
+    "invoice" => array(
+        "invoice_not_available" => "The payment :payment_id is not confirmed by the driver."
     ),
 );
