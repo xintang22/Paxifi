@@ -13,9 +13,14 @@ class CategoryController extends ApiController
      */
     public function index()
     {
-        $categories = CategoryRepository::enabled();
+        try {
 
-        return $this->respondWithCollection($categories);
+            $categories = CategoryRepository::enabled();
+
+            return $this->respondWithCollection($categories);
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
+        }
     }
 
     /**
