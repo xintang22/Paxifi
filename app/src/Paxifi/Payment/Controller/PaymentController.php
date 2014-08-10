@@ -1,9 +1,11 @@
 <?php namespace Paxifi\Payment\Controller;
 
+use Paxifi\Feedback\Repository\EloquentFeedbackRepository;
 use Paxifi\Order\Repository\Validation\UpdateOrderValidator;
 use Paxifi\Payment\Exception\PaymentNotMatchException;
 use Paxifi\Payment\Repository\PaymentRepository as Payment;
 use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository as PaymentMethods;
+use Paxifi\Payment\Repository\Validation\CreatePaymentFeedbackValidator;
 use Paxifi\Payment\Repository\Validation\CreatePaymentValidator;
 use Paxifi\Payment\Repository\Validation\UpdatePaymentValidator;
 use Paxifi\Payment\Transformer\PaymentTransformer;
@@ -40,14 +42,10 @@ class PaymentController extends ApiController
 
                 \DB::commit();
 
-                return $this->setStatusCode(200)->respond([
-                    'success' => true,
-                    'message' => 'Payment created successfully.',
-                    'payment_id' => $payment->id
-                ]);
+                return $this->setStatusCode(200)->respondWithItem($payment);
             }
 
-            return $this->respondWithError('Payment create failed, please try it later.');
+            return $this->setStatusCode(500)->respondWithError('Payment create failed, please try it later.');
         } catch (ValidationException $e) {
 
             return $this->errorWrongArgs($e->getErrors());
@@ -89,7 +87,6 @@ class PaymentController extends ApiController
                     \Event::fire('paxifi.product.ordered', array($product, $product['pivot']['quantity']));
                 });
             }
-//            die;
 
             \DB::commit();
 
@@ -98,60 +95,13 @@ class PaymentController extends ApiController
             ]);
 
         } catch(PaymentNotMatchException $e) {
-            return $this->errorForbidden($e->getMessage());
+            return $this->errorForbidden();
         } catch(ValidationException $e) {
             return $this->errorWrongArgs($e->getErrors());
         } catch (\Exception $e) {
             return $this->errorInternalError();
         }
     }
-
-    /**
-     * Update feedback after the passenger paid the order by cash.
-     *
-     * @param $payment
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function feedback($payment)
-    {
-        try {
-            \DB::beginTransaction();
-
-            if (\Input::has('feedback')) {
-                $feedback = \Input::get('feedback');
-
-                if (!empty($payment->order->feedback)) {
-                    return $this->setStatusCode(400)->respondWithError('Can only rating once.');
-                }
-
-                with(new UpdateOrderValidator)->validate(\Input::only('feedback'));
-
-                $payment->order->feedback = $feedback;
-
-                $payment->order->save();
-
-                \Event::fire('paxifi.drivers.rating', [$payment->order]);
-
-                \DB::commit();
-
-                return $this->setStatusCode(200)->respondWithItem($payment);
-
-            }
-
-            return $this->setStatusCode(400)->respondWithError("Missing argument feedback field.");
-
-        } catch (ValidationException $e) {
-
-            return $this->errorWrongArgs($e->getErrors());
-
-        } catch (\Exception $e) {
-
-            return $this->errorWrongArgs($e->getMessage());
-
-        }
-    }
-
 
     /**
      * Get order invoice email with a copy of invoice pdf file.
@@ -161,7 +111,7 @@ class PaymentController extends ApiController
      * @internal param $id
      * @return mixed
      */
-    public function email($payment)
+    public function invoice($payment)
     {
         try {
             \DB::beginTransaction();
@@ -173,7 +123,6 @@ class PaymentController extends ApiController
                 return;
 
             if ($payment->status) {
-
                 $payment->order->setBuyerEmail($buyer_email)
                     ->save();
 
@@ -204,7 +153,7 @@ class PaymentController extends ApiController
                 );
             }
 
-            return $this->setStatusCode(406)->respondWithError($this->translator->trans('responses.invoice.invoice_not_available', ['order_id' => $order->id]));
+            return $this->setStatusCode(406)->respondWithError($this->translator->trans('responses.invoice.invoice_not_available', ['payment_id' => $payment->id]));
 
         } catch (\Exception $e) {
             return $this->errorWrongArgs($e->getMessage());
