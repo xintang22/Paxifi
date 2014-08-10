@@ -22,7 +22,7 @@ class IssueServiceProvider extends ServiceProvider {
         $this->app['router']->post('issues', 'Paxifi\Issue\Controller\IssueController@store');
 
         // Retrieve issue types list
-        $this->app['router']->get('issues/list', 'Paxifi\Issue\Controller\IssueTypeController@index');
+        $this->app['router']->get('issues', 'Paxifi\Issue\Controller\IssueTypeController@index');
     }
 
     public function registerIssueRepository()
