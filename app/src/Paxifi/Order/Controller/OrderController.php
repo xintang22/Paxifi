@@ -3,11 +3,10 @@
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
-use Paxifi\Order\Repository\EloquentOrderRepository;
-use Paxifi\Order\Repository\Validation\UpdateOrderValidator;
+use Paxifi\Order\Repository\EloquentOrderRepository as Order;
 use Paxifi\Order\Transformer\OrderTransformer;
+use Paxifi\Payment\Repository\EloquentPaymentRepository;
 use Paxifi\Support\Controller\ApiController;
-use Paxifi\Store\Controller\RatingController;
 
 class OrderController extends ApiController
 {
@@ -18,7 +17,7 @@ class OrderController extends ApiController
 
             $items = Collection::make(\Input::get('items'));
 
-            $order = new EloquentOrderRepository();
+            $order = new Order();
             // create the order
             $order->save();
 
@@ -38,7 +37,7 @@ class OrderController extends ApiController
 
             \DB::commit();
 
-            return $this->setStatusCode(201)->respondWithItem(EloquentOrderRepository::find($order->id));
+            return $this->setStatusCode(201)->respondWithItem(Order::find($order->id));
 
         } catch (ModelNotFoundException $e) {
 
@@ -47,6 +46,8 @@ class OrderController extends ApiController
         } catch (\InvalidArgumentException $e) {
 
             return $this->errorWrongArgs($e->getMessage());
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
         }
     }
 
@@ -55,44 +56,36 @@ class OrderController extends ApiController
      */
     public function soldouts()
     {
-        $this->soldouts = [];
-        $this->orders = [];
+        try {
+            $this->soldouts = [];
+            $this->orders = [];
 
-        $refresh_time = \Input::get('refresh_time');
+            $refresh_time = \Input::get('refresh_time');
 
-        $from =  $refresh_time ? Carbon::createFromTimestamp($refresh_time) : 0;;
+            $from =  $refresh_time ? Carbon::createFromTimestamp(Carbon::now()->format('U') - $refresh_time) : Carbon::createFromTimestamp(0);
 
-        $orders = EloquentOrderRepository::take(5)->where('updated_at', '>', $from)->get();
+            $payments = EloquentPaymentRepository::take(5)->where('status', '=', 1)->where('updated_at', '<', Carbon::now())->where('updated_at', '>', $from)->orderBy('updated_at', 'desc')->get();
 
-        $orders->map(function ($order) {
+            $payments->map(function($payment) {
 
-            if ($order->payment && $order->payment->status) {
+                $order = $payment->order;
 
-                $order->products->map(function ($product) use ($order) {
-
+                $order->products->map(function($product) use($order) {
                     $this->soldouts[] = [
                         "product" => $product->toArray(),
                         "driver" => $product->driver,
                         "time" => Carbon::createFromTimeStamp($order->payment->updated_at->format('U'))->diffForHumans()
                     ];
-
                 });
 
-            }
+            });
 
-        });
+            $this->soldouts = (count($this->soldouts) > 5) ? array_slice($this->soldouts, 0, 5) : $this->soldouts;
 
-        $this->soldouts = (count($this->soldouts) > 5) ? array_slice($this->soldouts, 0, 5) : $this->soldouts;
-
-        return $this->setStatusCode(200)->respond($this->soldouts);
-    }
-
-    /**
-     * @param $order
-     */
-    public function getSoldOutProducts($order)
-    {
-
+            return $this->setStatusCode(200)->respond($this->soldouts);
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
+        }
     }
 
     /**
