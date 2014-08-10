@@ -74,7 +74,7 @@ class StickerController extends ApiController
         } catch (ValidationException $e) {
             return $this->errorWrongArgs($e->getErrors());
         } catch (\Exception $e) {
-            return $this->errorWrongArgs($e->getMessage());
+            return $this->errorInternalError();
         }
     }
 
@@ -138,13 +138,13 @@ class StickerController extends ApiController
             );
 
             if (\Event::fire('paxifi.email', array($emailOptions))) {
-                return $this->respond([
+                return $this->setStatusCode(200)->respond([
                     "success" => true
                 ]);
             }
 
         } catch (\Exception $e) {
-            return $this->errorWrongArgs($e->getMessage());
+            return $this->errorInternalError();
         }
     }
 
