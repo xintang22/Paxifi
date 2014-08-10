@@ -29,6 +29,11 @@ class NotificationServiceProvider extends ServiceProvider {
     public function registerRoutes()
     {
         $this->app['router']->group(['before' => 'oauth'], function () {
+
+            // Get sales notifications.
+            $this->app['router']->get('notifications', 'Paxifi\Notification\Controller\NotificationController@index');
+
+            // Create notifications.
             $this->app['router']->post('notifications', 'Paxifi\Notification\Controller\NotificationController@store');
         });
     }
