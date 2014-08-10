@@ -34,11 +34,11 @@ class ShipmentController extends ApiController
                 return $this->setStatusCode(201)->respondWithItem($shipment);
             }
 
-            return $this->errorInternalError('Syetem error. Please try it later.');
+            return $this->errorInternalError();
         } catch (ValidationException $e) {
             return $this->errorWrongArgs($e->getErrors());
         } catch (\Exception $e) {
-            return $this->errorWrongArgs($e->getMessage());
+            return $this->errorInternalError();
         }
     }
 
