@@ -103,7 +103,6 @@ class DriverController extends ApiController
             return $this->respondWithItem(DriverRepository::find($driver->id));
 
         } catch (ValidationException $e) {
-
             return $this->errorWrongArgs($e->getErrors());
         } catch (\Exception $e) {
             return $this->errorWrongArgs($e->getMessage());
@@ -144,8 +143,10 @@ class DriverController extends ApiController
 
             return $this->respondWithItem($driver);
 
-        } catch (\Exception $e) {
+        } catch (ValidationException $e) {
             return $this->errorWrongArgs($e->getErrors());
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
         }
     }
 
@@ -298,10 +299,9 @@ class DriverController extends ApiController
             ));
 
         } catch (ModelNotFoundException $e) {
-            return $this->setStatusCode(404)->respond([
-                'error' => true,
-                'message' => 'Store not found.'
-            ]);
+            return $this->setStatusCode(404)->respondWithError('Store Not Found');
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
         }
 
     }
