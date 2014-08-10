@@ -8,28 +8,32 @@ class RatingController extends BaseApiController
     /**
      * Rate the store/driver.
      *
-     * @param $order
+     * @param $feedback
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function rating($order)
+    public function rating($feedback)
     {
-        $driver = $order->OrderDriver();
+        try {
+            $driver = $feedback->driver;
 
-        switch ($order->feedback) {
-            case -1:
-                $driver->thumbsDown();
+            switch ($feedback->feedback) {
+                case -1:
+                    $driver->thumbsDown();
 
-                break;
+                    break;
 
-            case 1:
-            default:
-                $driver->thumbsUp();
+                case 1:
+                default:
+                    $driver->thumbsUp();
 
+            }
+
+            \Event::fire('paxifi.notifications.ranking', [$feedback]);
+
+            return $this->respond(array('success' => true));
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
         }
-
-        \Event::fire('paxifi.notifications.ranking', [$order]);
-
-        return $this->respond(array('success' => true));
     }
 }
