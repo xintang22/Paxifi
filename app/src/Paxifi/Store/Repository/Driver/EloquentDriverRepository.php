@@ -68,6 +68,30 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
+     * Drvier - Comments one to many relationship
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function feedbacks()
+    {
+        return $this->hasMany('Paxifi\Feedback\Repository\EloquentFeedbackRepository', 'driver_id', 'id');
+    }
+
+    /**
+     * Get all comments of the drivers.
+     *
+     * @return mixed
+     */
+    public function comments()
+    {
+        $query = $this->feedbacks();
+
+        $query->where('comment', '<>', "");
+        return  $query->get();
+
+    }
+
+    /**
      * Get driver notifications with conditions
      *
      * @param $from
@@ -95,6 +119,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         return $query
             ->where('created_at', '>=', $from)
             ->where('created_at', '<=', $to)
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 
