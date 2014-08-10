@@ -17,9 +17,7 @@ class NotificationController extends ApiController
     {
         try {
             if ($notifications = NotificationRepository::all()) {
-
                 return $this->setStatusCode(200)->respondWithCollection($notifications);
-
             }
 
             return $this->setStatusCode(200)->respond($this->translator->trans('notifications.no_new_notifications'));
@@ -44,12 +42,9 @@ class NotificationController extends ApiController
 
             $from = Carbon::createFromTimestamp(Carbon::now()->setTimezone(\Config::get('app.timezone'))->format('U') - (60 * 60 * \Config::get('notification_hours')));
 
-            if ($notifications = $driver->with_notifications($from, $to)) {
+            $notifications = $driver->with_notifications($from, $to);
 
-                return $this->setStatusCode(200)->respondWithCollection($notifications);
-            }
-
-            return $this->setStatusCode(200)->respond([]);
+            return $this->setStatusCode(200)->respondWithCollection($notifications);
 
         } catch (\Exception $e) {
             return $this->errorInternalError();
@@ -78,14 +73,14 @@ class NotificationController extends ApiController
     }
 
     /**
-     * @param $order
+     * @param $feedback
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function ranking($order)
+    public function ranking($feedback)
     {
         try {
-            $driver = $order->OrderDriver();
+            $driver = $feedback->driver;
 
             if ($driver->notify_feedback) {
                 \DB::beginTransaction();
@@ -95,10 +90,10 @@ class NotificationController extends ApiController
                 // billing is for cash checkout
                 $notification['driver_id'] = $driver->id;
 
-                if ($order->feedback == 1)
+                if ($feedback->feedback == 1)
                     $notification['ranking'] = 'up';
 
-                if ($order->feedback == -1)
+                if ($feedback->feedback == -1)
                     $notification['ranking'] = 'down';
 
                 if ($response = NotificationRepository::create($notification)) {
@@ -114,6 +109,10 @@ class NotificationController extends ApiController
         } catch (ValidationException $e) {
 
             return $this->errorWrongArgs($e->getErrors());
+
+        } catch (\Exception $e) {
+
+            return $this->errorInternalError();
 
         }
     }
@@ -264,10 +263,7 @@ class NotificationController extends ApiController
                 ]);
             }
 
-            return $this->setStatusCode(404)->respond([
-                'error' => true,
-                'message' => $this->translator->trans('notifications.no_available_resources')
-            ]);
+            return $this->setStatusCode(404)->respondWithError($this->translator->trans('notifications.no_available_resources'));
         } catch (\Exception $e) {
             return $this->errorInternalError();
         }
