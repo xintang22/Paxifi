@@ -18,7 +18,7 @@ class Queues
         // Process the send sticker pdf to user email event...
         try {
 
-            \Mail::send($data['template'], $view_data, function ($message) use ($data) {
+            \Mail::queue($data['template'], $view_data, function ($message) use ($data) {
 
                 $message->from($data['context']['from'], $data['context']['name'])->subject($data['context']['subject']);
 
