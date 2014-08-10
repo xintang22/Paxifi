@@ -31,8 +31,10 @@ class IssueController extends ApiController
                 \Event::fire('paxifi.email', [$emailOptions]);
 
                 return $this->setStatusCode(200)->respond([
-                    'success' => true,
-                    'message' => 'Your issue has been post to Paxifi sucessfully..'
+                    'success' => [
+                        'code' => 200,
+                        'message' => 'Your issue has been post to Paxifi successfully.'
+                    ]
                 ]);
             }
         } catch (\Exception $e) {
