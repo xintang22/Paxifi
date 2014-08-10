@@ -34,10 +34,10 @@ class PaymentServiceProvider extends ServiceProvider
     {
         $this->app['router']->group(['before' => 'oauth'], function () {
             // Invoice
-            $this->app['router']->post('payments/{payment}/email', 'Paxifi\Payment\Controller\PaymentController@email');
+            $this->app['router']->post('payments/{payment}/invoice', 'Paxifi\Payment\Controller\PaymentController@invoice');
 
             // Feedback
-            $this->app['router']->put('payments/{payment}/feedback', 'Paxifi\Payment\Controller\PaymentController@feedback');
+            $this->app['router']->put('payments/{payment}/feedback', 'Paxifi\Feedback\Controller\FeedbackController@feedback');
         });
     }
 
