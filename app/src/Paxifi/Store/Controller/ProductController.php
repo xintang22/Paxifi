@@ -2,8 +2,10 @@
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
-use Paxifi\Store\Repository\Product\Cost\EloquentCostRepository;
+use Paxifi\Problem\Repository\EloquentProblemTypesRepository as ProblemType;
+use Paxifi\Problem\Repository\ProblemRepository as Problem;
 use Paxifi\Store\Repository\Product\ProductRepository;
+use Paxifi\Store\Repository\Product\Validation\CreateProblemValidator;
 use Paxifi\Store\Repository\Product\Validation\CreateProductValidator;
 use Paxifi\Store\Repository\Product\Validation\UpdateProductValidator;
 use Paxifi\Store\Transformer\ProductTransformer;
@@ -277,6 +279,69 @@ class ProductController extends ApiController
 
             return $this->errorInternalError();
 
+        }
+    }
+
+    /**
+     * Get all problems types
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function problems()
+    {
+        if ($problem_types = ProblemType::all())
+        {
+            return $this->setStatusCode(200)->respond($problem_types);
+        }
+
+        return $this->errorInternalError();
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function problem()
+    {
+        try {
+            \DB::beginTransaction();
+
+            $inputs = \Input::all();
+
+            with(new CreateProblemValidator())->validate($inputs);
+
+            if($problem = Problem::create($inputs))
+            {
+                \DB::commit();
+
+                $emailOptions = array(
+                    'template' => 'emails.problem.report',
+                    'context' => $this->translator->trans('email.problem'),
+                    'to' => $problem->product->driver->email,
+                    'data' => [
+                        "driver_name" => $problem->product->driver->name,
+                        "reporter_email" => $problem->reporter_email,
+                        "product" => $problem->product->toArray(),
+                        "problem_type" => $problem->type->toArray(),
+                    ]
+                );
+
+                // Fire email invoice pdf event.
+                \Event::fire('paxifi.email', array($emailOptions));
+
+                return $this->setStatusCode(200)->respond([
+                    "success" => true,
+                    "problem_id" => $problem->id,
+                    "created_at" => $problem->created_at,
+                    "reporter_email" => $problem->reporter_email
+                ]);
+            }
+
+            return $this->errorInternalError('Sorry, the system is not available now, please try it later');
+
+        } catch(ValidationException $e) {
+            return $this->errorWrongArgs($e->getErrors());
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
         }
     }
 
