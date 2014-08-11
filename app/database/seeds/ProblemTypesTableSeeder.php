@@ -1,5 +1,6 @@
 <?php
-use Paxifi\Store\Repository\Product\Problem\EloquentProblemTypesRepository;
+
+use Paxifi\Problem\Repository\EloquentProblemTypesRepository;
 
 class ProblemTypesTableSeeder extends Seeder {
 
