@@ -118,6 +118,9 @@ return array(
         'Paxifi\Provider\StickerServiceProvider',
         'Paxifi\Provider\NotificationServiceProvider',
         'Paxifi\Provider\ShipmentServiceProvider',
+        'Paxifi\Provider\IssueServiceProvider',
+        'Paxifi\Provider\ProblemServiceProvider',
+        'Paxifi\Provider\FeedbackServiceProvider',
 
         'Intervention\Image\ImageServiceProvider',
         'Thujohn\Pdf\PdfServiceProvider',
