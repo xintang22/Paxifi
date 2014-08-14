@@ -12,9 +12,9 @@ class DriverTransformer extends TransformerAbstract
         $transformer = array(
             'id' => $driver->id,
             'email' => $driver->email,
-            'photo' => $driver->photo,
+            'photo' => !empty($driver->photo) ? $driver->photo : "",
             'name' => $driver->name,
-            'seller_id' => $driver->seller_id,
+            'seller_id' => !empty($driver->seller_id) ? $driver->seller_id : "",
             'address' => $driver->address,
             'currency' => $driver->currency,
             'tax' => $this->transformTaxConfiguration($driver),
