@@ -23,6 +23,7 @@ class ProductTransformer extends TransformerAbstract
             'unit_price' => $product->unit_price,
             'average_cost' => $product->average_cost,
             'inventory' => $product->inventory,
+            'created_at' => $product->created_at->format('U'),
             'tax' => array(
                 'amount' => $product->tax_amount,
                 'included_in_price' => (boolean)$product->driver->tax_included_in_price,
