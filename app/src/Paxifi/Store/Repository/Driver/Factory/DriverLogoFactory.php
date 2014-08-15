@@ -115,11 +115,6 @@ class DriverLogoFactory
      */
     public function getDriverLogoImageName()
     {
-        if (empty($this->driver->seller_id))
-        {
-            throw new \Exception('You have not defined your seller id.');
-        }
-
         $this->driverLogoName = empty($this->driver->photo) ? $this->driver->seller_id . '.jpg' : basename($this->driver->photo);
 
         return $this->driverLogoName;
