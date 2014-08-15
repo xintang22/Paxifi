@@ -37,9 +37,13 @@ class DriverController extends ApiController
         try {
             \DB::beginTransaction();
 
-            with(new CreateDriverValidator())->validate(\Input::all());
+            with(new CreateDriverValidator())->validate(\Input::except('seller_id'));
 
-            $driver = DriverRepository::create(\Input::all());
+            $driver = DriverRepository::create(\Input::except('seller_id'));
+
+            if (\Input::has('photo')) {
+                \Event::fire('paxifi.drivers.created', [$driver]);
+            }
 
             \DB::commit();
 
