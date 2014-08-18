@@ -25,6 +25,10 @@ class PaymentController extends ApiController
      */
     public function payment($order)
     {
+        if ($order->payment) {
+            return $this->setStatusCode(200)->respondWithItem($order->payment);
+        }
+
         try {
             \DB::beginTransaction();
 
