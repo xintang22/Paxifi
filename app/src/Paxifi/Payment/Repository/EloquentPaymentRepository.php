@@ -30,6 +30,16 @@ class EloquentPaymentRepository extends BaseModel {
     }
 
     /**
+     * Payment - Feedback Method one to one relationship
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function feedback()
+    {
+        return $this->belongsTo('Paxifi\Feedback\Repository\EloquentFeedbackRepository', 'id', 'payment_id');
+    }
+
+    /**
      * @param $order
      *
      * @return mixed
