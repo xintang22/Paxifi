@@ -18,6 +18,10 @@ class FeedbackController extends ApiController {
     public function feedback($payment)
     {
         try {
+            if($payment->feedback) {
+                return $this->setStatusCode(200)->respond([]);
+            }
+
             \DB::beginTransaction();
 
             $inputs = \Input::all();
