@@ -62,17 +62,24 @@ class FeedbackController extends ApiController {
      */
     public function comments($driver) {
         try {
+            $count = 4;
 
-            $comments = $driver->comments()->toArray();
+            $page = \Input::get('page');
+
+            if (\Input::has('page') && $page >= 1) {
+                $comments = $driver->comments()->skip(($page - 1) * $count)->take($count)->get()->toArray();
+            } else {
+                $comments = $driver->comments()->get()->toArray();
+            }
 
             return $this->setStatusCode(200)->respond(
                 [
-                    'success' => true,
-                    "comments" => $comments
+                    "success" => true,
+                    "comments" => $comments,
+                    "count" => $driver->comments()->get()->count()
                 ]
             );
 
-            die;
         } catch (\Exception $e) {
             return $this->setStatusCode(500)->respondWithError($e->getMessage());
         }
