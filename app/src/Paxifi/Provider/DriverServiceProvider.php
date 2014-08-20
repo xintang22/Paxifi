@@ -117,6 +117,7 @@ class DriverServiceProvider extends ServiceProvider
             // Get driver's comments
             $this->app['router']->get('drivers/{driver}/comments', 'Paxifi\Feedback\Controller\FeedbackController@comments');
 
+            $this->app['router']->get('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@show');
             // =========================================================================================================
             // OAuth + Client
             // =========================================================================================================
@@ -140,7 +141,7 @@ class DriverServiceProvider extends ServiceProvider
             $this->app['router']->group(['before' => 'check-store-owner'], function () {
 
                 // CRUD
-                $this->app['router']->get('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@show');
+//                $this->app['router']->get('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@show');
                 $this->app['router']->put('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@update');
                 $this->app['router']->delete('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@destroy');
 
