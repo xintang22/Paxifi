@@ -86,9 +86,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     {
         $query = $this->feedbacks();
 
-        $query->where('comment', '<>', "");
-        return  $query->get();
-
+        return $query->where('comment', '<>', "")->orderBy('created_at', 'desc');
     }
 
     /**
