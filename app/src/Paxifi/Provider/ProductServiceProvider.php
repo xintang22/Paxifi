@@ -16,7 +16,7 @@ class ProductServiceProvider extends ServiceProvider
 
         $this->registerCategoryRepository();
 
-        $this->registerListeners();
+        $this->registerEvents();
     }
 
     /**
@@ -49,16 +49,18 @@ class ProductServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register Product listeners
-     *
-     * @return void
+     * Register the events for product.
      */
-    public function registerListeners()
+    public function registerEvents()
     {
         // @TODO: Update the product inventory after success payment.
         $this->app['events']->listen('paxifi.product.ordered', function ($product, $quantity) {
             $product->updateInventory($quantity);
             $product->save();
+        });
+
+        $this->app['events']->listen('paxifi.products.photos.updated' , function ($photos) {
+            \Queue::push('Paxifi\Support\Queues\Queues@destroy', $photos);
         });
     }
 
