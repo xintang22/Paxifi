@@ -209,6 +209,12 @@ class ProductController extends ApiController
 
             with(new UpdateProductValidator())->validate(\Input::except('costs'));
 
+            if (\Input::has('photos')) {
+                $origin_photos = $product->photos;
+
+                \Event::fire('paxifi.products.photos.updated', [$origin_photos]);
+            }
+            
             $product->update(\Input::except('costs'));
 
             // @TODO: find a better way to handle updating/deleting product's costs
