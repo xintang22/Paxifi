@@ -16,7 +16,7 @@ return array(
             'completed' => ':amount of :product_name sold. Payment is complete.',
         ]
     ],
-    'emails' => 'You got a new email.',
+    'emails' => 'You have a new email.',
     'no_new_notifications' => 'You don\'t have new notifications.',
 
     // CRUD
