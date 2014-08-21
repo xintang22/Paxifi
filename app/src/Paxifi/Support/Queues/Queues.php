@@ -36,8 +36,20 @@ class Queues
 
             $job->delete();
         } catch (\Exception $e) {
-            dd($e->getMessage());
             return \Response::json(["error" => true, "message" => ""], 500, []);
+        }
+    }
+
+    public function destroy($job, $photos=null)
+    {
+        try {
+            foreach($photos as $photo ) {
+                unlink(public_path(trim(parse_url($photo['url'])['path'], '/')));
+            }
+
+            $job->delete();
+        } catch (\Exception $e) {
+            return true;
         }
     }
 } 
