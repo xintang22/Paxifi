@@ -34,15 +34,15 @@ class PaymentController extends ApiController
 
             $type = \Input::get('type', 'cash');
 
-            $new_payment = [
+            $newPayment = [
                 'payment_method_id' => PaymentMethods::getMethodIdByName($type),
                 'order_id' => $order->id,
-                'details' => "A new cash payment"
+                'details' => $this->translator->trans("payments.$type.create")
             ];
 
-            with(new CreatePaymentValidator())->validate($new_payment);
+            with(new CreatePaymentValidator())->validate($newPayment);
 
-            if ($payment = Payment::create($new_payment)) {
+            if ($payment = Payment::create($newPayment)) {
 
                 \DB::commit();
 
