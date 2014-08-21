@@ -24,7 +24,7 @@ class FeedbackController extends ApiController {
 
             \DB::beginTransaction();
 
-            $inputs = \Input::all();
+            $inputs = \Input::except('buyer_email');
             $inputs['payment_id'] = $payment->id;
             $inputs['driver_id'] = \Input::get('driver_id');
 
