@@ -6,12 +6,11 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 App::missing(function($exception)
 {
-    print_r($_SERVER);
     if ($_SERVER['SCRIPT_NAME'] == '/index.php' && \Input::has('paypal_ipn')) {
 
-        $payment = EloquentPaymentRepository::find(3);
-        $payment->status = 1;
-        $payment->save();
+        $payment_id = \Input::get('custom');
+
+        $payment = EloquentPaymentRepository::find($payment_id);
 
         return Response::json(json_decode($payment));
     }
