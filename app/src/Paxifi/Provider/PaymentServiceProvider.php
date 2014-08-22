@@ -38,6 +38,9 @@ class PaymentServiceProvider extends ServiceProvider
 
             // Feedback
             $this->app['router']->put('payments/{payment}/feedback', 'Paxifi\Feedback\Controller\FeedbackController@feedback');
+
+            // ipn.php handler
+            $this->app['router']->post('payments/paypal', array('as' => 'paypal.payment-ipn', 'uses' => 'Paxifi\Payment\Controller\PaymentController@paypal_ipn'));
         });
     }
 

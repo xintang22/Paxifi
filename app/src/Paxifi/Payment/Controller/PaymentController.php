@@ -108,6 +108,20 @@ class PaymentController extends ApiController
     }
 
     /**
+     * Paypal ipn handler.
+     */
+    public function paypal_ipn() {
+
+        $payment = Payment::find(\Input::get('custom'));
+
+        $payment->status = 1;
+
+        $payment->save();
+
+        return $this->setStatusCode(200)->respond([]);
+    }
+
+    /**
      * Get order invoice email with a copy of invoice pdf file.
      *
      * @param $payment
