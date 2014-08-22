@@ -1,17 +1,19 @@
 <?php
 
+use Paxifi\Payment\Repository\EloquentPaymentRepository;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+
 
 App::missing(function($exception)
 {
+    print_r($_SERVER);
     if ($_SERVER['SCRIPT_NAME'] == '/index.php' && \Input::has('paypal_ipn')) {
 
-        $f = fopen(public_path('data.txt'), 'w');
-        fwrite($f, '123');
-        fclose($f);
-//        $payment = Paxifi\Payment\Repository\EloquentPaymentRepository::find(1);
+        $payment = EloquentPaymentRepository::find(3);
+        $payment->status = 1;
+        $payment->save();
 
-//        return Response::json(json_decode($payment));
+        return Response::json(json_decode($payment));
     }
 
     return Response::json(array(
