@@ -118,7 +118,6 @@ class PaymentController extends ApiController
         \Log::info($ipn);
 
         return \Response::json($ipn);
-
     }
 
     /**
