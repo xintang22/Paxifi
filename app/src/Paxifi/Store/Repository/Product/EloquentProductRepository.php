@@ -3,9 +3,16 @@
 use Paxifi\Support\Repository\BaseModel;
 use Paxifi\Tax\Repository\TaxRate;
 use Paxifi\Tax\TaxableInterface;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class EloquentProductRepository extends BaseModel implements ProductRepositoryInterface, TaxableInterface
 {
+    use SoftDeletingTrait;
+
+    /**
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
     /**
      * The table associated with the model.
      *

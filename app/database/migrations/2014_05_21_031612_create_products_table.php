@@ -29,6 +29,7 @@ class CreateProductsTable extends Migration
             $table->boolean('status')->default(1);
 
             $table->timestamps();
+            $table->softDeletes();
 
             // Foreign keys
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
