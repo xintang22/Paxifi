@@ -110,15 +110,15 @@ class PaymentController extends ApiController
     /**
      * Paypal ipn handler.
      */
-    public function paypal_ipn() {
+    public function ipn() {
+        $ipn = \Input::all();
 
-        $payment = Payment::find(\Input::get('custom'));
+        \Log::useFiles(storage_path().'/logs/ipn-'.time().'.txt');
 
-        $payment->status = 1;
+        \Log::info($ipn);
 
-        $payment->save();
+        return \Response::json($ipn);
 
-        return $this->setStatusCode(200)->respond([]);
     }
 
     /**
