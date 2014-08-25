@@ -99,6 +99,12 @@ class DriverServiceProvider extends ServiceProvider
         $this->app['router']->get('drivers/password/reset/{token}', 'Paxifi\Store\Controller\RemindersController@show');
         $this->app['router']->post('drivers/password/reset', 'Paxifi\Store\Controller\RemindersController@reset');
 
+        // Paypal ipn handler.
+        $this->app['router']->post('paypal/ipn', 'Paxifi\Payment\Controller\PaymentController@ipn');
+
+        // Paypal subscribe
+        $this->app['router']->post('paypal/subscribe', 'Paxifi\Subscription\Controller\SubscriptionController@subscribe');
+
         $this->app['router']->group(['before' => 'oauth'], function () {
 
             // =========================================================================================================

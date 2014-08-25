@@ -32,9 +32,6 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function registerRoutes()
     {
-        // Paypal ipn handler.
-        $this->app['router']->post('paypal/ipn', 'Paxifi\Payment\Controller\PaymentController@ipn');
-
         $this->app['router']->group(['before' => 'oauth'], function () {
             // Invoice
             $this->app['router']->post('payments/{payment}/invoice', 'Paxifi\Payment\Controller\PaymentController@invoice');
