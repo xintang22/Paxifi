@@ -17,6 +17,7 @@ class DriverTransformer extends TransformerAbstract
             'seller_id' => !empty($driver->seller_id) ? $driver->seller_id : "",
             'address' => $driver->address,
             'currency' => $driver->currency,
+            'paypal_account' => !empty($driver->paypal_account) ? $driver->paypal_account : "",
             'tax' => $this->transformTaxConfiguration($driver),
             'settings' => array(
                 'notify_sale' => (boolean)$driver->notify_sale,
