@@ -86,7 +86,7 @@ class PaymentController extends ApiController
             if ($confirm == 1) {
                 $products = $payment->order->products;
 
-                $products->map(function($product) {
+                $products->map(function ($product) {
                     // Fires an event to update the inventory.
                     \Event::fire('paxifi.product.ordered', array($product, $product['pivot']['quantity']));
                 });
@@ -98,9 +98,9 @@ class PaymentController extends ApiController
                 "success" => true
             ]);
 
-        } catch(PaymentNotMatchException $e) {
+        } catch (PaymentNotMatchException $e) {
             return $this->errorForbidden();
-        } catch(ValidationException $e) {
+        } catch (ValidationException $e) {
             return $this->errorWrongArgs($e->getErrors());
         } catch (\Exception $e) {
             return $this->errorInternalError();
@@ -110,14 +110,34 @@ class PaymentController extends ApiController
     /**
      * Paypal ipn handler.
      */
-    public function ipn() {
-        $ipn = \Input::all();
+    public function ipn()
+    {
 
-        \Log::useFiles(storage_path().'/logs/ipn-'.time().'.txt');
+//        \Log::useFiles(storage_path().'/logs/ipn-'.time().'.txt');
+//
+//        \Log::info($ipn);
+        try {
+            $ipn = \Input::all();
+            if ($ipn['payer_status'] == 'verified') {
+                if ($payment = Payment::find($ipn['custom'])) {
+                    if (($payment->order->total_sales == $ipn['payment_gross']) && ($ipn['business'] == $payment->order->OrderDriver()->paypal_account)) {
+                        $payment->paypal_transaction_id = $ipn['txn_id'];
+                        $payment->paypal_transaction_status = 1;
+                        $payment->status = 1;
+                        $payment->save();
 
-        \Log::info($ipn);
+                        return $this->setStatusCode(200)->respondWithItem($payment);
+                    }
 
-        return \Response::json($ipn);
+                    return $this->setStatusCode(400)->respondWithError('Payment is not success.');
+                }
+
+                return $this->setStatusCode(404)->respondWithError('The payment is not found.');
+            }
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
+        }
+
     }
 
     /**
