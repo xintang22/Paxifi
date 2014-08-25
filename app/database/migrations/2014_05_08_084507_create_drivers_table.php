@@ -24,6 +24,7 @@ class CreateDriversTable extends Migration
             $table->string('remember_token')->nullable();
             $table->integer('thumbs_up')->default(0)->nullable();
             $table->integer('thumbs_down')->default(0)->nullable();
+            $table->string('paypal_account')->default(null)->nullable();
 
             $table->boolean('tax_enabled')->default(false);
             $table->boolean('tax_included_in_price')->default(false);
