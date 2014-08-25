@@ -6,6 +6,15 @@ use Paxifi\Support\Controller\ApiController;
 class SubscriptionController extends ApiController
 {
 
+    public function subscribe()
+    {
+        $subscribe = \Input::all();
+
+        \Log::useFiles(storage_path().'/logs/sub-'.time().'.txt');
+
+        \Log::info($subscribe);
+    }
+
     /**
      * Retrieves the Data Transformer
      *
