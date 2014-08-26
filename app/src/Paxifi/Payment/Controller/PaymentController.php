@@ -1,11 +1,8 @@
 <?php namespace Paxifi\Payment\Controller;
 
-use Paxifi\Feedback\Repository\EloquentFeedbackRepository;
-use Paxifi\Order\Repository\Validation\UpdateOrderValidator;
 use Paxifi\Payment\Exception\PaymentNotMatchException;
 use Paxifi\Payment\Repository\PaymentRepository as Payment;
 use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository as PaymentMethods;
-use Paxifi\Payment\Repository\Validation\CreatePaymentFeedbackValidator;
 use Paxifi\Payment\Repository\Validation\CreatePaymentValidator;
 use Paxifi\Payment\Repository\Validation\UpdatePaymentValidator;
 use Paxifi\Payment\Transformer\PaymentTransformer;
