@@ -15,6 +15,12 @@ class EloquentSubscriptionRepository extends BaseModel {
     protected $table = 'subscriptions';
 
     /**
+     *
+     * @var array
+     */
+    protected $fillable = [ "plan_id", "driver_id", "trial_start", "start", "canceled_at", "ended_at", "current_period_start", "current_period_end"];
+
+    /**
      * The attributes that should be mutated to dates.
      *
      * @var array
