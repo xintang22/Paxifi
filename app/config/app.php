@@ -121,6 +121,7 @@ return array(
         'Paxifi\Provider\IssueServiceProvider',
         'Paxifi\Provider\ProblemServiceProvider',
         'Paxifi\Provider\FeedbackServiceProvider',
+        'Paxifi\Provider\PaypalServiceProvider',
 
         'Intervention\Image\ImageServiceProvider',
         'Thujohn\Pdf\PdfServiceProvider',
@@ -195,7 +196,6 @@ return array(
         'PDF'             => 'Thujohn\Pdf\PdfFacade',
         'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
         'ResourceServer' => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
-
 
 	),
 
