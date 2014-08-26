@@ -18,7 +18,7 @@ class EloquentSubscriptionRepository extends BaseModel {
      *
      * @var array
      */
-    protected $fillable = [ "plan_id", "driver_id", "trial_start", "start", "canceled_at", "ended_at", "current_period_start", "current_period_end"];
+    protected $fillable = [ "plan_id", "driver_id", "trial_start", "start", "canceled_at", "ended_at", "current_period_start", "current_period_end", "txn_type", "payer_id", "ipn_track_id"];
 
     /**
      * The attributes that should be mutated to dates.
@@ -46,4 +46,10 @@ class EloquentSubscriptionRepository extends BaseModel {
     {
         return $this->belongsTo('Paxifi\Store\Repository\Driver\EloquentDriverRepository', 'driver_id', 'id');
     }
+
+    public static function findSubscriptionByIpnTrackId($ipnTrackId)
+    {
+        return self::where('ipn_track_id', '=', $ipnTrackId)->get();
+    }
+
 } 
