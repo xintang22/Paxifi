@@ -15,27 +15,30 @@ class PaypalController extends ApiController {
     {
         try {
             \DB::beginTransaction();
+
+            $response = "";
+
             $listener = new Listener;
             $verifier = new CurlVerifier;
             $ipn = \Input::all();
             $ipnMessage = new Message($ipn);
 
             $verifier->setIpnMessage($ipnMessage);
-            $verifier->setEnvironment(\Config::get('paxifi.environment'));
+            $verifier->setEnvironment(\Config::get('paxifi.paypal.environment'));
 
             $listener->setVerifier($verifier);
 
             $listener->listen(
-                function() use ($listener, $ipn) {
+                function() use ($listener, $ipn, &$response) {
+
                     // on verified IPN (everything is good!)
                     $resp = $listener->getVerifier()->getVerificationResponse();
 
                     if ($driver = EloquentDriverRepository::find(\Input::get('custom'))) {
-                        \Event::fire('paxifi.paypal.subscription.' . $ipn['txn_type'], [$driver, $ipn]);
+
+                        $response = \Event::fire('paxifi.paypal.subscription.' . $ipn['txn_type'], [$driver, $ipn]);
+
                     }
-
-                    \DB::commit();
-
                 },
                 function() use ($listener) {
 
@@ -43,12 +46,21 @@ class PaypalController extends ApiController {
                     $report = $listener->getReport();
                     $resp = $listener->getVerifier()->getVerificationResponse();
 
+                    return $this->setStatusCode(400)->respondWithError('Subscription failed.');
                 }
             );
+
+            $responseStatusCode = $response[0]->getStatusCode();
+            $responseContent = $response[0]->getData();
+
+            if ( $responseStatusCode >= 200 && $responseStatusCode <= 300 ) {
+                \DB::commit();
+            }
+
+            return $this->setStatusCode($responseStatusCode)->respond($responseContent);
         } catch (\RuntimeException $e) {
             return $this->setStatusCode(400)->respondWithError($e->getMessage());
         } catch (\Exception $e) {
-            return $e->getMessage();
             return $this->errorInternalError();
         }
 
