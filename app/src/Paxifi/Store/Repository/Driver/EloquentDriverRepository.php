@@ -38,7 +38,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'paypal_account', 'status', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others',);
 
     /**
-     * Driver-Product relationship.
+     * Driver - Product one to many relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -48,7 +48,17 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
-     * Driver can have one sticker object.
+     * Driver - Subscription one to one relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function subscription()
+    {
+        return $this->hasMany('Paxifi\Subscription\Repository\EloquentSubscriptionRepository', 'driver_id', 'id');
+    }
+
+    /**
+     * Driver - Sticker one to one relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -58,7 +68,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
-     * Driver-Notifications relationship.
+     * Driver - Notifications one to many relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

@@ -22,7 +22,7 @@ class EloquentSubscriptionRepository extends BaseModel {
     protected $dates = ['deleted_at'];
 
     /**
-     * Define belongsTo relationship
+     * Subscription - Subscription plans one to many relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -31,4 +31,13 @@ class EloquentSubscriptionRepository extends BaseModel {
         return $this->belongsTo('Paxifi\Subscription\Repository\EloquentPlanRepository', 'plan_id', 'id');
     }
 
+    /**
+     * Subscription - Driver one to one relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function driver()
+    {
+        return $this->belongsTo('Paxifi\Store\Repository\Driver\EloquentDriverRepository', 'driver_id', 'id');
+    }
 } 
