@@ -17,6 +17,9 @@ class PaypalServiceProvider extends ServiceProvider
         $this->registerRoutes();
     }
 
+    /**
+     * Register paypal module routes.
+     */
     public function registerRoutes()
     {
 
@@ -27,11 +30,17 @@ class PaypalServiceProvider extends ServiceProvider
         $this->app['router']->post('paypal/subscribe', 'Paxifi\Paypal\Controller\PaypalController@subscribe');
     }
 
+    /**
+     * Configure the paypal environment.
+     */
     public function registerConfiguration()
     {
-        $this->app['config']->set('paxifi.environment', 'sandbox');
+        $this->app['config']->set('paxifi.paypal.environment', 'sandbox');
     }
 
+    /**
+     * Register paypal subscription events.
+     */
     public function registerEvents()
     {
         // fire driver subscribe event.
