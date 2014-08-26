@@ -52,7 +52,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function subscription()
+    public function subscriptions()
     {
         return $this->hasMany('Paxifi\Subscription\Repository\EloquentSubscriptionRepository', 'driver_id', 'id');
     }
@@ -129,6 +129,24 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
             ->where('created_at', '<=', $to)
             ->orderBy('created_at', 'desc')
             ->get();
+    }
+
+    /**
+     * Active driver account
+     */
+    public function active()
+    {
+        $this->status = 1;
+        $this->save();
+    }
+
+    /**
+     * Inactive driver account
+     */
+    public function inactive()
+    {
+        $this->status = 0;
+        $this->save();
     }
 
     /**
