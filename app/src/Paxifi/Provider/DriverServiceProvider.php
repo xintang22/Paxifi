@@ -40,7 +40,7 @@ class DriverServiceProvider extends ServiceProvider
         $this->app['config']->set('images.drivers.template', 'images/drivers/template/');
         $this->app['config']->set('images.drivers.defaultlogo', 'driver_logo.png');
 //        $this->app['config']->set('paxifi.paypal.account', 'paxifiapp@gmail.com');
-        $this->app['config']->set('paxifi.paypal.account', '334531994-facilitator@qq.com');
+        $this->app['config']->set('paxifi.paypal.business', '334531994-facilitator@qq.com');
     }
 
     /**
@@ -101,6 +101,7 @@ class DriverServiceProvider extends ServiceProvider
         $this->app['router']->get('drivers/password/reset/{token}', 'Paxifi\Store\Controller\RemindersController@show');
         $this->app['router']->post('drivers/password/reset', 'Paxifi\Store\Controller\RemindersController@reset');
 
+
         $this->app['router']->group(['before' => 'oauth'], function () {
 
             // =========================================================================================================
@@ -109,17 +110,21 @@ class DriverServiceProvider extends ServiceProvider
 
             // Search
             $this->app['router']->get('drivers/search', 'Paxifi\Store\Controller\DriverController@search');
+            $this->app['router']->get('stores/search', 'Paxifi\Store\Controller\DriverController@search');
 
             // Password reminder
             $this->app['router']->post('drivers/password/remind', 'Paxifi\Store\Controller\RemindersController@remind');
 
             // View Store's products
             $this->app['router']->get('drivers/{driver}/products', 'Paxifi\Store\Controller\ProductController@index');
+            $this->app['router']->get('stores/{driver}/products', 'Paxifi\Store\Controller\ProductController@index');
 
             // Get driver's comments
             $this->app['router']->get('drivers/{driver}/comments', 'Paxifi\Feedback\Controller\FeedbackController@comments');
+            $this->app['router']->get('stores/{driver}/comments', 'Paxifi\Feedback\Controller\FeedbackController@comments');
 
             $this->app['router']->get('drivers/{driver}', 'Paxifi\Store\Controller\DriverController@show');
+            $this->app['router']->get('stores/{driver}', 'Paxifi\Store\Controller\DriverController@show');
             // =========================================================================================================
             // OAuth + Client
             // =========================================================================================================
