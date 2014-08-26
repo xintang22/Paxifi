@@ -39,7 +39,7 @@ class PaypalServiceProvider extends ServiceProvider
         $this->app['events']->listen('paxifi.paypal.subscription.subscr_cancel', 'Paxifi\Subscription\Controller\SubscriptionController@cancel');
         $this->app['events']->listen('paxifi.paypal.subscription.subscr_modify', 'Paxifi\Subscription\Controller\SubscriptionController@modify');
         $this->app['events']->listen('paxifi.paypal.subscription.subscr_failed', 'Paxifi\Subscription\Controller\SubscriptionController@failed');
-        $this->app['events']->listen('paxifi.paypal.subscription.subscr_payment', 'Paxifi\Subscription\Controller\SubscriptionController@payment');
+        $this->app['events']->listen('paxifi.paypal.subscription.subscr_payment', 'Paxifi\Subscription\Controller\SubscriptionController@subscribe');
         $this->app['events']->listen('paxifi.paypal.subscription.subscr_eot', 'Paxifi\Subscription\Controller\SubscriptionController@eot');
     }
 }
