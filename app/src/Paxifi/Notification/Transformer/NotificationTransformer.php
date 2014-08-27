@@ -37,6 +37,7 @@ class NotificationTransformer extends TransformerAbstract
             $response = $this->transformEmails($notification);
 
         $response['time'] = $notification->created_at->format('Y-m-d H:i:s');
+        $response['id'] = $notification->id;
 
         return $response;
     }
