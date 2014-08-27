@@ -1,7 +1,6 @@
 <?php namespace Paxifi\Subscription\Controller;
 
 use Carbon\Carbon;
-use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Subscription\Repository\EloquentSubscriptionRepository;
 use Paxifi\Subscription\Repository\Validation\CreateSubscriptionValidator;
 use Paxifi\Subscription\Transformer\SubscriptionTransformer;
@@ -10,6 +9,11 @@ use Paxifi\Support\Validation\ValidationException;
 
 class SubscriptionController extends ApiController
 {
+    public function index()
+    {
+        return $this->setStatusCode(200)->respondWithItem(EloquentSubscriptionRepository::all()->first());
+
+    }
 
     /**
      * Create a driver subscription.
@@ -35,44 +39,24 @@ class SubscriptionController extends ApiController
                 "ended_at" => null,
                 "current_period_start" => null,
                 "current_period_end" => null,
-                "txn_type" => $ipn['txn_type'],
-                "payer_id" => $ipn['payer_id'],
-                "ipn_track_id" => $ipn['ipn_track_id']
+                "ipn" => serialize($ipn),
+                "subscr_id" => $ipn['subscr_id']
             ];
 
-            if($trail = isset($ipn['period1']) ? explode(" ", $ipn['period1']) : NULL) {
+            if ($trail = isset($ipn['period1']) ? explode(" ", $ipn['period1']) : NULL) {
 
-                $new_subscription["trial_start"] = $new_subscription["current_period_start"] = Carbon::now();
+                $new_subscription["trial_start"] = Carbon::now();
 
-                switch($trail[1]) {
+                switch ($trail[1]) {
                     case 'M':
                         $new_subscription["trial_end"] = Carbon::now()->addMonths($trail[0]);
-                        $new_subscription["current_period_end"] = Carbon::now()->addMonths($trail[0]);
                         break;
                     case 'Y':
                         $new_subscription["trial_end"] = Carbon::now()->addYears($trail[0]);
-                        $new_subscription["current_period_end"] = Carbon::now()->addYears($trail[0]);
                         break;
                     default:
                         $new_subscription["trial_end"] = Carbon::now()->addDays($trail[0]);
-                        $new_subscription["current_period_end"] = Carbon::now()->addDays($trail[0]);
                 }
-            }
-
-            $recurring = explode(" ", $ipn['period3']);
-
-            switch($recurring[1]) {
-                case 'M':
-                    $new_subscription["end"] = Carbon::now()->addMonths($recurring[0]);
-                    $new_subscription["current_period_end"] = Carbon::now()->addMonths($recurring[0]);
-                    break;
-                case 'Y':
-                    $new_subscription["end"] = Carbon::now()->addYears($recurring[0]);
-                    $new_subscription["current_period_end"] = Carbon::now()->addYears($recurring[0]);
-                    break;
-                default:
-                    $new_subscription["end"] = Carbon::now()->addDays($recurring[0]);
-                    $new_subscription["current_period_end"] = Carbon::now()->addDays($recurring[0]);
             }
 
             with(new CreateSubscriptionValidator())->validate($new_subscription);
@@ -88,7 +72,7 @@ class SubscriptionController extends ApiController
 
         } catch (ValidationException $e) {
             return $this->errorWrongArgs($e->getErrors());
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorInternalError();
         }
     }
@@ -110,51 +94,99 @@ class SubscriptionController extends ApiController
             if ($ipn['payment_status'] == 'Completed' && $ipn['business'] == \Config::get('paxifi.paypal.business')) {
 
                 // Update Subscription status to active when the payment was success.
-
-                if ($subscription = EloquentSubscriptionRepository::findSubscriptionByIpnTrackId($ipn['ipn_track_id'])->first()) {
+                if ($subscription = EloquentSubscriptionRepository::findSubscriptionBySubscrId($ipn['subscr_id'])->first()) {
                     if ($subscription->driver_id == $ipn['custom'] && $subscription->driver_id == $driver->id) {
-                        $subscription->status = "active";
-                        $subscription->current_period_start = Carbon::now();
-                        $subscription->save();
 
-                        // Update driver status.
+                        switch ($recurring = explode(" ", unserialize($subscription->ipn)['period3'])) {
+                            case 'M':
+                                $subscription->current_period_end = $subscription->ended_at = Carbon::createFromTimestamp(time($ipn['payment_date']))->addMonths($recurring[0]);
+                                break;
+                            case 'Y':
+                                $subscription->current_period_end = $subscription->ended_at = Carbon::createFromTimestamp(time($ipn['payment_date']))->addYears($recurring[0]);
+                                break;
+                            default:
+                                $subscription->current_period_end = $subscription->ended_at = Carbon::createFromTimestamp(time($ipn['payment_date']))->addDays($recurring[0]);
+                        }
+
+                        $subscription->current_period_start = Carbon::now();
+                        $subscription->active();
+
+                        // Bind paypal account with driver account.
                         $driver->paypal_account = $ipn['payer_email'];
 
                         $driver->active();
 
                         \DB::commit();
 
-                        return $this->setStatusCode(200)->respond($driver);
+                        return $this->setStatusCode(200)->respondWithItem($subscription);
                     }
                 }
 
-                return $this->setStatusCode(200)->respond($driver);
+                return $this->setStatusCode(200)->respond([]);
 
             }
 
-            return $this->setStatusCode(400)->respondWithError('Subscription failed.');
+            return $this->errorWrongArgs('Subscription failed.');
         } catch (\Exception $e) {
+            print_r($e->getMessage());
             return $this->errorInternalError();
         }
-
-//        \Log::useFiles(storage_path() . '/logs/sub-' . time() . '.txt');
-//
-//        \Log::info($subscribe);
     }
 
+    /**
+     * Handle user subscription cancel.
+     *
+     * @param $driver
+     * @param $ipn
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function cancel($driver, $ipn)
     {
         try {
             \DB::beginTransaction();
 
-            if ($subscription = EloquentSubscriptionRepository::findSubscriptionByIpnTrackId($ipn['ipn_track_id'])->first()) {
-                $subscription->canceled_at = Carbon::now();
-                $subscription->save();
+            if ($subscription = EloquentSubscriptionRepository::findSubscriptionBySubscrId($ipn['subscr_id'])->first()) {
+                if ($subscription->driver->id == $driver->id) {
+                    // Updated the subscription cancel information.
+                    $subscription->cancel_at = Carbon::now();
+                    $subscription->cancel_at_period_end = true;
+                    $subscription->cancel();
+
+                    \DB::commit();
+                }
             }
-
-            \DB::commit();
         } catch (\Exception $e) {
+            return $this->errorInternalError();
+        }
+    }
 
+    /**
+     * Subscription end of term.
+     *
+     * @param $driver
+     * @param $ipn
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function eot($driver, $ipn)
+    {
+        try {
+            \DB::beginTransaction();
+
+            if ($subscription = EloquentSubscriptionRepository::findSubscriptionBySubscrId($ipn['subscr_id'])->first()) {
+                if ($subscription->driver->id == $driver->id) {
+
+                    // Expired subscription and driver status.
+                    $subscription->expired();
+
+                    $subscription->driver->inactive();
+
+                    \DB::commit();
+                }
+            }
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
         }
     }
 

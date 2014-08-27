@@ -3,7 +3,7 @@
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Paxifi\Support\Repository\BaseModel;
 
-class EloquentSubscriptionRepository extends BaseModel {
+class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRepositoryInterface{
 
     use SoftDeletingTrait;
 
@@ -18,7 +18,7 @@ class EloquentSubscriptionRepository extends BaseModel {
      *
      * @var array
      */
-    protected $fillable = [ "plan_id", "driver_id", "trial_start", "start", "canceled_at", "ended_at", "current_period_start", "current_period_end", "txn_type", "payer_id", "ipn_track_id"];
+    protected $fillable = [ "plan_id", "driver_id", "trial_start", "start", "canceled_at", "ended_at", "current_period_start", "current_period_end", "ipn", "subscr_id", "status"];
 
     /**
      * The attributes that should be mutated to dates.
@@ -47,9 +47,42 @@ class EloquentSubscriptionRepository extends BaseModel {
         return $this->belongsTo('Paxifi\Store\Repository\Driver\EloquentDriverRepository', 'driver_id', 'id');
     }
 
-    public static function findSubscriptionByIpnTrackId($ipnTrackId)
+    /**
+     * Find the subscriptions by tracking the subscr_id
+     *
+     * @param $subscrId
+     *
+     * @return mixed
+     */
+    public static function findSubscriptionBySubscrId($subscrId)
     {
-        return self::where('ipn_track_id', '=', $ipnTrackId)->get();
+        return self::where('subscr_id', '=', $subscrId)->get();
     }
 
-} 
+    /**
+     * Active subscription.
+     */
+    public function active()
+    {
+        $this->status = "active";
+        $this->save();
+    }
+
+    /**
+     * Expire subscription.
+     */
+    public function expired()
+    {
+        $this->status = "past_due";
+        $this->save();
+    }
+
+    /**
+     * Cancel subscription.
+     */
+    public function canceled()
+    {
+        $this->status = "canceled";
+        $this->save();
+    }
+}

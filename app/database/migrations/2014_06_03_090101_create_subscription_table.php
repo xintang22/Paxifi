@@ -18,8 +18,8 @@ class CreateSubscriptionTable extends Migration
             $table->unsignedInteger('plan_id');
             $table->unsignedInteger('driver_id');
 
-            $table->timestamp('trial_start');
-            $table->timestamp('trial_end');
+            $table->timestamp('trial_start')->nullable();
+            $table->timestamp('trial_end')->nullable();
 
             $table->timestamp('start')->nullable();
             $table->timestamp('canceled_at')->nullable();
@@ -29,6 +29,10 @@ class CreateSubscriptionTable extends Migration
             $table->timestamp('current_period_end')->nullable();
 
             $table->boolean('cancel_at_period_end')->default(0);
+
+            // tracking subscription txn
+            $table->text('ipn')->nullable()->default(null);
+            $table->string('subscr_id')->nullable()->default(null);
 
             $table->enum('status', array('trialing', 'active', 'past_due', 'canceled'))->default('trialing');
 
