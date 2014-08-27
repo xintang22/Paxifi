@@ -32,9 +32,9 @@ class PaypalController extends ApiController {
                     $resp = $listener->getVerifier()->getVerificationResponse();
 
                     if ($driver = EloquentDriverRepository::find(\Input::get('custom'))) {
-
-                        \Event::fire('paxifi.paypal.subscription.' . $ipn['txn_type'], [$driver, $ipn]);
-
+                        if (!$subscription = $driver->getActiveSubscription()) {
+                            \Event::fire('paxifi.paypal.subscription.' . $ipn['txn_type'], [$driver, $ipn]);
+                        }
                     }
                 },
                 function() use ($listener) {

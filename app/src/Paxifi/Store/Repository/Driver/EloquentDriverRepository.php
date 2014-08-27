@@ -58,6 +58,22 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
+     * Get the subscription which is in working on the account.
+     *
+     * @return mixed
+     */
+    public function getActiveSubscription()
+    {
+        return \DB::table('drivers')
+            ->select('subscriptions.*')
+            ->join('subscriptions', 'drivers.id', '=', 'subscriptions.driver_id')
+            ->where('subscriptions.status', '=', "active")
+            ->orWhere('subscriptions.status', '=', "canceled")
+            ->distinct()
+            ->first();
+    }
+
+    /**
      * Driver - Sticker one to one relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
@@ -372,6 +388,9 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
 
         $params->each(function ($param) use ($query) {
             $query->where($param['column'], $param['operator'], $param['value']);
+            if (\Config::get('paxifi.paypal.environment') == 'production') {
+                $query->where('status', '=', 1);
+            }
         });
 
         $models = $query->get(array('id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'status'));
