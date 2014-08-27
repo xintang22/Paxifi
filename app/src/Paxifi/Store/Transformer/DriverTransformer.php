@@ -19,6 +19,7 @@ class DriverTransformer extends TransformerAbstract
             'currency' => $driver->currency,
             'paypal_account' => !empty($driver->paypal_account) ? $driver->paypal_account : "",
             'tax' => $this->transformTaxConfiguration($driver),
+            'subscription' => $this->transformSubscription($driver),
             'settings' => array(
                 'notify_sale' => (boolean)$driver->notify_sale,
                 'notify_inventory' => (boolean)$driver->notify_inventory,
@@ -61,5 +62,15 @@ class DriverTransformer extends TransformerAbstract
         }
 
         return $tax;
+    }
+
+    /**
+     * @param $driver
+     *
+     * @return mixed
+     */
+    protected function transformSubscription($driver)
+    {
+        return $driver->getActiveSubscription() ?: "";
     }
 }

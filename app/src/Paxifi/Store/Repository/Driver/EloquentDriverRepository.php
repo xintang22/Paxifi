@@ -65,7 +65,21 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public function getActiveSubscription()
     {
         return \DB::table('drivers')
-            ->select('subscriptions.*')
+            ->select(
+                'subscriptions.id',
+                'subscriptions.plan_id',
+                'subscriptions.trial_start',
+                'subscriptions.trial_end',
+                'subscriptions.start',
+                'subscriptions.canceled_at',
+                'subscriptions.ended_at',
+                'subscriptions.current_period_start',
+                'subscriptions.current_period_end',
+                'subscriptions.cancel_at_period_end',
+                'subscriptions.status',
+                'subscriptions.created_at',
+                'subscriptions.updated_at'
+            )
             ->join('subscriptions', 'drivers.id', '=', 'subscriptions.driver_id')
             ->where('subscriptions.status', '=', "active")
             ->orWhere('subscriptions.status', '=', "canceled")
