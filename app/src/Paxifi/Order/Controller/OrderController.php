@@ -62,15 +62,15 @@ class OrderController extends ApiController
 
             $refresh_time = \Input::get('refresh_time');
 
-            $from =  $refresh_time ? Carbon::createFromTimestamp(Carbon::now()->format('U') - $refresh_time) : Carbon::createFromTimestamp(0);
+            $from = $refresh_time ? Carbon::createFromTimestamp(Carbon::now()->format('U') - $refresh_time) : Carbon::createFromTimestamp(0);
 
             $payments = EloquentPaymentRepository::take(5)->where('status', '=', 1)->where('updated_at', '<', Carbon::now())->where('updated_at', '>', $from)->orderBy('updated_at', 'desc')->get();
 
-            $payments->map(function($payment) {
+            $payments->map(function ($payment) {
 
                 $order = $payment->order;
 
-                $order->products->map(function($product) use($order) {
+                $order->products->map(function ($product) use ($order) {
                     $this->soldouts[] = [
                         "product" => $product->toArray(),
                         "driver" => $product->driver,

@@ -37,8 +37,6 @@ class PaymentController extends ApiController
                 'details' => $this->translator->trans("payments.$type.create")
             ];
 
-            with(new CreatePaymentValidator())->validate($newPayment);
-
             if ($payment = Payment::create($newPayment)) {
 
                 \DB::commit();
@@ -70,6 +68,10 @@ class PaymentController extends ApiController
 
             if ($this->getAuthenticatedDriver()->email != $payment->order->OrderDriver()->email) {
                 throw new PaymentNotMatchException('Payment owner not match');
+            }
+
+            if ($payment->status == 1) {
+                return $this->errorWrongArgs('Payment has been completed already.');
             }
 
             with(new UpdatePaymentValidator())->validate(\Input::only('confirm'));
@@ -191,6 +193,40 @@ class PaymentController extends ApiController
 
         } catch (\Exception $e) {
             return $this->errorWrongArgs($e->getMessage());
+        }
+    }
+
+    /**
+     * Cancel the payment.
+     *
+     * @param $payment
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cancel($payment)
+    {
+        try {
+            \DB::beginTransaction();
+
+            if ($payment->status != 1) {
+
+                $paymentNotDeleted = $payment;
+
+                if ($payment->delete()) {
+
+                    \DB::commit();
+
+                    return $this->setStatusCode(200)->respondWithItem($paymentNotDeleted);
+                }
+
+                return $this->setStatusCode(400)->respondWithError('Payment delete ');
+
+            }
+
+            return $this->errorWrongArgs('Payment has been completed. You cannot cancel it.');
+
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
         }
     }
 
