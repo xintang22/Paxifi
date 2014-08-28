@@ -33,6 +33,10 @@ class PaymentServiceProvider extends ServiceProvider
     public function registerRoutes()
     {
         $this->app['router']->group(['before' => 'oauth'], function () {
+
+            // Cancel order
+            $this->app['router']->put('payments/{payment}/cancel', 'Paxifi\Payment\Controller\PaymentController@cancel');
+
             // Invoice
             $this->app['router']->post('payments/{payment}/invoice', 'Paxifi\Payment\Controller\PaymentController@invoice');
 
