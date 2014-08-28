@@ -99,8 +99,8 @@ class DriverController extends ApiController
             \Event::fire('paxifi.store.updated', [$driver]);
 
             // file event to update sticker when field contains seller_id or photo
-            if (\Input::has('photo'))
-                \Event::fire('paxifi.store.photo.updated', [$driver]);
+//            if (\Input::has('photo'))
+//                \Event::fire('paxifi.store.photo.updated', [$driver]);
 
             \DB::commit();
 
