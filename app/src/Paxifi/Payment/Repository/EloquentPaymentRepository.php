@@ -1,13 +1,22 @@
 <?php namespace Paxifi\Payment\Repository;
 
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Paxifi\Support\Repository\BaseModel;
 
 class EloquentPaymentRepository extends BaseModel {
 
+    use SoftDeletingTrait;
 
     protected $table = 'payments';
 
     protected $fillable = ['order_id', 'payment_method_id', 'status', 'details'];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
 
     /**
      * Payment - Order one to one relationship.
