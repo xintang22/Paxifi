@@ -245,8 +245,10 @@ class NotificationController extends ApiController
 
                 $notifications->map(function ($notification) {
 
-                    if ($notification['sales']) {
-                        $payment = Payment::find($notification['sales']);
+                    if ($notification->sales) {
+
+                        $payment = Payment::find($notification->sales);
+
                         if ($payment->status == 0) {
                             return;
                         }
