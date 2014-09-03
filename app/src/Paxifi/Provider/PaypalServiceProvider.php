@@ -24,7 +24,7 @@ class PaypalServiceProvider extends ServiceProvider
     {
 
         // Paypal ipn handler.
-        $this->app['router']->post('paypal/ipn', 'Paxifi\Payment\Controller\PaymentController@ipn');
+        $this->app['router']->post('paypal/payment', 'Paxifi\Paypal\Controller\PaypalController@payment');
 
         // Paypal subscribe
         $this->app['router']->post('paypal/subscribe', 'Paxifi\Paypal\Controller\PaypalController@subscribe');
@@ -50,5 +50,8 @@ class PaypalServiceProvider extends ServiceProvider
         $this->app['events']->listen('paxifi.paypal.subscription.subscr_failed', 'Paxifi\Subscription\Controller\SubscriptionController@failed');
         $this->app['events']->listen('paxifi.paypal.subscription.subscr_payment', 'Paxifi\Subscription\Controller\SubscriptionController@subscribe');
         $this->app['events']->listen('paxifi.paypal.subscription.subscr_eot', 'Paxifi\Subscription\Controller\SubscriptionController@eot');
+
+        // fire paypal payment event.
+//        $this->app['events']->listen('paxifi.paypal.payment.subscr_signup');
     }
 }
