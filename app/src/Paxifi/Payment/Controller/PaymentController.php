@@ -107,39 +107,6 @@ class PaymentController extends ApiController
     }
 
     /**
-     * Paypal ipn handler.
-     */
-    public function ipn()
-    {
-
-//        \Log::useFiles(storage_path().'/logs/ipn-'.time().'.txt');
-//
-//        \Log::info($ipn);
-        try {
-            $ipn = \Input::all();
-            if ($ipn['payer_status'] == 'verified') {
-                if ($payment = Payment::find($ipn['custom'])) {
-                    if (($payment->order->total_sales == $ipn['payment_gross']) && ($ipn['business'] == $payment->order->OrderDriver()->paypal_account)) {
-                        $payment->paypal_transaction_id = $ipn['txn_id'];
-                        $payment->paypal_transaction_status = 1;
-                        $payment->status = 1;
-                        $payment->save();
-
-                        return $this->setStatusCode(200)->respondWithItem($payment);
-                    }
-
-                    return $this->setStatusCode(400)->respondWithError('Payment is not success.');
-                }
-
-                return $this->setStatusCode(404)->respondWithError('The payment is not found.');
-            }
-        } catch (\Exception $e) {
-            return $this->errorInternalError();
-        }
-
-    }
-
-    /**
      * Get order invoice email with a copy of invoice pdf file.
      *
      * @param $payment
