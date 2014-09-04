@@ -408,7 +408,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
             }
         });
 
-        $models = $query->get(array('id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'status'));
+        $models = $query->get(array('id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'status', 'paypal_account'));
 
         if (!$models->isEmpty()) return $models;
 
