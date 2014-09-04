@@ -197,6 +197,30 @@ class PaymentController extends ApiController
         }
     }
 
+
+    /**
+     * Verify paypal payment status (complete, fail, cancel).
+     *
+     * @param $payment
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verify($payment)
+    {
+        try {
+            if ($payment->status && $payment->paypal_transaction_status) {
+
+                return $this->respondWithItem($payment);
+
+            }
+
+            return $this->setStatusCode(403)->respondWithError("Payment not success.");
+
+        } catch (\Exception $e) {
+            return $this->respondWithError($e->getMessage());
+        }
+    }
+
     /**
      * @internal param \Paxifi\Order\Repository\EloquentOrderRepository $order
      *
