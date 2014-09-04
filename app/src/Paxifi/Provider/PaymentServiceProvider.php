@@ -42,6 +42,9 @@ class PaymentServiceProvider extends ServiceProvider
 
             // Feedback
             $this->app['router']->put('payments/{payment}/feedback', 'Paxifi\Feedback\Controller\FeedbackController@feedback');
+
+            // Paypal Status check
+            $this->app['router']->get('payments/{payment}/verify', 'Paxifi\Payment\Controller\PaymentController@verify');
         });
     }
 
