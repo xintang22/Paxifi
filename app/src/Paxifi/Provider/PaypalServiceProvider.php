@@ -52,6 +52,6 @@ class PaypalServiceProvider extends ServiceProvider
         $this->app['events']->listen('paxifi.paypal.subscription.subscr_eot', 'Paxifi\Subscription\Controller\SubscriptionController@eot');
 
         // fire paypal payment event.
-//        $this->app['events']->listen('paxifi.paypal.payment.subscr_signup');
+        $this->app['events']->listen('paxifi.paypal.payment.cart', 'Paxifi\Payment\Controller\PaymentController@paypalPaymentConfirmation');
     }
 }
