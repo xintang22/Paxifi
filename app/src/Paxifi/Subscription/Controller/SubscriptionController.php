@@ -12,7 +12,6 @@ class SubscriptionController extends ApiController
     public function index()
     {
         return $this->setStatusCode(200)->respondWithItem(EloquentSubscriptionRepository::all()->first());
-
     }
 
     /**
@@ -39,7 +38,7 @@ class SubscriptionController extends ApiController
                 "ended_at" => null,
                 "current_period_start" => null,
                 "current_period_end" => null,
-                "ipn" => serialize($ipn),
+                "ipn" => $ipn,
                 "subscr_id" => $ipn['subscr_id']
             ];
 
@@ -97,7 +96,7 @@ class SubscriptionController extends ApiController
                 if ($subscription = EloquentSubscriptionRepository::findSubscriptionBySubscrId($ipn['subscr_id'])->first()) {
                     if ($subscription->driver_id == $ipn['custom'] && $subscription->driver_id == $driver->id) {
 
-                        switch ($recurring = explode(" ", unserialize($subscription->ipn)['period3'])) {
+                        switch ($recurring = explode(" ", $subscription->ipn['period3'])) {
                             case 'M':
                                 $subscription->current_period_end = $subscription->ended_at = Carbon::createFromTimestamp(time($ipn['payment_date']))->addMonths($recurring[0]);
                                 break;

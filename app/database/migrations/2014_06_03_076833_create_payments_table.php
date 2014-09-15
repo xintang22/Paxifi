@@ -22,6 +22,7 @@ class CreatePaymentsTable extends Migration {
             $table->longText('details');
             $table->string('paypal_transaction_id')->nullable()->default(NULL);
             $table->boolean('paypal_transaction_status')->nullable()->default(0);
+            $table->text('ipn')->nullable()->default(NULL);
 
             $table->timestamps();
             $table->softDeletes();

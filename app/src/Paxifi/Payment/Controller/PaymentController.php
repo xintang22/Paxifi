@@ -3,7 +3,6 @@
 use Paxifi\Payment\Exception\PaymentNotMatchException;
 use Paxifi\Payment\Repository\PaymentRepository as Payment;
 use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository as PaymentMethods;
-use Paxifi\Payment\Repository\Validation\CreatePaymentValidator;
 use Paxifi\Payment\Repository\Validation\UpdatePaymentValidator;
 use Paxifi\Payment\Transformer\PaymentTransformer;
 use Paxifi\Support\Controller\ApiController;
@@ -22,14 +21,27 @@ class PaymentController extends ApiController
      */
     public function payment($order)
     {
-        if ($order->payment) {
-            return $this->setStatusCode(200)->respondWithItem($order->payment);
-        }
 
         try {
             \DB::beginTransaction();
 
             $type = \Input::get('type', 'cash');
+
+            /**
+             * ! Todo:: Optimize the payment creation logic.
+             *
+             * Check if the order payment is exist;
+             * If exist and has the same payment type, return the payment.
+             * If don't have the same payment type, delete the old payment.
+             * Create a new payment for this order.
+             */
+            if ($order->payment) {
+                if ($order->payment->payment_method()->get()->first()->name == $type) {
+                    return $this->setStatusCode(200)->respondWithItem($order->payment);
+                } else {
+                    $order->payment->delete();
+                }
+            }
 
             $newPayment = [
                 'payment_method_id' => PaymentMethods::getMethodIdByName($type),
@@ -45,6 +57,7 @@ class PaymentController extends ApiController
             }
 
             return $this->setStatusCode(500)->respondWithError('Payment create failed, please try it later.');
+
         } catch (ValidationException $e) {
 
             return $this->errorWrongArgs($e->getErrors());
@@ -122,7 +135,6 @@ class PaymentController extends ApiController
             $buyer_email = \Input::get('buyer_email');
 
             if (empty($buyer_email))
-
                 return;
 
             if ($payment->status) {
@@ -150,16 +162,16 @@ class PaymentController extends ApiController
                 \DB::commit();
 
                 return $this->setStatusCode(200)->respond(
-                    [
-                        "success" => true,
-                    ]
+                    ["success" => true]
                 );
             }
 
             return $this->setStatusCode(406)->respondWithError($this->translator->trans('responses.invoice.invoice_not_available', ['payment_id' => $payment->id]));
 
         } catch (\Exception $e) {
+
             return $this->errorWrongArgs($e->getMessage());
+
         }
     }
 
@@ -193,13 +205,15 @@ class PaymentController extends ApiController
             return $this->errorWrongArgs('Payment has been completed. You cannot cancel it.');
 
         } catch (\Exception $e) {
+
             return $this->errorInternalError();
+
         }
     }
 
 
     /**
-     * Verify paypal payment status (complete, fail, cancel).
+     * Verify paypal payment status completed.
      *
      * @param $payment
      *
@@ -217,7 +231,34 @@ class PaymentController extends ApiController
             return $this->setStatusCode(403)->respondWithError("Payment not success.");
 
         } catch (\Exception $e) {
+
             return $this->respondWithError($e->getMessage());
+
+        }
+    }
+
+    /**
+     * Confirm the paypal payment.
+     *
+     * @param $payment
+     * @param $ipn
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function paypalPaymentConfirmation ($payment, $ipn)
+    {
+        try {
+            $payment->status = 1;
+            $payment->paypal_transaction_status = 1;
+            $payment->paypal_transaction_id = $ipn['txn_id'];
+            $payment->ipn = $ipn;
+
+            $payment->save();
+
+        } catch (\Exception $e) {
+
+            return $this->errorInternalError();
+
         }
     }
 

@@ -60,6 +60,30 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
     }
 
     /**
+     * Attributes
+     *
+     * Serialize the ipn
+     *
+     * @param $value
+     */
+    public function setIpnAttribute($value)
+    {
+        $this->attributes['ipn'] = serialize($value);
+    }
+
+    /**
+     * Returns un-serialized ipn.
+     *
+     * @param $value
+     *
+     * @return mixed
+     */
+    public function getIpnAttribute($value)
+    {
+        return unserialize($value);
+    }
+
+    /**
      * Active subscription.
      */
     public function active()

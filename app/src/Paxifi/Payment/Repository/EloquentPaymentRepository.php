@@ -9,7 +9,7 @@ class EloquentPaymentRepository extends BaseModel {
 
     protected $table = 'payments';
 
-    protected $fillable = ['order_id', 'payment_method_id', 'status', 'details'];
+    protected $fillable = ['order_id', 'payment_method_id', 'status', 'details', 'paypal_transaction_id', 'paypal_transaction_status', 'ipn'];
 
     /**
      * The attributes that should be mutated to dates.
@@ -46,6 +46,30 @@ class EloquentPaymentRepository extends BaseModel {
     public function feedback()
     {
         return $this->belongsTo('Paxifi\Feedback\Repository\EloquentFeedbackRepository', 'id', 'payment_id');
+    }
+
+    /**
+     * Attributes
+     *
+     * Serialize the ipn
+     *
+     * @param $value
+     */
+    public function setIpnAttribute($value)
+    {
+        $this->attributes['ipn'] = serialize($value);
+    }
+
+    /**
+     * Returns un-serialized ipn.
+     *
+     * @param $value
+     *
+     * @return mixed
+     */
+    public function getIpnAttribute($value)
+    {
+        return unserialize($value);
     }
 
     /**

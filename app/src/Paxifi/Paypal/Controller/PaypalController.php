@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Paypal\Controller;
 
+use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Support\Controller\ApiController;
 use PayPal\Ipn\Listener;
@@ -9,56 +10,16 @@ use PayPal\Ipn\Verifier\CurlVerifier;
 class PaypalController extends ApiController
 {
 
+    /**
+     * Paypal cart payment ipn handler
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function payment()
     {
-
-        $ipn = \Input::all();
-
-        \Log::useFiles(storage_path().'/logs/ipn-'.time().'.txt');
-
-        \Log::info($ipn);
-//        try {
-//            $ipn = \Input::all();
-//            if ($ipn['payer_status'] == 'verified') {
-//                if ($payment = Payment::find($ipn['custom'])) {
-//                    if (($payment->order->total_sales == $ipn['payment_gross']) && ($ipn['business'] == $payment->order->OrderDriver()->paypal_account)) {
-//                        $payment->paypal_transaction_id = $ipn['txn_id'];
-//                        $payment->paypal_transaction_status = 1;
-//                        $payment->status = 1;
-//                        $payment->save();
-//
-//                        return $this->setStatusCode(200)->respondWithItem($payment);
-//                    }
-//
-//                    return $this->setStatusCode(400)->respondWithError('Payment is not success.');
-//                }
-//
-//                return $this->setStatusCode(404)->respondWithError('The payment is not found.');
-//            }
-//        } catch (\Exception $e) {
-//            return $this->errorInternalError();
-//        }
-
-    }
-
-//
-//    public function verifyPaypalPayment($payment) {
-//        try {
-//            if ($payment->paypal_transaction_status && $payment->status) {
-//                return $this->setStatusCode(200)->respondWithItem($payment);
-//            }
-//        } catch(\Exception $e) {
-//            return $this->errorInternalError();
-//        }
-//    }
-
-    /**
-     * Subscribe the paypal account with driver account.
-     */
-    public function subscribe()
-    {
         try {
-            \DB::transiction();
+            \DB::beginTransaction();
+
             $listener = new Listener;
             $verifier = new CurlVerifier;
             $ipn = \Input::all();
@@ -75,12 +36,76 @@ class PaypalController extends ApiController
                     // on verified IPN (everything is good!)
                     $resp = $listener->getVerifier()->getVerificationResponse();
 
-                    if ($driver = EloquentDriverRepository::find(\Input::get('custom'))) {
-                        if (!$subscription = $driver->getActiveSubscription()) {
-                            \Event::fire('paxifi.paypal.subscription.' . $ipn['txn_type'], [$driver, $ipn]);
+                    // Find paid order (custom is order_id).
+                    if ($order = EloquentOrderRepository::find(\Input::get('custom'))) {
 
-                            \DB::commit();
+                        /**
+                         * Check the paypal payment.
+                         *
+                         * Total sales ==  ipn['mc_gross']
+                         *
+                         * Driver Paypal Account == ipn['business]
+                         */
+                        // Todo:: add payment verify method
+                        if ($ipn['payment_status'] == 'Completed' &&
+                            $order->total_sales == $ipn['payment_gross'] &&
+                            $order->OrderDriver()->paypal_account == $ipn['business']
+                        ) {
+                            \Event::fire('paxifi.paypal.payment.' . $ipn['txn_type'], [$order->payment, $ipn]);
                         }
+
+                        \DB::commit();
+                    }
+
+                    return $this->setStatusCode(404)->respondWithError('Order Not Found');
+                },
+                function () use ($listener) {
+
+                    // on invalid IPN (somethings not right!)
+                    $report = $listener->getReport();
+                    $resp = $listener->getVerifier()->getVerificationResponse();
+
+                    return $this->setStatusCode(400)->respondWithError('Payment failed.');
+                }
+            );
+        } catch (\RuntimeException $e) {
+            return $this->setStatusCode(400)->respondWithError($e->getMessage());
+        } catch (\Exception $e) {
+            print_r($e->getMessage());
+            return $this->errorInternalError();
+        }
+    }
+
+    /**
+     * Paypal subscription ipn handler.
+     */
+    public function subscribe()
+    {
+        try {
+            \DB::beginTransaction();
+            $listener = new Listener;
+            $verifier = new CurlVerifier;
+            $ipn = \Input::all();
+            $ipnMessage = new Message($ipn);
+
+            $verifier->setIpnMessage($ipnMessage);
+            $verifier->setEnvironment(\Config::get('paxifi.paypal.environment'));
+
+            $listener->setVerifier($verifier);
+
+            $listener->listen(
+                function () use ($listener, $ipn, &$response) {
+
+                    // on verified IPN (everything is good!)
+                    $resp = $listener->getVerifier()->getVerificationResponse();
+
+                    // Find paid driver (custom is driver_id).
+                    if ($driver = EloquentDriverRepository::find(\Input::get('custom'))) {
+
+                        \Event::fire('paxifi.paypal.subscription.' . $ipn['txn_type'], [$driver, $ipn]);
+
+                        \DB::commit();
+
                     }
                 },
                 function () use ($listener) {
