@@ -182,15 +182,6 @@ class TaxRatesTableSeeder extends Seeder
         [
             'category' => 'standard',
             'country' => 'US',
-            'state' => 'NY', // New York
-            'postcode' => '10001',
-            'city' => 'New York City',
-            'amount' => '0.08875',
-        ],
-
-        [
-            'category' => 'standard',
-            'country' => 'US',
             'state' => 'WA', // Washington
             'postcode' => '98015',
             'city' => 'Bellevue',
