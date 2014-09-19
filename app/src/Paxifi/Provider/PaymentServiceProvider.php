@@ -23,6 +23,8 @@ class PaymentServiceProvider extends ServiceProvider
         $this->registerRouteModelBindings();
 
         $this->registerRoutes();
+
+        $this->registerPaymentEvents();
     }
 
     /**
@@ -104,6 +106,14 @@ class PaymentServiceProvider extends ServiceProvider
     {
         $this->app->bind('paxifi.repository.payment', 'Paxifi\Payment\Repository\EloquentPaymentRepository', true);
         $this->app->bind('paxifi.repository.payment_methods', 'Paxifi\Payment\Repository\EloquentPaymentMethodsRepository', true);
+    }
+
+    /**
+     * Register payment events
+     */
+    protected function registerPaymentEvents()
+    {
+        $this->app['events']->listen('paxifi.build.invoice' , 'Paxifi\Payment\Controller\PaymentController@buildInvoice');
     }
 
     /**

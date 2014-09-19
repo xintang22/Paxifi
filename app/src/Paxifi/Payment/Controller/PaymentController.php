@@ -141,23 +141,7 @@ class PaymentController extends ApiController
                 $payment->order->setBuyerEmail($buyer_email)
                     ->save();
 
-                $invoiceFactory = new PaymentInvoiceFactory($payment->order, $this->getInvoiceContentTranslation());
-
-                $invoiceFactory->build();
-
-                // Config email options
-                $emailOptions = array(
-                    'template' => 'invoice.email',
-                    'context' => $this->translator->trans('email.invoice'),
-                    'to' => $buyer_email,
-                    'data' => $invoiceFactory->getInvoiceData(),
-                    'attach' => $invoiceFactory->getPdfFilePath(),
-                    'as' => 'invoice_' . $payment->id . '.pdf',
-                    'mime' => 'application/pdf'
-                );
-
-                // Fire email invoice pdf event.
-                \Event::fire('paxifi.email', array($emailOptions));
+                \Event::fire('paxifi.build.invoice', $payment);
 
                 \DB::commit();
 
@@ -261,6 +245,30 @@ class PaymentController extends ApiController
 
         }
     }
+
+    /**
+     * Build invoice event
+     */
+    public function buildInvoice($payment) {
+        $invoiceFactory = new PaymentInvoiceFactory($payment->order, $this->getInvoiceContentTranslation());
+
+        $invoiceFactory->build();
+
+        // Config email options
+        $emailOptions = array(
+            'template' => 'invoice.email',
+            'context' => $this->translator->trans('email.invoice'),
+            'to' => $payment->order->buyer_email,
+            'data' => $invoiceFactory->getInvoiceData(),
+            'attach' => $invoiceFactory->getPdfFilePath(),
+            'as' => 'invoice_' . $payment->id . '.pdf',
+            'mime' => 'application/pdf'
+        );
+
+        // Fire email invoice pdf event.
+        \Event::fire('paxifi.email', array($emailOptions));
+    }
+
 
     /**
      * @internal param \Paxifi\Order\Repository\EloquentOrderRepository $order
