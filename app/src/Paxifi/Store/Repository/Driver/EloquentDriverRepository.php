@@ -52,9 +52,9 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function subscriptions()
+    public function subscription()
     {
-        return $this->hasMany('Paxifi\Subscription\Repository\EloquentSubscriptionRepository', 'driver_id', 'id');
+        return $this->hasOne('Paxifi\Subscription\Repository\EloquentSubscriptionRepository', 'driver_id', 'id')->where('status', '<>', 'past_due');
     }
 
     /**

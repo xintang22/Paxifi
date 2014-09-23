@@ -9,9 +9,17 @@ use Paxifi\Support\Validation\ValidationException;
 
 class SubscriptionController extends ApiController
 {
-    public function index()
+    public function index($driver = null)
     {
-        return $this->setStatusCode(200)->respondWithItem(EloquentSubscriptionRepository::all()->first());
+        if (is_null($driver)) {
+            $driver = $this->getAuthenticatedDriver();
+        }
+
+        if ($driver->subscription) {
+            return $this->setStatusCode(200)->respondWithItem($driver->subscription);
+        }
+
+        return $this->setStatusCode(200)->respond([]);
     }
 
     /**
@@ -27,6 +35,10 @@ class SubscriptionController extends ApiController
     {
         try {
             \DB::beginTransaction();
+
+            if ($driver->subscription && $driver->subscription->status != 'past_due') {
+                return $driver->subscription;
+            }
 
             $new_subscription = [
                 "plan_id" => 1,
@@ -61,6 +73,8 @@ class SubscriptionController extends ApiController
             with(new CreateSubscriptionValidator())->validate($new_subscription);
 
             if ($subscription = EloquentSubscriptionRepository::create($new_subscription)) {
+
+                $subscription->driver->active();
 
                 \DB::commit();
 
