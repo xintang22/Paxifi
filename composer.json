@@ -12,6 +12,7 @@
         "lucadegasperi/oauth2-server-laravel": "1.0.x",
         "intervention/image" : "*",
         "thujohn/pdf": "dev-master",
+        "mike182uk/paypal-ipn-listener" : "v2.0.0",
         "pda/pheanstalk": "*"
     },
     "require-dev": {
