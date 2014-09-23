@@ -38,7 +38,9 @@ class DriverTransformer extends TransformerAbstract
                     "id" => 2,
                     "name" => "Best Seller of the Year 2014"
                 ]
-            ]
+            ],
+            'paypal_account' => $driver->paypal_account,
+            'status' => $driver->status
         );
 
         return $transformer;

@@ -37,13 +37,9 @@ class DriverController extends ApiController
         try {
             \DB::beginTransaction();
 
-            with(new CreateDriverValidator())->validate(\Input::except('seller_id'));
+            with(new CreateDriverValidator())->validate(\Input::except('seller_id', 'status', 'paypal_account'));
 
-            $driver = DriverRepository::create(\Input::except('seller_id'));
-
-            if (\Input::has('photo')) {
-                \Event::fire('paxifi.drivers.created', [$driver]);
-            }
+            $driver = DriverRepository::create(\Input::except('seller_id', 'status', 'paypal_account'));
 
             \DB::commit();
 
@@ -186,16 +182,6 @@ class DriverController extends ApiController
             return $this->errorInternalError();
 
         }
-    }
-
-    /**
-     * Retrieves the Data Transformer
-     *
-     * @return \League\Fractal\TransformerAbstract
-     */
-    public function getTransformer()
-    {
-        return new DriverTransformer();
     }
 
     /**
@@ -400,5 +386,15 @@ class DriverController extends ApiController
         } catch (\Exception $e) {
             return $this->errorInternalError();
         }
+    }
+
+    /**
+     * Retrieves the Data Transformer
+     *
+     * @return \League\Fractal\TransformerAbstract
+     */
+    public function getTransformer()
+    {
+        return new DriverTransformer();
     }
 }
