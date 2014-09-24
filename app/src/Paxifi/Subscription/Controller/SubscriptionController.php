@@ -159,12 +159,12 @@ class SubscriptionController extends ApiController
         try {
             \DB::beginTransaction();
 
-            if ($subscription = EloquentSubscriptionRepository::findSubscriptionBySubscrId($ipn['subscr_id'])->first()) {
+            if ($subscription = EloquentSubscriptionRepository::findSubscriptionBySubscrId($ipn['subscr_id'])) {
                 if ($subscription->driver->id == $driver->id) {
                     // Updated the subscription cancel information.
-                    $subscription->cancel_at = Carbon::now();
+                    $subscription->canceled_at = Carbon::now();
                     $subscription->cancel_at_period_end = true;
-                    $subscription->cancel();
+                    $subscription->canceled();
 
                     \DB::commit();
                 }
@@ -187,13 +187,21 @@ class SubscriptionController extends ApiController
         try {
             \DB::beginTransaction();
 
-            if ($subscription = EloquentSubscriptionRepository::findSubscriptionBySubscrId($ipn['subscr_id'])->first()) {
+            if ($subscription = EloquentSubscriptionRepository::findSubscriptionBySubscrId($ipn['subscr_id'])) {
+
                 if ($subscription->driver->id == $driver->id) {
 
                     // Expired subscription and driver status.
                     $subscription->expired();
 
                     $subscription->driver->inactive();
+
+                    /*
+                     * When the subscription finished, all the commission will get paid to paxifi.
+                     *
+                     * Commission payment event fired for each driver.
+                     */
+                    \Event::fire('paxifi.paypal.commission.payment', $driver);
 
                     \DB::commit();
                 }

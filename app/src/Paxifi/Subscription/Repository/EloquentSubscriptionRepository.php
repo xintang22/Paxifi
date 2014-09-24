@@ -56,7 +56,7 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
      */
     public static function findSubscriptionBySubscrId($subscrId)
     {
-        return self::where('subscr_id', '=', $subscrId)->get();
+        return self::where('subscr_id', '=', $subscrId)->get()->first();
     }
 
     /**
