@@ -36,6 +36,9 @@ class PaypalServiceProvider extends ServiceProvider
                 // Paypal user authorization.
                 $this->app['router']->post('paypal/authorize', 'Paxifi\Paypal\Controller\PaypalController@authorize');
 
+                // Paypal driver sales.
+                $this->app['router']->post('paypal/commission', 'Paxifi\Paypal\Controller\PaypalController@commission');
+
             });
 
         });
@@ -69,5 +72,8 @@ class PaypalServiceProvider extends ServiceProvider
 
         // fire paypal payment event.
         $this->app['events']->listen('paxifi.paypal.payment.cart', 'Paxifi\Payment\Controller\PaymentController@paypalPaymentConfirmation');
+
+        // paxifi.paypal.commission.payment
+        $this->app['events']->listen('paxifi.paypal.commission.payment', 'Paxifi\Paypal\Controller\PaypalController@commission');
     }
 }
