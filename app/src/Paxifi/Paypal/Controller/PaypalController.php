@@ -1,11 +1,16 @@
 <?php namespace Paxifi\Paypal\Controller;
 
+use Carbon\Carbon;
 use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Support\Controller\ApiController;
 use PayPal\Ipn\Listener;
 use PayPal\Ipn\Message;
 use PayPal\Ipn\Verifier\CurlVerifier;
+use Paxifi\Sales\Repository\SaleCollection;
+use PayPal\Rest\ApiContext;
+use PayPal\Auth\OAuthTokenCredential;
+use PayPal\Api\Authorization;
 
 class PaypalController extends ApiController
 {
@@ -81,6 +86,10 @@ class PaypalController extends ApiController
      */
     public function subscribe()
     {
+//        $ipn = \Input::all();
+//        \Log::useFiles(storage_path().'/logs/'. 'sub-'. time(). '.txt');
+//        \Log::info($ipn);
+//        die;
         try {
             \DB::beginTransaction();
             $listener = new Listener;
@@ -123,6 +132,73 @@ class PaypalController extends ApiController
             return $this->errorInternalError();
         }
 
+    }
+
+    /**
+     * Handle the paypal authorization process.
+     *
+     * 1. get authorization code response
+     * 2. process the code and store refresh token
+     */
+    public function authorize()
+    {
+        try {
+            \DB::beginTransaction();
+            if ($driver = $this->getAuthenticatedDriver()) {
+                $authorizationCode = \Input::get('response.code');
+
+                $url = \Config::get('paxifi.paypal.url');
+
+                $client = new \GuzzleHttp\Client();
+
+                $res = $client->post($url, [
+                    'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
+                    'auth' => ['AWS54BAuSLHhRKWeYKLyah03y09dEtuu_haQHlBuu_XJgrgDjGzPkawZgcu_', 'EMt35xD7ksEW7RDrHp60SCOTExhRIsv38tujA6x-x8cjl4LGtsXu1YbE98qy'],
+                    'body' => [
+                        'grant_type' => 'authorization_code',
+                        'response_type' => 'token',
+                        'redirect_uri' => 'urn:ietf:wg:oauth:2.0:oob',
+                        'code' => $authorizationCode
+                    ]
+                ]);
+
+                if ($res->getStatusCode() == 200) {
+                    $driver->paypal_refresh_token = $res->json()['refresh_token'];
+
+                    $driver->save();
+
+                    \DB::commit();
+
+                    return $this->setStatusCode(200)->respond('success');
+                }
+
+                return $this->setStatusCode(400)->respondWithError('');
+            }
+
+        } catch (\Exception $e) {
+            return $this->respondWithError($e->getMessage());
+        }
+    }
+
+    // Create commission paypal payment.
+    public function commission($driver=null)
+    {
+        try {
+
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
+            // Get the pre-month commissions.
+            $sales = new SaleCollection($driver->sales(Carbon::now()->subMonth(), Carbon::now()));
+
+            // Todo::create paypal future payment.
+            
+
+
+        } catch(\Exception $e) {
+
+        }
     }
 
     /**
