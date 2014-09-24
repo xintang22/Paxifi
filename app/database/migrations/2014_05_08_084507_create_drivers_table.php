@@ -15,7 +15,7 @@ class CreateDriversTable extends Migration
         Schema::create('drivers', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('seller_id')->unique()->nullable()->default(null);
+            $table->string('seller_id')->unique()->nullable()->default("");
             $table->string('email')->unique();
             $table->string('password');
             $table->string('photo')->nullable();
@@ -24,7 +24,8 @@ class CreateDriversTable extends Migration
             $table->string('remember_token')->nullable();
             $table->integer('thumbs_up')->default(0)->nullable();
             $table->integer('thumbs_down')->default(0)->nullable();
-            $table->string('paypal_account')->default(null)->nullable();
+            $table->string('paypal_account')->default("")->nullable();
+            $table->string('paypal_refresh_token')->default("")->nullable();
 
             $table->boolean('tax_enabled')->default(false);
             $table->boolean('tax_included_in_price')->default(false);

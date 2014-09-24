@@ -23,7 +23,7 @@ class CreateOrdersTable extends Migration {
             $table->decimal('profit')->nullable()->default(0);
             $table->decimal('commission')->default(0);
 
-            $table->string('buyer_email')->nullable()->default(NULL);
+            $table->string('buyer_email')->nullable()->default("");
 
             $table->boolean('status')->nullable()->default(0);
 

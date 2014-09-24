@@ -16,10 +16,10 @@ class CreateNotificationsTable extends Migration {
             $table->increments('id');
             $table->unsignedInteger('driver_id');
             $table->integer('sales')->nullable()->default(0);
-            $table->string('ranking')->nullable()->default(NULL);
+            $table->string('ranking')->nullable()->default("");
             $table->integer('stock_reminder')->nullable()->default(0);
             $table->integer('billing')->nullable()->default(0);
-            $table->string('emails')->nullable()->default(NULL);
+            $table->string('emails')->nullable()->default("");
             $table->timestamps();
             $table->softDeletes();
 
