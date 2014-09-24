@@ -68,6 +68,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
             ->select(
                 'subscriptions.id',
                 'subscriptions.plan_id',
+                'subscriptions.driver_id',
                 'subscriptions.trial_start',
                 'subscriptions.trial_end',
                 'subscriptions.start',
@@ -81,10 +82,9 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
                 'subscriptions.updated_at'
             )
             ->join('subscriptions', 'drivers.id', '=', 'subscriptions.driver_id')
-            ->where('subscriptions.status', '=', "active")
-            ->orWhere('subscriptions.status', '=', "canceled")
-            ->distinct()
-            ->first();
+            ->where('subscriptions.driver_id', '=', $this->id)
+            ->where('subscriptions.status', '<>', 'past_due')
+            ->distinct();
     }
 
     /**

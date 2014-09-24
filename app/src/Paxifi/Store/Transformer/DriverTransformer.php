@@ -73,6 +73,6 @@ class DriverTransformer extends TransformerAbstract
      */
     protected function transformSubscription($driver)
     {
-        return $driver->getActiveSubscription() ?: "";
+        return $driver->getActiveSubscription()->first() ? : "";
     }
 }
