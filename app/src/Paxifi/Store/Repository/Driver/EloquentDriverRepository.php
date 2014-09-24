@@ -196,8 +196,8 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
             ->join('payments', 'payments.order_id', '=', 'orders.id')
             ->select('orders.id')
             ->where('drivers.id', '=', $this->id)
-            ->where('orders.created_at', '>=', $from)
-            ->where('orders.created_at', '<=', $to)
+            ->where('payments.created_at', '>=', $from)
+            ->where('payments.created_at', '<=', $to)
             ->where('payments.status', '=', 1)
             ->distinct()
             ->get();
