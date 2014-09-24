@@ -26,8 +26,19 @@ class PaypalServiceProvider extends ServiceProvider
         // Paypal ipn handler.
         $this->app['router']->post('paypal/payment', 'Paxifi\Paypal\Controller\PaypalController@payment');
 
-        // Paypal subscribe
+        // Paypal subscribe.
         $this->app['router']->post('paypal/subscribe', 'Paxifi\Paypal\Controller\PaypalController@subscribe');
+
+        $this->app['router']->group(['before' => 'oauth'], function () {
+
+            $this->app['router']->group(['before' => 'oauth-owner:user'], function () {
+
+                // Paypal user authorization.
+                $this->app['router']->post('paypal/authorize', 'Paxifi\Paypal\Controller\PaypalController@authorize');
+
+            });
+
+        });
     }
 
     /**
@@ -36,6 +47,11 @@ class PaypalServiceProvider extends ServiceProvider
     public function registerConfiguration()
     {
         $this->app['config']->set('paxifi.paypal.environment', 'sandbox');
+
+        // Paxifi paypal client
+        $this->app['config']->set('paxifi.paypal.url', "https://api.sandbox.paypal.com/v1/oauth2/token");
+        $this->app['config']->set('paxifi.paypal.client_id', "AWS54BAuSLHhRKWeYKLyah03y09dEtuu_haQHlBuu_XJgrgDjGzPkawZgcu_");
+        $this->app['config']->set('paxifi.paypal.client_secret', "EMt35xD7ksEW7RDrHp60SCOTExhRIsv38tujA6x-x8cjl4LGtsXu1YbE98qy");
     }
 
     /**
