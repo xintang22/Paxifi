@@ -84,7 +84,8 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
             ->join('subscriptions', 'drivers.id', '=', 'subscriptions.driver_id')
             ->where('subscriptions.driver_id', '=', $this->id)
             ->where('subscriptions.status', '<>', 'past_due')
-            ->distinct();
+            ->distinct()
+            ->first();
     }
 
     /**
