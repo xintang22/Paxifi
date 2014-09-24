@@ -160,7 +160,7 @@ class SubscriptionController extends ApiController
             \DB::beginTransaction();
 
             if ($subscription = EloquentSubscriptionRepository::findSubscriptionBySubscrId($ipn['subscr_id'])) {
-                if ($subscription->driver->id == $driver->id) {
+                if ($subscription->driver_id == $ipn['custom'] ) {
                     // Updated the subscription cancel information.
                     $subscription->canceled_at = Carbon::now();
                     $subscription->cancel_at_period_end = true;
