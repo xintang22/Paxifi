@@ -58,37 +58,6 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
-     * Get the subscription which is in working on the account.
-     *
-     * @return mixed
-     */
-    public function getActiveSubscription()
-    {
-        return \DB::table('drivers')
-            ->select(
-                'subscriptions.id',
-                'subscriptions.plan_id',
-                'subscriptions.driver_id',
-                'subscriptions.trial_start',
-                'subscriptions.trial_end',
-                'subscriptions.start',
-                'subscriptions.canceled_at',
-                'subscriptions.ended_at',
-                'subscriptions.current_period_start',
-                'subscriptions.current_period_end',
-                'subscriptions.cancel_at_period_end',
-                'subscriptions.status',
-                'subscriptions.created_at',
-                'subscriptions.updated_at'
-            )
-            ->join('subscriptions', 'drivers.id', '=', 'subscriptions.driver_id')
-            ->where('subscriptions.driver_id', '=', $this->id)
-            ->where('subscriptions.status', '<>', 'past_due')
-            ->distinct()
-            ->first();
-    }
-
-    /**
      * Driver - Sticker one to one relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

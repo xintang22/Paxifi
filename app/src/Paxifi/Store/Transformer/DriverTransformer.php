@@ -3,6 +3,7 @@
 use Illuminate\Support\Collection;
 use League\Fractal\TransformerAbstract;
 use Paxifi\Store\Repository\Driver\DriverRepositoryInterface;
+use Paxifi\Subscription\Transformer\SubscriptionTransformer;
 
 class DriverTransformer extends TransformerAbstract
 {
@@ -74,6 +75,6 @@ class DriverTransformer extends TransformerAbstract
      */
     protected function transformSubscription($driver)
     {
-        return $driver->getActiveSubscription() ? : "";
+        return $driver->subscription ? with(new SubscriptionTransformer())->transform($driver->subscription) : "";
     }
 }

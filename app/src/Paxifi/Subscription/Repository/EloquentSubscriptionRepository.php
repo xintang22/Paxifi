@@ -15,6 +15,11 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
     protected $table = 'subscriptions';
 
     /**
+     * @var array
+     */
+    protected $hidden = ['ipn'];
+
+    /**
      *
      * @var array
      */
