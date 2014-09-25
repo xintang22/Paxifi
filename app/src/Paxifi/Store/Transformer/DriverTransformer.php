@@ -17,7 +17,6 @@ class DriverTransformer extends TransformerAbstract
             'seller_id' => !empty($driver->seller_id) ? $driver->seller_id : "",
             'address' => $driver->address,
             'currency' => $driver->currency,
-            'paypal_account' => !empty($driver->paypal_account) ? $driver->paypal_account : "",
             'tax' => $this->transformTaxConfiguration($driver),
             'subscription' => $this->transformSubscription($driver),
             'settings' => array(
@@ -27,6 +26,8 @@ class DriverTransformer extends TransformerAbstract
                 'notify_billing' => (boolean)$driver->notify_billing,
                 'notify_others' => (boolean)$driver->notify_others,
             ),
+            'paypal_account' => !empty($driver->paypal_account) ? $driver->paypal_account : "",
+            'paypal_authorized' => (boolean)$driver->paypal_refresh_token ? true: false,
             'thumbs_up' => $driver->thumbs_up,
             'thumbs_down' => $driver->thumbs_down,
             'achievements' => [
