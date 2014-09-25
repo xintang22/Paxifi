@@ -39,7 +39,7 @@ class DriverServiceProvider extends ServiceProvider
         $this->app['config']->set('images.drivers.logo', 'uploads/');
         $this->app['config']->set('images.drivers.template', 'images/drivers/template/');
         $this->app['config']->set('images.drivers.defaultlogo', 'driver_logo.png');
-//        $this->app['config']->set('paxifi.paypal.account', 'paxifiapp@gmail.com');
+//        $this->app['config']->set('paxifi.paypal.business', 'paxifiapp@gmail.com');
         $this->app['config']->set('paxifi.paypal.business', '334531994-facilitator@qq.com');
     }
 
@@ -213,6 +213,7 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->put('me/password/change', 'Paxifi\Store\Controller\DriverController@changePassword');
 
                 // @TODO Subscriptions
+                $this->app['router']->get('me/subscribed', 'Paxifi\Subscription\Controller\SubscriptionController@subscribed');
                 $this->app['router']->get('me/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@index');
                 $this->app['router']->post('me/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@store');
                 $this->app['router']->get('me/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@show');

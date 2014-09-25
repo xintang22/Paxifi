@@ -104,6 +104,7 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
     {
         $this->status = "past_due";
         $this->save();
+        $this->delete();
     }
 
     /**

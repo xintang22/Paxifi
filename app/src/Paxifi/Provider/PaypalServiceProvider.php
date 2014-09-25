@@ -37,7 +37,7 @@ class PaypalServiceProvider extends ServiceProvider
                 $this->app['router']->post('paypal/authorize', 'Paxifi\Paypal\Controller\PaypalController@authorize');
 
                 // Paypal driver sales.
-                $this->app['router']->post('paypal/commission', 'Paxifi\Paypal\Controller\PaypalController@commission');
+                $this->app['router']->post('paypal/commission', 'Paxifi\Commission\Controller\CommissionController@commission');
 
             });
 
@@ -52,7 +52,7 @@ class PaypalServiceProvider extends ServiceProvider
         $this->app['config']->set('paxifi.paypal.environment', 'sandbox');
 
         // Paxifi paypal client
-        $this->app['config']->set('paxifi.paypal.url', "https://api.sandbox.paypal.com/v1/oauth2/token");
+        $this->app['config']->set('paxifi.paypal.url', "https://api.sandbox.paypal.com/v1/");
         $this->app['config']->set('paxifi.paypal.client_id', "AWS54BAuSLHhRKWeYKLyah03y09dEtuu_haQHlBuu_XJgrgDjGzPkawZgcu_");
         $this->app['config']->set('paxifi.paypal.client_secret', "EMt35xD7ksEW7RDrHp60SCOTExhRIsv38tujA6x-x8cjl4LGtsXu1YbE98qy");
     }
@@ -74,6 +74,6 @@ class PaypalServiceProvider extends ServiceProvider
         $this->app['events']->listen('paxifi.paypal.payment.cart', 'Paxifi\Payment\Controller\PaymentController@paypalPaymentConfirmation');
 
         // paxifi.paypal.commission.payment
-        $this->app['events']->listen('paxifi.paypal.commission.payment', 'Paxifi\Paypal\Controller\PaypalController@commission');
+        $this->app['events']->listen('paxifi.paypal.commission.payment', 'Paxifi\Commission\Controller\CommissionController@commission');
     }
 }

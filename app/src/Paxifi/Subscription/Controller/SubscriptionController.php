@@ -23,6 +23,24 @@ class SubscriptionController extends ApiController
     }
 
     /**
+     * @param null $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function subscribed($driver = null)
+    {
+        if (is_null($driver)) {
+            $driver = $this->getAuthenticatedDriver();
+        }
+
+        if ($driver->hasSubscribed()->get()) {
+            return $this->setStatusCode(200)->respondWithCollection($driver->hasSubscribed()->get());
+        }
+
+        return $this->setStatusCode(404)->respondWithError([]);
+    }
+
+    /**
      * Create a driver subscription.
      * Method fired when txn_type is subsrc_signup
      *
@@ -73,6 +91,9 @@ class SubscriptionController extends ApiController
             with(new CreateSubscriptionValidator())->validate($new_subscription);
 
             if ($subscription = EloquentSubscriptionRepository::create($new_subscription)) {
+
+                // Bind paypal account with driver account.
+                $driver->paypal_account = $ipn['payer_email'];
 
                 $subscription->driver->active();
 
@@ -160,7 +181,7 @@ class SubscriptionController extends ApiController
             \DB::beginTransaction();
 
             if ($subscription = EloquentSubscriptionRepository::findSubscriptionBySubscrId($ipn['subscr_id'])) {
-                if ($subscription->driver_id == $ipn['custom'] ) {
+                if ($subscription->driver_id == $ipn['custom']) {
                     // Updated the subscription cancel information.
                     $subscription->canceled_at = Carbon::now();
                     $subscription->cancel_at_period_end = true;

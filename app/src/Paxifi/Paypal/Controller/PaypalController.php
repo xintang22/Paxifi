@@ -1,16 +1,15 @@
 <?php namespace Paxifi\Paypal\Controller;
 
 use Carbon\Carbon;
+use GuzzleHttp\Exception\RequestException;
 use Paxifi\Order\Repository\EloquentOrderRepository;
+use Paxifi\Paypal\Helper\PaypalHelper;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Support\Controller\ApiController;
 use PayPal\Ipn\Listener;
 use PayPal\Ipn\Message;
 use PayPal\Ipn\Verifier\CurlVerifier;
 use Paxifi\Sales\Repository\SaleCollection;
-use PayPal\Rest\ApiContext;
-use PayPal\Auth\OAuthTokenCredential;
-use PayPal\Api\Authorization;
 
 class PaypalController extends ApiController
 {
@@ -147,13 +146,10 @@ class PaypalController extends ApiController
             if ($driver = $this->getAuthenticatedDriver()) {
                 $authorizationCode = \Input::get('response.code');
 
-                $url = \Config::get('paxifi.paypal.url');
-
                 $client = new \GuzzleHttp\Client();
 
-                $res = $client->post($url, [
-                    'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
-                    'auth' => ['AWS54BAuSLHhRKWeYKLyah03y09dEtuu_haQHlBuu_XJgrgDjGzPkawZgcu_', 'EMt35xD7ksEW7RDrHp60SCOTExhRIsv38tujA6x-x8cjl4LGtsXu1YbE98qy'],
+                $res = $client->post(\Config::get('paxifi.paypal.url') . 'oauth2/token', [
+                    'auth' => [\Config::get('paxifi.paypal.client_id'), \Config::get('paxifi.paypal.client_secret')],
                     'body' => [
                         'grant_type' => 'authorization_code',
                         'response_type' => 'token',
@@ -169,7 +165,7 @@ class PaypalController extends ApiController
 
                     \DB::commit();
 
-                    return $this->setStatusCode(200)->respond('success');
+                    return $this->setStatusCode(200)->respond(['authorize' => true]);
                 }
 
                 return $this->setStatusCode(400)->respondWithError('');
@@ -177,27 +173,6 @@ class PaypalController extends ApiController
 
         } catch (\Exception $e) {
             return $this->respondWithError($e->getMessage());
-        }
-    }
-
-    // Create commission paypal payment.
-    public function commission($driver=null)
-    {
-        try {
-
-            if (is_null($driver)) {
-                $driver = $this->getAuthenticatedDriver();
-            }
-
-            // Get the pre-month commissions.
-            $sales = new SaleCollection($driver->sales(Carbon::now()->subMonth(), Carbon::now()));
-
-            // Todo::create paypal future payment.
-            
-
-
-        } catch(\Exception $e) {
-
         }
     }
 
