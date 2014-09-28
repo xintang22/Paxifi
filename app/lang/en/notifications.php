@@ -1,6 +1,6 @@
 <?php 
 return array(
-    'billing' => '',
+    'billing' => 'You have get :commission billed.',
     'ranking' => [
         'up' => 'You got a thumbs up.',
         'down' => 'You got a thumbs down.',
