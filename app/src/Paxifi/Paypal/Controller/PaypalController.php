@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Exception\RequestException;
 use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Paypal\Helper\PaypalHelper;
+use Paxifi\Shipment\Repository\EloquentShipmentRepository;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Support\Controller\ApiController;
 use PayPal\Ipn\Listener;
@@ -50,7 +51,6 @@ class PaypalController extends ApiController
                          *
                          * Driver Paypal Account == ipn['business]
                          */
-                        // Todo:: add payment verify method
                         if ($ipn['payment_status'] == 'Completed' &&
                             $order->total_sales == $ipn['payment_gross'] &&
                             $order->OrderDriver()->paypal_account == $ipn['business']
@@ -173,6 +173,39 @@ class PaypalController extends ApiController
 
         } catch (\Exception $e) {
             return $this->respondWithError($e->getMessage());
+        }
+    }
+
+    /**
+     * Paypal payment for sticker.
+     *
+     * @param null $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function buySticker($driver = null)
+    {
+        try {
+            \DB::beginTransaction();
+            if (is_null($driver)) {
+                $driver = $driver = $this->getAuthenticatedDriver();
+            }
+
+            $paypal_helper = new PaypalHelper($driver);
+
+            $sticker_payment = \Input::all();
+
+            if ($payment = $paypal_helper->verifyPaypalSinglePayment($sticker_payment)) {
+                $shipment = EloquentShipmentRepository::find(\Input::get('shipment_id'));
+
+                $shipment->payment_status = 'completed';
+
+                $shipment->save();
+                \DB::commit();
+            }
+
+        } catch (\Exception $e) {
+            return $this->setStatusCode(400)->respondWithError($e->getMessage());
         }
     }
 
