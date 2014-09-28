@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use Paxifi\Notification\Repository\NotificationRepository;
 use Paxifi\Notification\Transformer\NotificationTransformer;
+use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
 use Paxifi\Payment\Repository\EloquentPaymentRepository as Payment;
@@ -52,18 +53,35 @@ class NotificationController extends ApiController
     }
 
     /**
-     * @param null $order
+     * @param $commission
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function billing($order)
+    public function billing($commission)
     {
         try {
             \DB::beginTransaction();
 
-            // Todo:: Paxifi billing, related to paypal.
+            if ($driver = EloquentDriverRepository::find($commission->driver_id)) {
 
-            return $this->errorInternalError('System error.');
+                $notification = [];
+
+                if ($driver->notify_billing) {
+                    $notification['driver_id'] = $commission->driver_id;
+                    $notification['billing'] = $commission->commissions . ' ' . $commission->currency;
+
+                    if ($notification = NotificationRepository::create($notification)) {
+
+                        \DB::commit();
+
+                        return $this->setStatusCode(201)->respondWithItem($notification);
+                    }
+
+                }
+
+            }
+
+            return true;
 
         } catch (ValidationException $e) {
 

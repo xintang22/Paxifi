@@ -54,8 +54,7 @@ class NotificationTransformer extends TransformerAbstract
         $billing = [];
 
         if ($notification->billing) {
-            $order = Order::find($notification->billing);
-            $billing['message'] = $this->translator->trans('notifications.billing', ['currency' => $notification->driver->currency, 'amount' => $order->total_sales]);
+            $billing['message'] = $this->translator->trans('notifications.billing', [':commission' => $notification->billing]);
             $billing['type'] = 'billing';
         }
 

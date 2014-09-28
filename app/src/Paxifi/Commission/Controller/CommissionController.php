@@ -31,6 +31,8 @@ class CommissionController extends ApiController
         }
 
         try {
+            \DB::beginTransaction();
+
 
             if ($driver->id == $ipn['custom']) {
                 // Get the pre-month commissions.
@@ -39,21 +41,40 @@ class CommissionController extends ApiController
                 if ($sales) {
                     $paypalHelper = new PaypalHelper($driver);
 
-                    if ($res = $paypalHelper->createPaypalFuturePayment($sales->toArray()['totals'])) {
-                        print_r($res);
+                    // get authorized commission payment
+                    if ($authorizedCommissionPayment = $paypalHelper->createPaypalFuturePayment($sales->toArray()['totals'])) {
 
-                        // Todo:: fire notification event the commission fee get paid.
-                        $commission_payment = [
-                            'driver_id' => $driver->id,
-                            'total_commission' => $sales->toArray()['totals']['commission'],
-                            'status' => $res['state'],
-                            'commission_ipn' => $res,
-                            'commission_payment_id' => $res['id']
-                        ];
+                        // capture authorized commission payment
+                        if ($capture = $paypalHelper->capturePaypalPayment($authorizedCommissionPayment)) {
 
-                        if ($commission = EloquentCommissionRepository::create($commission_payment)) {
-                            return $this->setStatusCode(201)->respondWithItem($commission);
+                            if ($authorizedCommissionPayment['id'] == $capture['parent_payment']) {
+                                $commission_payment = [
+                                    'driver_id' => $driver->id,
+                                    'commissions' => $authorizedCommissionPayment['transactions'][0]['amount']['total'],
+                                    'currency' => $authorizedCommissionPayment['transactions'][0]['amount']['currency'],
+                                    'status' => $authorizedCommissionPayment['state'],
+                                    'commission_ipn' => $authorizedCommissionPayment,
+                                    'commission_payment_id' => $authorizedCommissionPayment['id'],
+                                    'capture_id' => $capture['id'],
+                                    'capture_created_at' => $capture['create_time'],
+                                    'capture_updated_at' => $capture['update_time'],
+                                    'capture_status' => $capture['state'],
+                                    'capture_ipn' => $capture,
+                                ];
+
+                                if ($commission = EloquentCommissionRepository::create($commission_payment)) {
+
+                                    \DB::commit();
+
+                                    // Todo:: fire notification event the commission paid.
+                                    \Event::fire('paxifi.notifications.billing', [$commission]);
+
+                                    return $this->setStatusCode(201)->respondWithItem($commission);
+                                }
+                            }
+
                         }
+
                     }
                 }
             }

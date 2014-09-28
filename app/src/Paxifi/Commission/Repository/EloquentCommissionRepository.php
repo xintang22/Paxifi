@@ -18,7 +18,7 @@ class EloquentCommissionRepository extends BaseModel
      *
      * @var array
      */
-    protected $fillable = ['driver_id', 'total_commission', 'status', 'commission_ipn', 'commission_payment_id'];
+    protected $fillable = ['driver_id', 'commissions', 'currency', 'status', 'commission_ipn', 'commission_payment_id', 'capture_created_at', 'capture_updated_at', 'capture_id', 'capture_ipn', 'capture_status'];
 
     /**
      * Driver - Commission one to many relationship.
@@ -50,6 +50,30 @@ class EloquentCommissionRepository extends BaseModel
      * @return mixed
      */
     public function getCommissionIpnAttribute($value)
+    {
+        return unserialize($value);
+    }
+
+    /**
+     * Attributes
+     *
+     * Serialize the ipn
+     *
+     * @param $value
+     */
+    public function setCaptureIpnAttribute($value)
+    {
+        $this->attributes['capture_ipn'] = serialize($value);
+    }
+
+    /**
+     * Returns un-serialized ipn.
+     *
+     * @param $value
+     *
+     * @return mixed
+     */
+    public function getCaptureIpnAttribute($value)
     {
         return unserialize($value);
     }

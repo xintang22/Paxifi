@@ -18,7 +18,7 @@ class CreateNotificationsTable extends Migration {
             $table->integer('sales')->nullable()->default(0);
             $table->string('ranking')->nullable()->default("");
             $table->integer('stock_reminder')->nullable()->default(0);
-            $table->integer('billing')->nullable()->default(0);
+            $table->string('billing')->nullable()->default("");
             $table->string('emails')->nullable()->default("");
             $table->timestamps();
             $table->softDeletes();
