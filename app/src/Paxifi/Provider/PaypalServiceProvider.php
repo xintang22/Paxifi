@@ -39,6 +39,9 @@ class PaypalServiceProvider extends ServiceProvider
                 // Paypal driver sales.
                 $this->app['router']->post('paypal/commission', 'Paxifi\Commission\Controller\CommissionController@commission');
 
+                // Paypal buy sticker single payment.
+                $this->app['router']->post('paypal/sticker', 'Paxifi\Paypal\Controller\PaypalController@buySticker');
+
             });
 
         });
@@ -75,5 +78,8 @@ class PaypalServiceProvider extends ServiceProvider
 
         // paxifi.paypal.commission.payment
         $this->app['events']->listen('paxifi.paypal.commission.payment', 'Paxifi\Commission\Controller\CommissionController@commission');
+
+        // paxifi.paypal.sticker.payment
+        $this->app['events']->listen('paxifi.paypal.sticker.payment', 'Paxifi\Paypal\Controller\PaypalController@buySticker');
     }
 }
