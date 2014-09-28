@@ -5,8 +5,9 @@ use Paxifi\Support\Repository\BaseModel;
 class EloquentShipmentRepository extends BaseModel {
     protected $table = 'shipments';
 
-    protected $fillable = ['sticker_id', 'address', 'status'];
+    protected $fillable = ['sticker_id', 'address', 'status', 'paypal_payment_id', 'paypal_payment_status', 'paypal_payment_details'];
 
+    protected $hidden = ['paypal_payment_details'];
     // Relationship
     public function sticker()
     {

@@ -10,7 +10,8 @@ class CreateShipmentValidator extends Validator
         "address.city" => "required",
         "address.country" => "required",
         "address.postcode" => "required",
-        "status" => "in Shipped, Waiting, Printed"
+        "status" => "in:shipped,waiting,printed",
+        "payment_status" => "in:pending,completed"
     ];
 
     protected $messages = [

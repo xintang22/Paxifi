@@ -19,18 +19,25 @@ class ShipmentController extends ApiController
     public function shipment($driver = null)
     {
         try {
+            \DB::beginTransaction();
+            
             if (is_null($driver)) {
                 $driver = $this->getAuthenticatedDriver();
             }
 
             $new_shipment = [
                 "sticker_id" => $driver->sticker->id,
-                "address" => \Input::get('address')
+                "address" => \Input::get('address'),
+                "status" => "waiting",
+                "paypal_payment_status" => "pending"
             ];
 
             with(new CreateShipmentValidator())->validate($new_shipment);
 
             if ($shipment = Shipment::create($new_shipment)) {
+
+                \DB::commit();
+
                 return $this->setStatusCode(201)->respondWithItem($shipment);
             }
 
@@ -38,6 +45,7 @@ class ShipmentController extends ApiController
         } catch (ValidationException $e) {
             return $this->errorWrongArgs($e->getErrors());
         } catch (\Exception $e) {
+            print_r($e->getMessage());
             return $this->errorInternalError();
         }
     }
