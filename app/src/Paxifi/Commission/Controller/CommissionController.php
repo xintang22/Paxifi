@@ -18,21 +18,11 @@ use Paxifi\Support\Controller\ApiController;
 
 class CommissionController extends ApiController
 {
-
     // Create commission paypal payment.
-    public function commission($driver = null, $ipn = null)
+    public function commission($driver, $ipn)
     {
-        if (is_null($driver)) {
-            $driver = $this->getAuthenticatedDriver();
-        }
-
-        if (is_null($ipn)) {
-            $ipn = \Input::all();
-        }
-
         try {
             \DB::beginTransaction();
-
 
             if ($driver->id == $ipn['custom']) {
                 // Get the pre-month commissions.
