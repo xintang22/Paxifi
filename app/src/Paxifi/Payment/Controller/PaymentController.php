@@ -5,6 +5,7 @@ use Paxifi\Payment\Repository\PaymentRepository as Payment;
 use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository as PaymentMethods;
 use Paxifi\Payment\Repository\Validation\UpdatePaymentValidator;
 use Paxifi\Payment\Transformer\PaymentTransformer;
+use Paxifi\Store\Repository\Product\EloquentProductRepository;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
 use Paxifi\Payment\Repository\Factory\PaymentInvoiceFactory;
@@ -101,6 +102,11 @@ class PaymentController extends ApiController
                 $products->map(function ($product) {
                     // Fires an event to update the inventory.
                     \Event::fire('paxifi.product.ordered', array($product, $product['pivot']['quantity']));
+
+                    // Fires an event to notification the driver that the product is in low inventory.
+                    if (EloquentProductRepository::find($product->id)->inventory <= 5) {
+                        \Event::fire('paxifi.notifications.stock', array($product));
+                    }
                 });
             }
 
