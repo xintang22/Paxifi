@@ -36,6 +36,7 @@ class CreateDriversTable extends Migration
             $table->boolean('notify_feedback')->default(true);
             $table->boolean('notify_billing')->default(true);
             $table->boolean('notify_others')->default(true);
+            $table->boolean('suspended')->nullable()->default(false);
             $table->tinyInteger('status', false, true)->nullable()->default(0);
             $table->timestamps();
             $table->softDeletes();
