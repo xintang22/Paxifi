@@ -41,6 +41,9 @@ class PaymentController extends ApiController
                     return $this->setStatusCode(200)->respondWithItem($order->payment);
                 } else {
                     $order->payment->delete();
+
+                    // Fire delete sales event.
+                    \Event::fire('paxifi.notifications.sales.delete', [$order->payment]);
                 }
             }
 
@@ -183,6 +186,8 @@ class PaymentController extends ApiController
 
                 if ($payment->delete()) {
 
+                    // Fire delete sales event.
+                    \Event::fire('paxifi.notifications.sales.delete', [$payment]);
                     \DB::commit();
 
                     return $this->setStatusCode(200)->respondWithItem($paymentNotDeleted);

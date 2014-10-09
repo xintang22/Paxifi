@@ -290,6 +290,27 @@ class NotificationController extends ApiController
     }
 
     /**
+     * When payment get canceled, the related notifications get delete also.
+     *
+     * @param $payment
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cancelSales($payment)
+    {
+        try {
+            \DB::beginTransaction();
+                if (NotificationRepository::where('sales', '=', $payment->id)->delete()) {
+                    $this->setStatusCode(204);
+                }
+            \DB::commit();
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
+        }
+
+    }
+
+    /**
      * Retrieves the Data Transformer
      *
      * @return \League\Fractal\TransformerAbstract
