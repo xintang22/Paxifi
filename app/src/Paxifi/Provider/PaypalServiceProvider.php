@@ -15,6 +15,7 @@ class PaypalServiceProvider extends ServiceProvider
         $this->registerConfiguration();
         $this->registerEvents();
         $this->registerRoutes();
+        $this->registerLogger();
     }
 
     /**
@@ -81,5 +82,19 @@ class PaypalServiceProvider extends ServiceProvider
 
         // paxifi.paypal.sticker.payment
         $this->app['events']->listen('paxifi.paypal.sticker.payment', 'Paxifi\Paypal\Controller\PaypalController@buySticker');
+    }
+
+    /**
+     * Register a custom logger for paypal.
+     */
+    public function registerLogger()
+    {
+        $this->app->bindShared('paxifi.paypal.log', function ($app) {
+            /** @var \Illuminate\Log\Writer $logger */
+            $logger = $app->make('log');
+            $logger->useFiles(storage_path().'/logs/paypal.log');
+
+            return $logger;
+        });
     }
 }

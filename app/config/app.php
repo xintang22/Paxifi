@@ -197,6 +197,8 @@ return array(
         'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
         'ResourceServer' => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
 
+        'PaypalLog'   => 'Paxifi\Paypal\Logger',
+
 	),
 
 );
