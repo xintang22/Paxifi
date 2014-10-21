@@ -166,7 +166,7 @@ class BaseApiController extends Controller
      */
     public function errorWrongArgs($message = 'Wrong Arguments')
     {
-        return $this->setStatusCode(400)->respondWithError($message);
+        return $this->setStatusCode(406)->respondWithError($message);
     }
 
     /**
