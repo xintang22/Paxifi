@@ -2,20 +2,17 @@
 
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
+Route::get('/', function () {
+    return Response::json([
+        'status' => 'Ok',
+        'time' => \Carbon\Carbon::now()->toISO8601String(),
+    ]);
+});
 
-App::missing(function($exception)
-{
-    return Response::json(array(
-        "status" => 501,
-        'error' => "not_implemented",
-        'message' => 'Not Implemented'
-    ), 501);
+App::missing(function($exception) {
+    return Redirect::to('/');
 });
 
 App::error(function (MethodNotAllowedHttpException $exception) {
-    return Response::json(array(
-        "status" => 405,
-        'error' => "method_not_allowed",
-        'message' => 'Method Not Allowed',
-    ), 405);
+    return Redirect::to('/');
 });
