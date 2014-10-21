@@ -1,9 +1,12 @@
 <?php namespace Paxifi\Subscription\Repository;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Support\Repository\BaseModel;
 
-class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRepositoryInterface{
+class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRepositoryInterface
+{
 
     use SoftDeletingTrait;
 
@@ -23,7 +26,7 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
      *
      * @var array
      */
-    protected $fillable = [ "plan_id", "driver_id", "trial_start", "trial_end", "start", "canceled_at", "ended_at", "current_period_start", "current_period_end", "ipn", "subscr_id", "status"];
+    protected $fillable = ["plan_id", "driver_id", "trial_start", "trial_end", "start", "canceled_at", "ended_at", "current_period_start", "current_period_end", "ipn", "subscr_id", "status"];
 
     /**
      * The attributes that should be mutated to dates.
@@ -114,5 +117,23 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
     {
         $this->status = "canceled";
         $this->save();
+    }
+
+    /**
+     * @param EloquentPlanRepository $plan
+     * @param EloquentDriverRepository $driver
+     */
+    public static function initiateTrail(EloquentPlanRepository $plan, EloquentDriverRepository $driver)
+    {
+        $now = Carbon::now();
+
+        $subsctiption = new static();
+        $subsctiption->driver_id = $driver->id;
+        $subsctiption->plan_id = $plan->id;
+        $subsctiption->trial_start = $now;
+        $subsctiption->trial_end = $now->addDays($plan->trial_period_days);
+        $subsctiption->start = $now;
+
+        $subsctiption->save();
     }
 }

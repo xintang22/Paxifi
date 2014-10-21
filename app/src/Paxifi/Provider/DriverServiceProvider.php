@@ -136,6 +136,7 @@ class DriverServiceProvider extends ServiceProvider
 
                 // Register new Store
                 $this->app['router']->post('drivers', 'Paxifi\Store\Controller\DriverController@store');
+                $this->app['router']->post('drivers/register', 'Paxifi\Store\Controller\DriverController@register');
 
                 // Rating
                 $this->app['router']->post('drivers/{driver}/rating', 'Paxifi\Store\Controller\RatingController@rating');

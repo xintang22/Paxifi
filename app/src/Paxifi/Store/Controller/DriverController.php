@@ -1,21 +1,45 @@
 <?php namespace Paxifi\Store\Controller;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
+use Paxifi\Paypal\Paypal;
 use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Store\Repository\Driver\Factory\DriverLogoFactory;
 use Paxifi\Store\Repository\Driver\Validation\CreateDriverValidator;
+use Paxifi\Store\Repository\Driver\Validation\RegisterDriverValidator;
 use Paxifi\Store\Repository\Driver\Validation\SettingsValidator;
 use Paxifi\Store\Repository\Driver\Validation\UpdateDriverSellerIdValidator;
 use Paxifi\Store\Repository\Driver\Validation\UpdateDriverValidator;
 use Paxifi\Store\Repository\Driver\Validation\UpdatePasswordValidator;
 use Paxifi\Store\Transformer\DriverTransformer;
+use Paxifi\Subscription\Repository\EloquentPlanRepository;
+use Paxifi\Subscription\Repository\EloquentSubscriptionRepository;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
 
 class DriverController extends ApiController
 {
+    /**
+     * @var array
+     */
     protected $searchables = ['seller_id'];
+
+    /**
+     * @var \Paxifi\Store\Repository\Driver\Validation\RegisterDriverValidator
+     */
+    protected $registerDriverValidator;
+    /**
+     * @var Paypal
+     */
+    private $paypal;
+
+    function __construct(RegisterDriverValidator $registerDriverValidator, Paypal $paypal)
+    {
+        parent::__construct();
+        $this->registerDriverValidator = $registerDriverValidator;
+        $this->paypal = $paypal;
+    }
 
     /**
      * Display a listing of drivers.
@@ -40,6 +64,42 @@ class DriverController extends ApiController
             with(new CreateDriverValidator())->validate(\Input::except('seller_id', 'status', 'paypal_account'));
 
             $driver = DriverRepository::create(\Input::except('seller_id', 'status', 'paypal_account'));
+
+            \DB::commit();
+
+            return $this->setStatusCode(201)->respondWithItem(DriverRepository::find($driver->id));
+
+        } catch (ValidationException $e) {
+            return $this->errorWrongArgs($e->getErrors());
+        }
+
+    }
+
+    /**
+     * Register a new Driver (a.k.a Store)
+     *
+     * @return Response
+     */
+    public function register()
+    {
+        try {
+            \DB::beginTransaction();
+
+            $data = \Input::except('seller_id', 'status', 'paypal_account');
+
+            // Validate user input + Paypal token
+            $this->registerDriverValidator->validate($data);
+
+            // create a new driver
+            $driver = DriverRepository::create($data);
+
+            // initiate driver's subscription / trial
+            EloquentSubscriptionRepository::initiateTrail(EloquentPlanRepository::firstOrFail(), $driver);
+
+            // Get Driver Paypal information and store the Paypal email
+            $info = $this->paypal->getUserInfoByAccessToken($driver);
+            $driver->paypal_account = $info['email'];
+            $driver->save();
 
             \DB::commit();
 
