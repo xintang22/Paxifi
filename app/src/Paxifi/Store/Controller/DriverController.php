@@ -98,7 +98,8 @@ class DriverController extends ApiController
 
             // Get Driver Paypal information and store the Paypal email
             $info = $this->paypal->getUserInfoByAccessToken($driver);
-            $driver->paypal_account = $info['email'];
+
+            $driver->paypal_account = $info->email;
             $driver->save();
 
             \DB::commit();
