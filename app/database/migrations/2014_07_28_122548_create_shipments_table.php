@@ -17,9 +17,9 @@ class CreateShipmentsTable extends Migration {
             $table->unsignedInteger('sticker_id');
             $table->text('address');
             $table->enum('status', ['shipped', 'waiting' , 'printed'])->default('waiting');
-            $table->string('paypal_payment_id')->nullable()->default('');
+            $table->string('paypal_payment_id')->nullable();
             $table->enum('paypal_payment_status', ['pending', 'completed'])->default('pending');
-            $table->text('paypal_payment_details')->nullable()->default('');
+            $table->text('paypal_payment_details')->nullable();
             $table->timestamps();
 
             // Relationship.

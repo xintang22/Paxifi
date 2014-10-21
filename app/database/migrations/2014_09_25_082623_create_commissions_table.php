@@ -25,9 +25,9 @@ class CreateCommissionsTable extends Migration {
             // authorized commission capture
             $table->timestamp('capture_created_at')->nullable();
             $table->timestamp('capture_updated_at')->nullable();
-            $table->string('capture_id')->nullable()->default("");
-            $table->text('capture_ipn')->nullable()->default("");
-            $table->string('capture_status')->nullable()->default("");
+            $table->string('capture_id')->nullable();
+            $table->text('capture_ipn')->nullable();
+            $table->string('capture_status')->nullable();
 
             $table->timestamps();
 
