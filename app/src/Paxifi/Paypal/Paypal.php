@@ -44,6 +44,7 @@ class Paypal
 
         /** @var \GuzzleHttp\Message\ResponseInterface $res */
         $res = $this->client->post($oauth2Url, [
+            'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
             'auth' => [$this->clientId, $this->clientSecret],
             'body' => [
                 'grant_type' => 'authorization_code',
