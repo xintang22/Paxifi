@@ -302,6 +302,12 @@ class DriverServiceProvider extends ServiceProvider
             \Queue::push('Paxifi\Support\Queues\Queues@email', $emailOptions);
         });
 
+        // fire initialize driver account information.
+//        $this->app['events']->listen('paxifi.drivers.initialize', function($driver) {
+//            \Queue::push('Paxifi\Store\Controller\DriverController@initialize', $driver);
+//        });
+        $this->app['events']->listen('paxifi.drivers.initialize', 'Paxifi\Store\Controller\DriverController@initialize');
+
         // fire driver logo generate event.
         $this->app['events']->listen(['paxifi.drivers.created', 'paxifi.store.photo.updated', 'paxifi.store.seller_id.created'], 'Paxifi\Store\Controller\DriverController@logo');
 

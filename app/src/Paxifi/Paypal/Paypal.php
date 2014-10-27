@@ -29,6 +29,36 @@ class Paypal
         $this->request = $request;
     }
 
+    private function curl($url, $method = 'GET', $postvals = null)
+    {
+        $ch = curl_init($url);
+
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($ch, CURLOPT_USERPWD, $this->clientId . ":" . $this->clientSecret);
+
+        $options = array(
+            CURLOPT_HEADER => true,
+            CURLINFO_HEADER_OUT => true,
+            CURLOPT_HTTPHEADER => array("Accept: application/json", "Accept-Language: en_US"),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_VERBOSE => true,
+            CURLOPT_POSTFIELDS => $postvals,
+            CURLOPT_CUSTOMREQUEST => $method,
+        );
+
+        curl_setopt_array($ch, $options);
+
+        $response = curl_exec($ch);
+
+        $statue = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $header = substr($response, 0, curl_getinfo($ch, CURLINFO_HEADER_SIZE));
+        $body = json_decode(substr($response, curl_getinfo($ch, CURLINFO_HEADER_SIZE)));
+
+        curl_close($ch);
+
+        return array('status' => $statue, 'header' => $header, 'body' => $body);
+    }
+
     /**
      * Verify given authorization code.
      *
@@ -42,28 +72,10 @@ class Paypal
     {
         $oauth2Url = $this->paypalUrl . 'oauth2/token';
 
-        /** @var \GuzzleHttp\Message\ResponseInterface $res */
-        $res = $this->client->post($oauth2Url, [
-            'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
-            'auth' => [$this->clientId, $this->clientSecret],
-            'body' => [
-                'grant_type' => 'authorization_code',
-                'response_type' => 'token',
-                'redirect_uri' => 'urn:ietf:wg:oauth:2.0:oob',
-                'code' => $code
-            ]
-        ]);
+        // return $this->requestWithCurl($code, $attachToRequest, $oauth2Url);
 
-        if ($res->getStatusCode() == 200) {
-            if ($attachToRequest) {
-                // Attach the user paypal authorization to the Request
-                $this->request->merge(['paypal' => $res->json()]);
-            }
+        return $this->requestWithGuzzle($code, $attachToRequest, $oauth2Url);
 
-            return $res->json();
-        }
-
-        throw new \InvalidArgumentException('Invalid Paypal Authorization Code.');
     }
 
     /**
@@ -79,6 +91,14 @@ class Paypal
         try {
             $oauth2Url = $this->paypalUrl . 'oauth2/token';
 
+//            $postvals = "grant_type=refresh_token&refresh_token=$driver->paypal_refresh_token";
+
+//            $response = self::curl($oauth2Url, "POST", $postvals);
+
+//            if ($response['status'] == 200) {
+//                return $response['body']->access_token;
+//            }
+
             $res = $this->client->post($oauth2Url, [
                 'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
                 'auth' => [$this->clientId, $this->clientSecret],
@@ -89,7 +109,7 @@ class Paypal
             ]);
 
             if ($res->getStatusCode() == 200) {
-                return $res->json(["object" => true])->access_token;
+                return $res->json()['access_token'];
             }
 
             throw new \Exception('Refresh access token failed.');
@@ -99,17 +119,14 @@ class Paypal
     }
 
     /**
-     * Retrieve user profile attributes.
+     * Retrieve user profile attributes by given access token.
      *
-     * @param \Paxifi\Store\Repository\Driver\EloquentDriverRepository $driver
+     * @param $accessToken
      *
-     * @return string
+     * @return mixed
      */
-    public function getUserInfoByAccessToken(EloquentDriverRepository $driver)
+    public function getUserInfoByAccessToken($accessToken)
     {
-
-        // Get access token
-        $accessToken = $this->getUserAccessToken($driver);
 
         // Create a fake payment to check the user paypal account
         // and store his paypal email (metchant email)
@@ -124,7 +141,7 @@ class Paypal
                         "currency" => 'USD',
                         "total" => 0.01
                     ],
-                    "description" => "Paxifi Testing Payment"
+                    "description" => "Paxifi: check validity of PayPal account"
                 ]
             ]
         ];
@@ -136,7 +153,6 @@ class Paypal
 
         // Refund the payment
         if ($this->refundPayment($accessToken, $capturedPayment)) {
-            // @TODO return the correct format (array or object) of the payer info
             return $payment->payer->payer_info;
         }
     }
@@ -199,8 +215,7 @@ class Paypal
                 ]
             ]);
 
-            if ($capture->getStatusCode() == 200 && $capture->json(['object' => true])->state == "completed")
-            {
+            if ($capture->getStatusCode() == 200 && $capture->json(['object' => true])->state == "completed") {
                 PaypalLog::info(['Capture' => $capture->json()]);
                 return $capture->json(['object' => true]);
             }
@@ -255,7 +270,8 @@ class Paypal
      *
      * @return string
      */
-    private function getPaypalLink(array $links = array(), $rel) {
+    private function getPaypalLink(array $links = array(), $rel)
+    {
         $matchedUrl = "";
 
         foreach ($links as $index => $link) {
@@ -265,6 +281,72 @@ class Paypal
         }
 
         return $matchedUrl;
+    }
+
+    /**
+     * @param $code
+     * @param $attachToRequest
+     * @param $oauth2Url
+     *
+     * @throws \InvalidArgumentException
+     * @return mixed
+     */
+    private function requestWithGuzzle($code, $attachToRequest, $oauth2Url)
+    {
+        try {
+            /** @var \GuzzleHttp\Message\ResponseInterface $res */
+            $res = $this->client->post($oauth2Url, [
+                'auth' => [$this->clientId, $this->clientSecret],
+                'body' => [
+                    'grant_type' => 'authorization_code',
+                    'response_type' => 'token',
+                    'redirect_uri' => 'urn:ietf:wg:oauth:2.0:oob',
+                    'code' => $code
+                ]
+            ]);
+
+            if ($res->getStatusCode() == 200) {
+                if ($attachToRequest) {
+                    // Attach the user paypal authorization to the Request
+                    $this->request->merge(['paypal' => $res->json(['object' => true])]);
+                }
+
+                return $res->json();
+            }
+            throw new \InvalidArgumentException('Invalid Paypal Authorization Code.');
+
+        } catch (\Exception $e) {
+
+            throw new \InvalidArgumentException('Invalid Paypal Authorization Code.');
+
+        }
+
+    }
+
+    /**
+     * @param $code
+     * @param $attachToRequest
+     * @param $oauth2Url
+     *
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
+    private function requestWithCurl($code, $attachToRequest, $oauth2Url)
+    {
+        $postvals = "grant_type=authorization_code&response_type=token&redirect_uri=urn:ietf:wg:oauth:2.0:oob&code=$code";
+
+        $response = self::curl($oauth2Url, "POST", $postvals);
+
+        if ($response['status'] == 200) {
+            if ($attachToRequest) {
+                // Attach the user paypal authorization to the Request
+                $this->request->merge(['paypal' => $response['body']]);
+            }
+
+            return $response['body'];
+        }
+
+        throw new \InvalidArgumentException('Invalid Paypal Authorization Code.');
     }
 }
 

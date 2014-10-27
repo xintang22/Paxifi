@@ -90,17 +90,14 @@ class DriverController extends ApiController
             // Validate user input + Paypal token
             $this->registerDriverValidator->validate($data);
 
+            $paypal = \Input::get('paypal');
+
+            $data['paypal_refresh_token'] = $paypal->refresh_token;
+
             // create a new driver
             $driver = DriverRepository::create($data);
 
-            // initiate driver's subscription / trial
-            EloquentSubscriptionRepository::initiateTrail(EloquentPlanRepository::firstOrFail(), $driver);
-
-            // Get Driver Paypal information and store the Paypal email
-            $info = $this->paypal->getUserInfoByAccessToken($driver);
-
-            $driver->paypal_account = $info->email;
-            $driver->save();
+            \Event::fire('paxifi.drivers.initialize', [$driver]);
 
             \DB::commit();
 
@@ -108,9 +105,38 @@ class DriverController extends ApiController
 
         } catch (ValidationException $e) {
             return $this->errorWrongArgs($e->getErrors());
+        } catch (\InvalidArgumentException $e) {
+            return $this->errorWrongArgs($e->getMessage());
         }
 
     }
+
+    /**
+     * @param $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function initialize($driver)
+    {
+        try {
+            \DB::beginTransaction();
+
+            // initiate driver's subscription / trial
+            EloquentSubscriptionRepository::initiateTrail(EloquentPlanRepository::firstOrFail(), $driver);
+
+            $accessToken = $this->paypal->getUserAccessToken($driver);
+
+            // Get Driver Paypal information and store the Paypal email
+            $info = $this->paypal->getUserInfoByAccessToken($accessToken);
+
+            $driver->paypal_account = $info->email;
+            $driver->save();
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            return $this->errorWrongArgs($e->getMessage());
+        }
+}
 
     /**
      * Display the specified driver.
@@ -154,10 +180,6 @@ class DriverController extends ApiController
             $driver->update(\Input::except('email', 'seller_id', 'status', 'paypal_account'));
 
             \Event::fire('paxifi.store.updated', [$driver]);
-
-            // file event to update sticker when field contains seller_id or photo
-//            if (\Input::has('photo'))
-//                \Event::fire('paxifi.store.photo.updated', [$driver]);
 
             \DB::commit();
 
