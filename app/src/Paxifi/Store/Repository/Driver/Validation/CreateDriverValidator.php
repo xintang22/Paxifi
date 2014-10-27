@@ -6,7 +6,6 @@ class CreateDriverValidator extends Validator
 {
     protected $rules = [
         'name' => 'required',
-        'seller_id' => 'unique:drivers|alpha_dash|max:12',
         'email' => 'required|email|unique:drivers',
         'password' => 'required|min:6|alpha_dash',
         'photo' => 'url',
