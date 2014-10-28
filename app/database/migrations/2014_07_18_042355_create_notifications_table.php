@@ -15,11 +15,11 @@ class CreateNotificationsTable extends Migration {
         Schema::create('notifications', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('driver_id');
-            $table->integer('sales')->nullable()->default(0);
-            $table->string('ranking')->nullable()->default("");
-            $table->integer('stock_reminder')->nullable()->default(0);
-            $table->string('billing')->nullable()->default("");
-            $table->string('emails')->nullable()->default("");
+            $table->integer('sales')->default(0);
+            $table->string('ranking')->nullable();
+            $table->integer('stock_reminder')->default(0);
+            $table->string('billing')->nullable();
+            $table->string('emails')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
