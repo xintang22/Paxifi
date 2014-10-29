@@ -10,6 +10,23 @@ use Paxifi\Support\Controller\ApiController;
 
 class OrderController extends ApiController
 {
+    /**
+     * Get specific order information
+     *
+     * @param $order
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($order)
+    {
+        return $this->respondWithItem($order);
+    }
+
+    /**
+     * Create order record.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store()
     {
         try {
@@ -44,7 +61,6 @@ class OrderController extends ApiController
             return $this->errorWrongArgs('Invalid product id');
 
         } catch (\InvalidArgumentException $e) {
-
             return $this->errorWrongArgs($e->getMessage());
         } catch (\Exception $e) {
             return $this->errorInternalError();
