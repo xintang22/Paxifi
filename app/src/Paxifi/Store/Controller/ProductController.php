@@ -1,7 +1,6 @@
 <?php namespace Paxifi\Store\Controller;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Problem\Repository\EloquentProblemTypesRepository as ProblemType;
 use Paxifi\Problem\Repository\ProblemRepository as Problem;
 use Paxifi\Store\Repository\Product\ProductRepository;
@@ -23,18 +22,19 @@ class ProductController extends ApiController
      */
     public function index($driver = null)
     {
+        try {
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
 
-        if (is_null($driver)) {
-            $driver = $this->getAuthenticatedDriver();
+            if (\Input::has('page') && \Input::get('page') != 0) {
+                return $this->respondWithCollection($driver->products()->paginate());
+            } else {
+                return $this->respondWithCollection($driver->products()->get());
+            }
+        } catch (\Exception $e) {
+            return $this->errorInternalError($e->getMessage());
         }
-
-        if ($driver instanceof EloquentDriverRepository) {
-
-            return $this->respondWithCollection($driver->products()->get());
-
-        }
-
-        return $this->respondWithCollection(ProductRepository::all());
     }
 
     /**
