@@ -36,6 +36,9 @@ class PaymentServiceProvider extends ServiceProvider
     {
         $this->app['router']->group(['before' => 'oauth'], function () {
 
+            // Get payment with specific payment id.
+            $this->app['router']->get('payments/{payment}', 'Paxifi\Payment\Controller\PaymentController@show');
+
             // Cancel order
             $this->app['router']->put('payments/{payment}/cancel', 'Paxifi\Payment\Controller\PaymentController@cancel');
 
