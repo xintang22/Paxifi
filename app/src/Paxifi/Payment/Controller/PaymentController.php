@@ -12,6 +12,16 @@ use Paxifi\Payment\Repository\Factory\PaymentInvoiceFactory;
 
 class PaymentController extends ApiController
 {
+    /**
+     * Get specific payment information.
+     *
+     * @param $payment
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($payment) {
+        return $this->respondWithItem($payment);
+    }
 
     /**
      * Cash Payment.
