@@ -72,9 +72,9 @@ class Paypal
     {
         $oauth2Url = $this->paypalUrl . 'oauth2/token';
 
-        // return $this->requestWithCurl($code, $attachToRequest, $oauth2Url);
-
-        return $this->requestWithGuzzle($code, $attachToRequest, $oauth2Url);
+         return $this->requestWithCurl($code, $attachToRequest, $oauth2Url);
+//
+//        return $this->requestWithGuzzle($code, $attachToRequest, $oauth2Url);
 
     }
 
