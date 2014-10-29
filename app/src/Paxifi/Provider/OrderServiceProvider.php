@@ -51,6 +51,8 @@ class OrderServiceProvider extends ServiceProvider
             // get all the soldout order and products.
             $this->app['router']->get('soldouts', 'Paxifi\Order\Controller\OrderController@soldouts');
 
+            $this->app['router']->get('orders/{order}', 'Paxifi\Order\Controller\OrderController@show');
+
             $this->app['router']->post('orders', 'Paxifi\Order\Controller\OrderController@store');
 
             // Feedback
