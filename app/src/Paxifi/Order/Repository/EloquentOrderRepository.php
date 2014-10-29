@@ -114,8 +114,14 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
 
         // Total Tax
         $totalUnitPrice = $product->unit_price * $item['quantity'];
-        $totalTax = Calculator::calculate($totalUnitPrice, $product->getTaxRate());
-        $this->total_tax += $totalTax;
+
+        if ($product->driver->tax_enabled) {
+            $totalTax = Calculator::calculate($totalUnitPrice, $product->getTaxRate());
+            $this->total_tax += $totalTax;
+        } else {
+            $totalTax = 0;
+            $this->total_tax += $totalTax;
+        }
 
         // Total Sales
         $this->total_sales += $product->getTaxRate()->isIncludedInPrice() ? $totalUnitPrice : $totalUnitPrice + $totalTax;
