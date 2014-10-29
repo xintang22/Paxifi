@@ -28,6 +28,8 @@ class PaypalController extends ApiController
             $listener = new Listener;
             $verifier = new CurlVerifier;
             $ipn = \Input::all();
+            \Log::useFiles(storage_path().'/logs/'. 'payment-'. time(). '.txt');
+            \Log::info($ipn);
             $ipnMessage = new Message($ipn);
 
             $verifier->setIpnMessage($ipnMessage);
