@@ -28,7 +28,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @var array
      */
-    protected $hidden = array('password', 'paypal_refresh_token');
+    protected $hidden = array('password', 'paypal_refresh_token', 'remember_token');
 
     /**
      * The attributes that are mass assignable.
