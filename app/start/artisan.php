@@ -11,3 +11,9 @@
 |
 */
 
+use Paxifi\Support\Socket\ListenCommand;
+
+Artisan::add(new SetupCommand);
+
+Artisan::add(new ListenCommand);
+
