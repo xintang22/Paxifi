@@ -14,7 +14,9 @@
         "thujohn/pdf": "dev-master",
         "mike182uk/paypal-ipn-listener" : "v2.0.0",
         "pda/pheanstalk": "*",
-        "guzzlehttp/guzzle": "~4.0"
+        "guzzlehttp/guzzle": "dev-master",
+        "cboden/ratchet": "0.3.*",
+        "react/zmq": "0.2.*|0.3.*"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
