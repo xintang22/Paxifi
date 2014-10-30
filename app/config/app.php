@@ -122,10 +122,14 @@ return array(
         'Paxifi\Provider\ProblemServiceProvider',
         'Paxifi\Provider\FeedbackServiceProvider',
         'Paxifi\Provider\PaypalServiceProvider',
+        'Paxifi\Provider\SettingsServiceProvider',
 
         'Intervention\Image\ImageServiceProvider',
         'Thujohn\Pdf\PdfServiceProvider',
         'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
+
+        // Socket
+        'Paxifi\Support\Socket\SocketServiceProvider',
 
 	),
 
@@ -198,6 +202,8 @@ return array(
         'ResourceServer' => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
 
         'PaypalLog'   => 'Paxifi\Paypal\Logger',
+
+        'Socket'		  => 'Paxifi\Support\Socket\Socket',
 
 	),
 
