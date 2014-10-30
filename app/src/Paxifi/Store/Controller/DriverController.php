@@ -222,8 +222,6 @@ class DriverController extends ApiController
 
             \DB::commit();
 
-            \Event::fire('paxifi.store.seller_id.created', [$driver]);
-
             return $this->respondWithItem($driver);
 
         } catch (ValidationException $e) {
