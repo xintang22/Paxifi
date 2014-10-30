@@ -11,6 +11,7 @@ use PayPal\Ipn\Listener;
 use PayPal\Ipn\Message;
 use PayPal\Ipn\Verifier\CurlVerifier;
 use Paxifi\Sales\Repository\SaleCollection;
+use PayPal\Ipn\Verifier\SocketVerifier;
 
 class PaypalController extends ApiController
 {
@@ -26,54 +27,57 @@ class PaypalController extends ApiController
             \DB::beginTransaction();
 
             $listener = new Listener;
-            $verifier = new CurlVerifier;
-            $ipn = \Input::all();
-            \Log::useFiles(storage_path().'/logs/'. 'payment-'. time(). '.txt');
-            \Log::info($ipn);
-            $ipnMessage = new Message($ipn);
+            $verifier = new SocketVerifier;
+            // $ipn = \Input::all();
+
+            $ipnMessage = Message::createFromGlobals(); // uses php://input      
 
             $verifier->setIpnMessage($ipnMessage);
             $verifier->setEnvironment(\Config::get('paxifi.paypal.environment'));
 
             $listener->setVerifier($verifier);
 
-            $listener->listen(
-                function () use ($listener, $ipn, &$response) {
+            $listener->onVerifiedIpn(function() use ($listener) {
+                $ipn = [];
+                
+                $messages = $listener->getVerifier()->getIpnMessage();
 
-                    // on verified IPN (everything is good!)
-                    $resp = $listener->getVerifier()->getVerificationResponse();
+                parse_str($messages, $ipn);
 
-                    // Find paid order (custom is order_id).
-                    if ($order = EloquentOrderRepository::find(\Input::get('custom'))) {
+                if ($order = EloquentOrderRepository::find(\Input::get('custom'))) {
 
-                        /**
-                         * Check the paypal payment.
-                         *
-                         * Total sales ==  ipn['mc_gross']
-                         *
-                         * Driver Paypal Account == ipn['business]
-                         */
-                        if ($ipn['payment_status'] == 'Completed' &&
-                            $order->total_sales == $ipn['payment_gross'] &&
-                            $order->OrderDriver()->paypal_account == $ipn['business']
-                        ) {
-                            \Event::fire('paxifi.paypal.payment.' . $ipn['txn_type'], [$order->payment, $ipn]);
-                        }
-
-                        \DB::commit();
+                    /**
+                     * Check the paypal payment.
+                     *
+                     * Total sales ==  ipn['mc_gross']
+                     *
+                     * Driver Paypal Account == ipn['business]
+                     */
+                    if ($ipn['payment_status'] == 'Completed' &&
+                        $order->total_sales == $ipn['payment_gross'] &&
+                        $order->OrderDriver()->paypal_account == $ipn['business']
+                    ) {
+                        \Event::fire('paxifi.paypal.payment.' . $ipn['txn_type'], [$order->payment, $ipn]);
                     }
 
-                    return $this->setStatusCode(404)->respondWithError('Order Not Found');
-                },
-                function () use ($listener) {
-
-                    // on invalid IPN (somethings not right!)
-                    $report = $listener->getReport();
-                    $resp = $listener->getVerifier()->getVerificationResponse();
-
-                    return $this->setStatusCode(400)->respondWithError('Payment failed.');
+                    \DB::commit();
                 }
-            );
+            });
+
+            $listener->listen(function() use ($listener) {
+
+                $resp = $listener->getVerifier()->getVerificationResponse();
+
+            }, function() use($listener) {
+
+                 // on invalid IPN (somethings not right!)
+                 $report = $listener->getReport();
+                 $resp = $listener->getVerifier()->getVerificationResponse();
+                 \Log::useFiles(storage_path().'/logs/'. 'error-'. time(). '.txt');
+                 \Log::info($report);
+
+                 return $this->setStatusCode(400)->respondWithError('Payment failed.');
+            });
         } catch (\RuntimeException $e) {
             return $this->setStatusCode(400)->respondWithError($e->getMessage());
         } catch (\Exception $e) {
