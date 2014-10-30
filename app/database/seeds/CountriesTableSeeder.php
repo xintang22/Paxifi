@@ -1,6 +1,6 @@
 <?php
 
-use \Paxifi\Settings\Repository\EloquentSettingsRepository;
+use \Paxifi\Settings\Repository\EloquentCountryRepository;
 
 class CountriesTableSeeder extends Seeder
 {
@@ -16,7 +16,7 @@ class CountriesTableSeeder extends Seeder
         DB::table('countries')->truncate();
 
         foreach ($this->countries as $index => $country) {
-            EloquentSettingsRepository::create($country);
+            EloquentCountryRepository::create($country);
         }
     }
 
