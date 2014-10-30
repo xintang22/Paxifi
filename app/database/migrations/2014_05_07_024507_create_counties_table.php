@@ -18,7 +18,8 @@ class CreateCountiesTable extends Migration
             $table->string('name');
             $table->string('iso', 2);
             $table->string('currency');
-            $table->decimal('sticker_shipment');
+            $table->decimal('sticker_price');
+            $table->decimal('commission_rate');
         });
     }
 
