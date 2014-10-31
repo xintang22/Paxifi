@@ -107,6 +107,8 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 
+        'Paxifi\Support\Socket\SocketServiceProvider',
+
         'Paxifi\Provider\ApiServiceProvider',
         'Paxifi\Provider\OAuth2ServiceProvider',
         'Paxifi\Provider\DriverServiceProvider',
@@ -127,9 +129,6 @@ return array(
         'Intervention\Image\ImageServiceProvider',
         'Thujohn\Pdf\PdfServiceProvider',
         'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
-
-        // Socket
-        'Paxifi\Support\Socket\SocketServiceProvider',
 
 	),
 

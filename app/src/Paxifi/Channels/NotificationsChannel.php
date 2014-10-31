@@ -6,7 +6,7 @@ use Paxifi\Support\Socket\BaseChannel;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
 
-class NotificationChannel extends BaseChannel
+class NotificationsChannel extends BaseChannel
 {
     /**
      * Handler to be executed after client subscription.

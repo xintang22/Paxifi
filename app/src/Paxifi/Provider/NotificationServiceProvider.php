@@ -2,6 +2,7 @@
 
 use Illuminate\Support\ServiceProvider;
 use Paxifi\Sticker\Exception\NotificationNotFoundException;
+use Socket;
 
 /**
  * Class NotificationServiceProvider
