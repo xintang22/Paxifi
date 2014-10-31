@@ -5,6 +5,7 @@ use Paxifi\Notification\Repository\EloquentNotificationRepository;
 use Paxifi\Order\Repository\EloquentOrderRepository as Order;
 use Paxifi\Store\Repository\Product\EloquentProductRepository as Product;
 use Paxifi\Payment\Repository\EloquentPaymentRepository as Payment;
+use Illuminate\Support\Collection;
 
 class NotificationTransformer extends TransformerAbstract
 {
@@ -32,6 +33,7 @@ class NotificationTransformer extends TransformerAbstract
 
         if ($notification->sales)
             $response = $this->transformSales($notification);
+
 
         if ($notification->emails)
             $response = $this->transformEmails($notification);
@@ -115,7 +117,21 @@ class NotificationTransformer extends TransformerAbstract
             switch ($payment->payment_method()->first()->name)
             {
                 case 'paypal':
+
                     $translation = "notifications.sales.paypal.completed";
+
+                    $payment->order->products->map(function($product, $index) use(&$sales, $translation, $notification, $payment, $payment_status) {
+
+                        $sale = [
+                            'message' => $this->translator->trans($translation , ['product_name' => $product->name, 'currency' => $notification->driver->currency, 'amount' => $payment->order->total_sales]),
+                            'type' => 'sales',
+                            'status' => $payment_status,
+                            'payment' => $payment->toArray()
+                        ];
+
+                        $sales = $sale;
+                    });
+
                     break;
 
                 default:
@@ -132,14 +148,16 @@ class NotificationTransformer extends TransformerAbstract
                     }
 
                     $translation = "notifications.sales.cash." . $status;
+
+                    $sales = [
+                        'message' => $this->translator->trans($translation , ['currency' => $notification->driver->currency, 'amount' => $payment->order->total_sales]),
+                        'type' => 'sales',
+                        'status' => $payment_status,
+                        'payment' => $payment
+                    ];
             }
 
-            $sales = [
-                'message' => $this->translator->trans($translation , ['currency' => $notification->driver->currency, 'amount' => $payment->order->total_sales]),
-                'type' => 'sales',
-                'status' => $payment_status,
-                'payment' => $payment
-            ];
+
         }
 
         return $sales;
