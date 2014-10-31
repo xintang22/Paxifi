@@ -6,6 +6,7 @@ use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Paypal\Helper\PaypalHelper;
 use Paxifi\Shipment\Repository\EloquentShipmentRepository;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
+use Paxifi\Store\Repository\Product\EloquentProductRepository;
 use Paxifi\Support\Controller\ApiController;
 use PayPal\Ipn\Listener;
 use PayPal\Ipn\Message;
@@ -39,7 +40,7 @@ class PaypalController extends ApiController
 
             $listener->onVerifiedIpn(function() use ($listener) {
                 $ipn = [];
-                
+
                 $messages = $listener->getVerifier()->getIpnMessage();
 
                 parse_str($messages, $ipn);
@@ -58,6 +59,18 @@ class PaypalController extends ApiController
                         $order->OrderDriver()->paypal_account == $ipn['business']
                     ) {
                         \Event::fire('paxifi.paypal.payment.' . $ipn['txn_type'], [$order->payment, $ipn]);
+
+                        $products = $order->products;
+
+                        $products->map(function ($product) {
+                            // Fires an event to update the inventory.
+                            \Event::fire('paxifi.product.ordered', array($product, $product['pivot']['quantity']));
+
+                            // Fires an event to notification the driver that the product is in low inventory.
+                            if (EloquentProductRepository::find($product->id)->inventory <= 5) {
+                                \Event::fire('paxifi.notifications.stock', array($product));
+                            }
+                        });
                     }
 
                     \DB::commit();
