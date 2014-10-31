@@ -4,11 +4,11 @@ return array(
 
     "auth" => array(
 
-        "login" => "You have been successfully logged in.",
+        "login" => "You have successfully logged in.",
 
-        "logout" => "You have been successfully logged out.",
+        "logout" => "You have successfully logged out.",
 
-        "wrong_credentials" => "Wrong email or password.",
+        "wrong_credentials" => "Incorrect email or password.",
 
         "not_logged_in" => "You are not logged in.",
 
@@ -20,19 +20,19 @@ return array(
 
         "driver" => "We can't find a driver with that e-mail address.",
 
-        "sent" => "Password reminder sent to :email!",
+        "sent" => "Password reminder has been sent to :email!",
 
         "reset" => "Your password has been successfully updated.",
     ),
 
     "store" => array(
 
-        "not_found" => "Store with ID :id was not found.",
+        "not_found" => "The store ID :id does not exist.",
     ),
 
     "product" => array(
 
-        "not_found" => "Product with ID :id was not found.",
+        "not_found" => "The product ID :id does not found.",
 
     ),
 
@@ -41,6 +41,6 @@ return array(
     ),
 
     "invoice" => array(
-        "invoice_not_available" => "The payment :payment_id is not confirmed by the driver."
+        "invoice_not_available" => "The payment :payment_id has not been confirmed by the driver."
     ),
 );
