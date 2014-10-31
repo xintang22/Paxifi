@@ -120,17 +120,12 @@ class NotificationTransformer extends TransformerAbstract
 
                     $translation = "notifications.sales.paypal.completed";
 
-                    $payment->order->products->map(function($product, $index) use(&$sales, $translation, $notification, $payment, $payment_status) {
-
-                        $sale = [
-                            'message' => $this->translator->trans($translation , ['product_name' => $product->name, 'currency' => $notification->driver->currency, 'amount' => $payment->order->total_sales]),
-                            'type' => 'sales',
-                            'status' => $payment_status,
-                            'payment' => $payment->toArray()
-                        ];
-
-                        $sales = $sale;
-                    });
+                    $sales = [
+                        'message' => $this->translator->trans($translation , ['currency' => $notification->driver->currency, 'amount' => $payment->order->total_sales]),
+                        'type' => 'sales',
+                        'status' => $payment_status,
+                        'payment' => $payment
+                    ];
 
                     break;
 
