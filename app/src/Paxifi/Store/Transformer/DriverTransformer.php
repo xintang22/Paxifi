@@ -31,16 +31,6 @@ class DriverTransformer extends TransformerAbstract
             'paypal_authorized' => (boolean)$driver->paypal_refresh_token ? true: false,
             'thumbs_up' => $driver->thumbs_up,
             'thumbs_down' => $driver->thumbs_down,
-            'achievements' => [
-                [
-                    "id" => 1,
-                    "name" => "Best Seller in NY, 2012"
-                ],
-                [
-                    "id" => 2,
-                    "name" => "Best Seller of the Year 2014"
-                ]
-            ],
             'paypal_account' => $driver->paypal_account,
             'status' => $driver->status
         );
