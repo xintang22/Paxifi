@@ -1,23 +1,23 @@
 <?php 
 return array(
-    'billing' => 'Commission amount of :commission has been deducted.',
+    'billing' => 'Commission fee of :currency :commission has been deducted from your PayPal account.',
     'ranking' => [
-        'up' => 'You got a thumbs up.',
-        'down' => 'You got a thumbs down.',
+        'up' => 'You received a thumbs up.',
+        'down' => 'You recieved a thumbs down.',
     ],
-    'stock_reminder' => ':product_name out of stock!',
+    'stock_reminder' => ':product_name is out of stock!',
     'sales' => [
         "cash" => [
-            'waiting' => ':currency :amount cash payment is waiting for confirmation.',
-            'received' => ':currency :amount cash payment received.',
-            'canceled' => ':currency :amount cash payment was canceled.'
+            'waiting' => 'The cash payment of :currency :amount is waiting for your confirmation.',
+            'received' => 'You received a cash payment of :currency :amount .',
+            'canceled' => 'The cash payment of :currency :amount canceled by you.'
         ],
         "paypal" => [
-            'completed' => 'You received :currency :amount via PayPal.',
+            'completed' => 'You received an amount of :currency :amount via PayPal.',
         ]
     ],
     'emails' => 'You have a new email, please check your email inbox.',
-    'no_new_notifications' => 'You don\'t have new notifications.',
+    'no_new_notifications' => 'You don\'t have any new notifications.',
 
     // CRUD
     'created' => ':type notification has been created.',
