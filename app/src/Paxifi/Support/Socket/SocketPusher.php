@@ -32,7 +32,6 @@ class SocketPusher
 
         if ($this->auth->authenticate($connection)) {
 
-            print $connection->userId;
             $this->connections[$connection->userId][$connection->resourceId] = $connection;
 
         } else {
@@ -40,7 +39,8 @@ class SocketPusher
             $connection->send(json_encode([
                 'error' => [
                     'type' => 'unauthorized',
-                    'message' => \trans('errors.auth.jwt_invalid'),
+                    'message' => 'Invalid access token',
+                    'error_code' => 401,
                 ]
             ]));
 
