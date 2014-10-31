@@ -7,7 +7,8 @@ use Paxifi\Sticker\Exception\NotificationNotFoundException;
  * Class NotificationServiceProvider
  * @package Paxifi\Provider
  */
-class NotificationServiceProvider extends ServiceProvider {
+class NotificationServiceProvider extends ServiceProvider
+{
 
     /**
      * Register the service provider.
@@ -21,6 +22,8 @@ class NotificationServiceProvider extends ServiceProvider {
         $this->registerEvents();
 
         $this->registerNotificationRepository();
+
+        $this->registerSocketChannels();
     }
 
     /**
@@ -61,6 +64,16 @@ class NotificationServiceProvider extends ServiceProvider {
     protected function registerNotificationRepository()
     {
         $this->app->bind('paxifi.repository.notifications', 'Paxifi\Notification\Repository\EloquentNotificationRepository', true);
+    }
+
+    /**
+     * Register Socket Channels.
+     *
+     * @return void
+     */
+    protected function registerSocketChannels()
+    {
+        Socket::channel('notifications', 'Paxifi\Channels\NotificationsChannel');
     }
 
     /**
