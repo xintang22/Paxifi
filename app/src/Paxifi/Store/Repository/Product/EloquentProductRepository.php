@@ -10,6 +10,13 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
     use SoftDeletingTrait;
 
     /**
+     * Paginate default per page.
+     *
+     * @var int
+     */
+    protected $perPage = 6;
+
+    /**
      * @var array
      */
     protected $dates = ['deleted_at'];
@@ -25,7 +32,7 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
      *
      * @var array
      */
-    protected $fillable = array('name', 'photos', 'description', 'unit_price', 'average_cost', 'inventory', 'tax_amount', 'driver_id', 'category_id');
+    protected $fillable = array('name', 'photos', 'description', 'unit_price', 'average_cost', 'inventory', 'tax_amount', 'driver_id', 'category_id', 'weight');
 
     /**
      * The data validation rules
