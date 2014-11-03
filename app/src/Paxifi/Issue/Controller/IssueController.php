@@ -24,8 +24,7 @@ class IssueController extends ApiController
                         "name" => $this->translator->trans('email.issue.name'),
                         "subject" => $inputs['subject']
                     ],
-//                    'to' => $issue->type->email
-                    'to' => "sonny@mobilenowgroup.com"
+                    'to' => $issue->type->email
                 );
 
                 \Event::fire('paxifi.email', [$emailOptions]);
