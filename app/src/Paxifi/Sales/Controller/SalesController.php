@@ -46,10 +46,13 @@ class SalesController extends BaseApiController
         $from = ($from = (int)\Input::get('from')) ? Carbon::createFromTimestamp($from) : $driver->created_at;
         $to = ($to = (int)\Input::get('to')) ? Carbon::createFromTimestamp($to) : Carbon::now();
 
+        if (\Input::has('page')) {
+            $paginator = ['page' => \Input::get('page'), 'per_page' => \Input::get('per_page', 6)];
 
-        $paginator = \Input::only('page', 'per_page');
-
-        $sales = new SaleCollection($driver->sales($from, $to, $paginator)->toArray()['data']);
+            $sales = new SaleCollection($driver->sales($from, $to, $paginator)->toArray()['data']);
+        } else {
+            $sales = new SaleCollection($driver->sales($from, $to));
+        }
 
         return $this->respond($sales->toArray());
     }
