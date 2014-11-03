@@ -1,6 +1,5 @@
 <?php namespace Paxifi\Store\Transformer;
 
-use Illuminate\Support\Collection;
 use League\Fractal\TransformerAbstract;
 use Paxifi\Store\Repository\Driver\DriverRepositoryInterface;
 use Paxifi\Subscription\Transformer\SubscriptionTransformer;
@@ -32,7 +31,8 @@ class DriverTransformer extends TransformerAbstract
             'thumbs_up' => $driver->thumbs_up,
             'thumbs_down' => $driver->thumbs_down,
             'paypal_account' => $driver->paypal_account,
-            'status' => $driver->status
+            'status' => $driver->status,
+            'created_at' => $driver->created_at
         );
 
         return $transformer;
