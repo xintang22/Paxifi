@@ -163,9 +163,9 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @return array
      */
-    public function sales($from, $to)
+    public function sales($from, $to, $paginate = false)
     {
-        return \DB::table('drivers')
+        $query = \DB::table('drivers')
             ->join('products', 'drivers.id', '=', 'products.driver_id')
             ->join('order_items', 'products.id', '=', 'order_items.product_id')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
@@ -175,8 +175,13 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
             ->where('payments.created_at', '>=', $from)
             ->where('payments.created_at', '<=', $to)
             ->where('payments.status', '=', 1)
-            ->distinct()
-            ->get();
+            ->distinct();
+
+        if ($paginate) {
+            return $query->paginate($paginate['per_page']);
+        } else {
+            return $query->get();
+        }
     }
 
 

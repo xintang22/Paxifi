@@ -45,31 +45,23 @@ class SaleCollection extends Collection
      */
     protected $totalTax;
 
-    function __construct(array $salesIds = array(), $page, $per)
+    function __construct(array $salesIds = array())
     {
-        $this->page = $page;
-        $this->per = $per;
 
-        $this->sales = new Collection();
+        foreach ($salesIds as $sale) {
 
-        foreach ($salesIds as $index => $sale) {
-
-            if (($index >= ($this->page -1) * $this->per) && ($index < ($this->page) * $this->per)) {
-                $this->push(new SaleRepository(EloquentOrderRepository::find($sale->id)));
-            }
-
-            $this->sales->push(new SaleRepository(EloquentOrderRepository::find($sale->id)));
+            $this->push(new SaleRepository(EloquentOrderRepository::find($sale->id)));
         }
 
-        $this->calculateTotals($this->sales);
+        $this->calculateTotals();
     }
 
     /**
      * Calculate totals
      */
-    protected function calculateTotals($sales)
+    protected function calculateTotals()
     {
-        $sales->each(function ($item) {
+        $this->each(function ($item) {
             $this->totalCosts += $item->getTotalCosts();
             $this->totalItems += $item->getTotalItems();
             $this->totalProfit += $item->getProfit();
@@ -95,7 +87,7 @@ class SaleCollection extends Collection
                 'tax' => $this->totalTax,
                 'items' => $this->totalItems,
             ),
-            'sales' => parent::toArray(),
+            'sales' => parent::toArray()
         );
     }
 }

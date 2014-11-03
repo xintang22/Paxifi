@@ -25,9 +25,31 @@ class SalesController extends BaseApiController
         $from = ($from = (int)\Input::get('from')) ? Carbon::createFromTimestamp($from) : $driver->created_at;
         $to = ($to = (int)\Input::get('to')) ? Carbon::createFromTimestamp($to) : Carbon::now();
 
-        $page = (\Input::get('page', 1) >= 1) ? \Input::get('page', 1) : 1;
+        $sales = new SaleCollection($driver->sales($from, $to));
 
-        $sales = new SaleCollection($driver->sales($from, $to), $page, \Input::get('per', 6));
+        return $this->respond($sales->toArray());
+    }
+
+    /**
+     * Response for paginated sales response.
+     *
+     * @param EloquentDriverRepository $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function histories(EloquentDriverRepository $driver = null) {
+
+        if (is_null($driver)) {
+            $driver = $this->getAuthenticatedDriver();
+        }
+
+        $from = ($from = (int)\Input::get('from')) ? Carbon::createFromTimestamp($from) : $driver->created_at;
+        $to = ($to = (int)\Input::get('to')) ? Carbon::createFromTimestamp($to) : Carbon::now();
+
+
+        $paginator = \Input::only('page', 'per_page');
+
+        $sales = new SaleCollection($driver->sales($from, $to, $paginator)->toArray()['data']);
 
         return $this->respond($sales->toArray());
     }

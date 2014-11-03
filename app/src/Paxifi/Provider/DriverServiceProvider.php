@@ -202,6 +202,7 @@ class DriverServiceProvider extends ServiceProvider
 
                 // sales
                 $this->app['router']->get('me/sales', 'Paxifi\Sales\Controller\SalesController@index');
+                $this->app['router']->get('me/sales/histories', 'Paxifi\Sales\Controller\SalesController@histories');
                 $this->app['router']->get('me/sales/forecasts', 'Paxifi\Sales\Controller\SalesController@forecasts');
 
                 // taxes
