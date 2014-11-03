@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Paxifi\Sales\Repository\SaleCollection;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Support\Controller\BaseApiController;
+use Illuminate\Support\Collection;
 
 class SalesController extends BaseApiController
 {
@@ -24,7 +25,9 @@ class SalesController extends BaseApiController
         $from = ($from = (int)\Input::get('from')) ? Carbon::createFromTimestamp($from) : $driver->created_at;
         $to = ($to = (int)\Input::get('to')) ? Carbon::createFromTimestamp($to) : Carbon::now();
 
-        $sales = new SaleCollection($driver->sales($from, $to));
+        $page = (\Input::get('page', 1) >= 1) ? \Input::get('page', 1) : 1;
+
+        $sales = new SaleCollection($driver->sales($from, $to), $page, \Input::get('per', 6));
 
         return $this->respond($sales->toArray());
     }

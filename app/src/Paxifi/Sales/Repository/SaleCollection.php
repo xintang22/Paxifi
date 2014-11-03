@@ -6,6 +6,21 @@ use Paxifi\Order\Repository\EloquentOrderRepository;
 class SaleCollection extends Collection
 {
     /**
+     * @var
+     */
+    protected $sales;
+
+    /**
+     * @var int
+     */
+    protected $per;
+
+    /**
+     * @var int
+     */
+    protected $page;
+
+    /**
      * @var float
      */
     protected $totalCosts;
@@ -30,21 +45,31 @@ class SaleCollection extends Collection
      */
     protected $totalTax;
 
-    function __construct(array $salesIds = array())
+    function __construct(array $salesIds = array(), $page, $per)
     {
-        foreach ($salesIds as $sale) {
-            $this->push(new SaleRepository(EloquentOrderRepository::find($sale->id)));
+        $this->page = $page;
+        $this->per = $per;
+
+        $this->sales = new Collection();
+
+        foreach ($salesIds as $index => $sale) {
+
+            if (($index >= ($this->page -1) * $this->per) && ($index < ($this->page) * $this->per)) {
+                $this->push(new SaleRepository(EloquentOrderRepository::find($sale->id)));
+            }
+
+            $this->sales->push(new SaleRepository(EloquentOrderRepository::find($sale->id)));
         }
 
-        $this->calculateTotals();
+        $this->calculateTotals($this->sales);
     }
 
     /**
      * Calculate totals
      */
-    protected function calculateTotals()
+    protected function calculateTotals($sales)
     {
-        $this->each(function ($item) {
+        $sales->each(function ($item) {
             $this->totalCosts += $item->getTotalCosts();
             $this->totalItems += $item->getTotalItems();
             $this->totalProfit += $item->getProfit();
