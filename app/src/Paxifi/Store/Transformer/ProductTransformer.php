@@ -29,6 +29,7 @@ class ProductTransformer extends TransformerAbstract
                 'included_in_price' => (boolean)$product->driver->tax_included_in_price,
             ),
             'costs' => $this->transformCosts($product->costs),
+            'weight' => $product->weight
         );
     }
 
