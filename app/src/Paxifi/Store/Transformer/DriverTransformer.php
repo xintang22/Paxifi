@@ -32,7 +32,8 @@ class DriverTransformer extends TransformerAbstract
             'thumbs_down' => $driver->thumbs_down,
             'paypal_account' => $driver->paypal_account,
             'status' => $driver->status,
-            'created_at' => $driver->created_at
+            'created_at' => $driver->created_at,
+            'comments_count' => $driver->comments()->get()->count()
         );
 
         return $transformer;
