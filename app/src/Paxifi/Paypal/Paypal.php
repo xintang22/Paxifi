@@ -3,10 +3,9 @@
 use GuzzleHttp\Client;
 use Illuminate\Config\Repository;
 use Illuminate\Http\Request;
-use Paxifi\Payment\Repository\EloquentPaymentRepository;
-use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Paypal\Logger as PaypalLog;
+use Paxifi\Subscription\Repository\EloquentPlanRepository;
 
 class Paypal
 {
@@ -91,25 +90,12 @@ class Paypal
         try {
             $oauth2Url = $this->paypalUrl . 'oauth2/token';
 
-//            $postvals = "grant_type=refresh_token&refresh_token=$driver->paypal_refresh_token";
+            $postvals = "grant_type=refresh_token&refresh_token=$driver->paypal_refresh_token";
 
-//            $response = self::curl($oauth2Url, "POST", $postvals);
+            $response = self::curl($oauth2Url, "POST", $postvals);
 
-//            if ($response['status'] == 200) {
-//                return $response['body']->access_token;
-//            }
-
-            $res = $this->client->post($oauth2Url, [
-                'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
-                'auth' => [$this->clientId, $this->clientSecret],
-                'body' => [
-                    'grant_type' => 'refresh_token',
-                    'refresh_token' => $driver->paypal_refresh_token
-                ]
-            ]);
-
-            if ($res->getStatusCode() == 200) {
-                return $res->json()['access_token'];
+            if ($response['status'] == 200) {
+                return $response['body']->access_token;
             }
 
             throw new \Exception('Refresh access token failed.');
@@ -154,6 +140,47 @@ class Paypal
         // Refund the payment
         if ($this->refundPayment($accessToken, $capturedPayment)) {
             return $payment->payer->payer_info;
+        } else {
+            return fasle;
+        }
+    }
+
+    /**
+     * create subscription payment via paypal.
+     *
+     * @param EloquentPlanRepository   $plan
+     * @param EloquentDriverRepository $driver
+     *
+     * @return bool|mixed
+     */
+    public function subscriptionPayment(EloquentPlanRepository $plan, EloquentDriverRepository $driver)
+    {
+        $transactions = [
+            'intent' => 'authorize',
+            'payer' => [
+                'payment_method' => 'paypal'
+            ],
+            'transactions' => [
+                [
+                    "amount" => [
+                        "currency" => $plan->currency,
+                        "total" => $plan->amount
+                    ],
+                    "description" => "Paxifi: Subscription payment."
+                ]
+            ]
+        ];
+
+        $payment = $this->createPayment(null, $transactions, $driver);
+
+        // Capture the payment
+        if ($capturedPayment = $this->capturePayment(null, $payment, $driver)) {
+            // Todo:: record capture payment success.
+
+            return $capturedPayment;
+        } else {
+            // Todo:: record Capture payment failed.
+            return false;
         }
     }
 
@@ -163,12 +190,16 @@ class Paypal
      * @param       $accessToken
      * @param array $transactions
      *
+     * @param null  $driver
+     *
      * @throws \Exception
      * @return \GuzzleHttp\Message\ResponseInterface
      */
-    public function createPayment($accessToken, array $transactions = array())
+    public function createPayment($accessToken, array $transactions = array(), $driver = null)
     {
         try {
+
+            $accessToken = is_null($accessToken) ? $this->getUserAccessToken($driver) : $accessToken;
 
             $paymentUrl = $this->paypalUrl . 'payments/payment';
 
@@ -178,28 +209,35 @@ class Paypal
             ]);
 
             if ($res->getStatusCode() == 201) {
-                PaypalLog::info(['Create' => $res->json()]);
+//                PaypalLog::info(['Create' => $res->json()]);
+                // Todo:: record create authorized future payment success.
                 return $res->json(['object' => true]);
             }
 
-            PaypalLog::error(['Create future payment failed']);
+//            PaypalLog::error(['Create future payment failed']);
             throw new \Exception('Create future payment failed');
         } catch (\Exception $e) {
-            PaypalLog::error(['Create future payment failed']);
+
+            // Todo:: record create authorized future payment failed.
+//            PaypalLog::error(['Create future payment failed']);
             throw new \Exception($e->getMessage());
         }
     }
 
     /**
-     * @param $accessToken
-     * @param $payment
+     * @param      $accessToken
+     * @param      $payment
      *
-     * @return mixed
+     * @param null $driver
+     *
      * @throws \Exception
+     * @return mixed
      */
-    public function capturePayment($accessToken, $payment)
+    public function capturePayment($accessToken = null, $payment, $driver = null)
     {
         try {
+            $accessToken = is_null($accessToken) ? $this->getUserAccessToken($driver) : $accessToken;
+
             $links = $payment->transactions[0]->related_resources[0]->authorization->links;
 
             $captureUrl = $this->getPaypalLink($links, 'capture');
@@ -215,16 +253,22 @@ class Paypal
                 ]
             ]);
 
-            if ($capture->getStatusCode() == 200 && $capture->json(['object' => true])->state == "completed") {
-                PaypalLog::info(['Capture' => $capture->json()]);
-                return $capture->json(['object' => true]);
+            if ($capture->getStatusCode() == 200) {
+
+                if (($capture->json(['object' => true])->state == 'pending' &&
+                    $payment->transactions[0]->related_resources[0]->authorization->state == 'pending' &&
+                    $payment->transactions[0]->related_resources[0]->authorization->reason_code == 'PAYMENT_REVIEW') ||
+                    $capture->json(['object' => true])->state == "completed"
+                ) {
+                    return $capture->json(['object' => true]);
+                }
             }
 
-            PaypalLog::error(['Capture future payment failed']);
+//            PaypalLog::error(['Capture future payment failed']);
             throw new \Exception('Capture future payment failed');
         } catch (\Exception $e) {
 
-            PaypalLog::error(['Capture future payment failed']);
+//            PaypalLog::error(['Capture future payment failed']);
             throw new \Exception($e->getMessage());
         }
     }
@@ -249,14 +293,14 @@ class Paypal
             ]);
 
             if ($refund->getStatusCode() == 201) {
-                PaypalLog::info(['Refund' => $refund->json()]);
+//                PaypalLog::info(['Refund' => $refund->json()]);
                 return true;
             }
 
-            PaypalLog::error(['Refund failed']);
+//            PaypalLog::error(['Refund failed']);
             return false;
         } catch (\Exception $e) {
-            PaypalLog::error(['Refund failed']);
+//            PaypalLog::error(['Refund failed']);
             throw new \Exception($e->getMessage());
         }
 
