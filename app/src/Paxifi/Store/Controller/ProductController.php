@@ -27,11 +27,30 @@ class ProductController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            if (\Input::has('page') && \Input::get('page') != 0) {
-                return $this->respondWithCollection($driver->products()->paginate());
+            if (\Input::has('page')) {
+                return $this->respondWithCollection($driver->products()->paginate(\Input::get('per_page', 6)));
             } else {
                 return $this->respondWithCollection($driver->products()->get());
             }
+        } catch (\Exception $e) {
+            return $this->errorInternalError($e->getMessage());
+        }
+    }
+
+    /**
+     * Get the total product counts of the driver.
+     *
+     * @param null $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getProductsCount($driver = null) {
+        try {
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
+           return $this->respond(['products_count' => $driver->products()->count()]);
         } catch (\Exception $e) {
             return $this->errorInternalError($e->getMessage());
         }

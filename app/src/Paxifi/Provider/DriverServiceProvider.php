@@ -3,6 +3,7 @@
 use Illuminate\Auth\Reminders\PasswordBroker;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
+use Paxifi\Middleware\Subscription;
 use Paxifi\Store\Auth\AuthManager;
 use Paxifi\Store\Exception\StoreNotFoundException;
 use Paxifi\Subscription\Exception\SubscriptionNotFoundException;
@@ -199,6 +200,7 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->get('me/products/{product}', 'Paxifi\Store\Controller\ProductController@showMine');
                 $this->app['router']->put('me/products/{product}', 'Paxifi\Store\Controller\ProductController@updateMine');
                 $this->app['router']->delete('me/products/{product}', 'Paxifi\Store\Controller\ProductController@destroyMine');
+                $this->app['router']->get('me/count/products', 'Paxifi\Store\Controller\ProductController@getProductsCount');
 
                 // sales
                 $this->app['router']->get('me/sales', 'Paxifi\Sales\Controller\SalesController@index');
@@ -314,5 +316,9 @@ class DriverServiceProvider extends ServiceProvider
 
         // fire driver rating event.
         $this->app['events']->listen('paxifi.drivers.rating' , 'Paxifi\Store\Controller\RatingController@rating');
+    }
+
+    public function registerMiddleWare() {
+        $this->app->middleware( new Subscription($this->app) );
     }
 }
