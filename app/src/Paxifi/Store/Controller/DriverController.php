@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Store\Controller;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
@@ -462,6 +463,127 @@ class DriverController extends ApiController
             return $this->errorWrongArgs($e->getErrors());
         } catch (\Exception $e) {
             return $this->errorInternalError();
+        }
+    }
+
+    /**
+     * Driver renew the subscription status when the account expired.
+     *
+     * @param null $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function renewSubscription($driver = null) {
+        try {
+            \DB::beginTransaction();
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
+            // Get driver subscription.
+            $subscription = $driver->subscription;
+
+            if ($subscription->status != 'past_due') {
+                return $this->setStatusCode(406)->respondWithError('Account is still active.');
+            }
+
+            $plan = EloquentPlanRepository::findOrFail($subscription->plan_id);
+
+            if ($subscriptionPayment = $this->paypal->subscriptionPayment($plan, $driver)) {
+
+                $subscription->renewSubscription(EloquentPlanRepository::findOrFail($subscription->plan_id), $driver);
+
+                \DB::commit();
+
+                return $this->respondWithItem($driver);
+            }
+
+            return $this->setStatusCode(406)->respondWithError('Subscription payment failed.');
+        } catch (\Exception $e) {
+            return $this->errorInternalError($e->getMessage());
+        }
+    }
+
+    /**
+     * Cancel driver subscription.
+     *
+     * @param $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cancelSubscription($driver = null) {
+        try {
+            \DB::beginTransaction();
+
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
+            $subscription = $driver->subscription;
+
+            // check if subscription is still usable.
+            if (in_array($subscription->status, ['canceled', 'past_due']) ) {
+                return $this->setStatusCode(406)->respondWithError('Account is already canceled subscription or expired.');
+            }
+
+            $plan = EloquentPlanRepository::findOrFail($subscription->plan_id);
+
+            switch($plan->interval) {
+                case 'month':
+                    $subscription->current_period_end = $subscription->current_period_start->addMonths($plan->interval_count);
+                    break;
+                case 'season':
+                    break;
+                default:
+                    $subscription->current_period_end = $subscription->current_period_start->addDays($plan->interval_count);
+                    ;
+            }
+
+            $subscription->canceled_at = Carbon::now();
+            $subscription->cancel_at_period_end = true;
+            $subscription->canceled();
+
+            \DB::commit();
+
+            return $this->setStatusCode(200)->respondWithItem($driver);
+        } catch (\Exception $e) {
+            return $this->errorInternalError($e->getMessage());
+        }
+    }
+
+    /**
+     * Reactive subscription if account is canceled.
+     *
+     * @param null $driver
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function reactiveSubscription($driver = null) {
+        try {
+            \DB::beginTransaction();
+
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
+            $subscription = $driver->subscription;
+
+            if ($subscription->status == 'canceled') {
+
+                if (Carbon::now() <= $subscription->trial_end || Carbon::now() <= $subscription->current_period_end ) {
+                    $subscription->active();
+
+                    \DB::commit();
+                    return $this->respondWithItem($driver);
+                }
+
+                return $this->setStatusCode(406)->respondWithError('Account is expired, please renew the subscription.');
+            }
+
+            return $this->setStatusCode(406)->respondWithError('Account cannot be active.');
+
+        } catch (\Exception $e) {
+            return $this->errorInternalError($e->getMessage());
         }
     }
 

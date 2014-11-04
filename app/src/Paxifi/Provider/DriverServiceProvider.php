@@ -30,6 +30,8 @@ class DriverServiceProvider extends ServiceProvider
         $this->registerPasswordBroker();
 
         $this->registerEvents();
+
+        $this->registerMiddleWare();
     }
 
     /**
@@ -217,12 +219,9 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->put('me/password/change', 'Paxifi\Store\Controller\DriverController@changePassword');
 
                 // @TODO Subscriptions
-                $this->app['router']->get('me/subscribed', 'Paxifi\Subscription\Controller\SubscriptionController@subscribed');
-                $this->app['router']->get('me/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@index');
-                $this->app['router']->post('me/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@store');
-                $this->app['router']->get('me/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@show');
-                $this->app['router']->put('me/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@update');
-                $this->app['router']->delete('me/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@cancel');
+                $this->app['router']->put('me/subscriptions/renew', 'Paxifi\Store\Controller\DriverController@renewSubscription');
+                $this->app['router']->put('me/subscriptions/cancel', 'Paxifi\Store\Controller\DriverController@cancelSubscription');
+                $this->app['router']->put('me/subscriptions/reactive', 'Paxifi\Store\Controller\DriverController@reactiveSubscription');
 
                 // Sticker
                 $this->app['router']->get('me/sticker', 'Paxifi\Sticker\Controller\StickerController@show');

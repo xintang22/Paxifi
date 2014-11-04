@@ -106,8 +106,8 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
     public function expired()
     {
         $this->status = "past_due";
+        $this->ended_at = Carbon::now();
         $this->save();
-        $this->delete();
     }
 
     /**
@@ -127,13 +127,42 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
     {
         $now = Carbon::now();
 
-        $subsctiption = new static();
-        $subsctiption->driver_id = $driver->id;
-        $subsctiption->plan_id = $plan->id;
-        $subsctiption->trial_start = $now;
-        $subsctiption->trial_end = $now->addDays($plan->trial_period_days);
-        $subsctiption->start = $now;
+        $subscription = new static();
+        $subscription->driver_id = $driver->id;
+        $subscription->plan_id = $plan->id;
+        $subscription->trial_start = $now;
+        $subscription->trial_end = $now->addDays($plan->trial_period_days);
+        $subscription->start = $now;
+        $subscription->current_period_start = $now->addDays($plan->trial_period_days);
 
-        $subsctiption->save();
+        $subscription->save();
+    }
+
+    /**
+     * Renew the subscription.
+     *
+     * @param EloquentPlanRepository   $plan
+     * @param EloquentDriverRepository $driver
+     */
+    public function renewSubscription(EloquentPlanRepository $plan, EloquentDriverRepository $driver)
+    {
+        $now = Carbon::now();
+
+        $this->current_period_start = $now;
+        $this->cancel_at_period_end = false;
+
+        switch($plan->interval) {
+            case 'month':
+                $this->current_period_end = $now->addMonths($plan->interval_count);
+                break;
+            default:;
+        }
+
+        $this->active();
+    }
+
+    public function getDates()
+    {
+        return array('created_at', 'updated_at', 'trial_start', 'trial_end', 'start', 'canceled_at', 'ended_at', 'current_period_start', 'current_period_end', 'current_period_start');
     }
 }
