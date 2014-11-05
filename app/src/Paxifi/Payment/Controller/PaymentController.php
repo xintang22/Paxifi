@@ -257,6 +257,7 @@ class PaymentController extends ApiController
     public function paypalPaymentConfirmation ($payment, $ipn)
     {
         try {
+            \DB::beginTransaction();
             $payment->status = 1;
             $payment->paypal_transaction_status = 1;
             $payment->paypal_transaction_id = $ipn['txn_id'];
@@ -267,6 +268,10 @@ class PaymentController extends ApiController
             $order = $payment->order;
             $order->status = 1;
             $order->save();
+
+            \Event::fire('paxifi.notifications.sales', [$payment]);
+
+            \DB::commit();
 
         } catch (\Exception $e) {
 

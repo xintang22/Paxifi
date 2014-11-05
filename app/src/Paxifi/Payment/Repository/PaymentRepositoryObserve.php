@@ -1,6 +1,6 @@
 <?php namespace Paxifi\Payment\Repository;
 
-use Paxifi\Payment\Repository\EloquentPaymentRepository as Payment;
+use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository as PaymentMethods;
 
 class PaymentRepositoryObserve {
 
@@ -11,7 +11,11 @@ class PaymentRepositoryObserve {
      */
     public function created($payment)
     {
-        \Event::fire('paxifi.notifications.sales', [$payment]);
+        $payment_method = PaymentMethods::find($payment->payment_method_id);
+
+        if ($payment_method->name != 'paypal') {
+            \Event::fire('paxifi.notifications.sales', [$payment]);
+        }
     }
 
     /**
