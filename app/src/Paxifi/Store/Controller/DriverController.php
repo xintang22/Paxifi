@@ -526,19 +526,6 @@ class DriverController extends ApiController
                 return $this->setStatusCode(406)->respondWithError('Account is already canceled subscription or expired.');
             }
 
-            $plan = EloquentPlanRepository::findOrFail($subscription->plan_id);
-
-            switch($plan->interval) {
-                case 'month':
-                    $subscription->current_period_end = $subscription->current_period_start->addMonths($plan->interval_count);
-                    break;
-                case 'season':
-                    break;
-                default:
-                    $subscription->current_period_end = $subscription->current_period_start->addDays($plan->interval_count);
-                    ;
-            }
-
             $subscription->canceled();
 
             \DB::commit();
