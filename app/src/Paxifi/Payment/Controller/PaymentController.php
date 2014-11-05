@@ -264,6 +264,10 @@ class PaymentController extends ApiController
 
             $payment->save();
 
+            $order = $payment->order;
+            $order->status = 1;
+            $order->save();
+
         } catch (\Exception $e) {
 
             return $this->errorInternalError();
