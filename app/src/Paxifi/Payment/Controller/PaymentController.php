@@ -109,6 +109,10 @@ class PaymentController extends ApiController
 
             $payment->save();
 
+            $order = $payment->order;
+            $order->status = 1;
+            $order->save();
+
             if ($confirm == 1) {
                 $products = $payment->order->products;
 
