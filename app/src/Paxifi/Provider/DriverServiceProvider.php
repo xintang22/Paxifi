@@ -219,6 +219,7 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->put('me/password/change', 'Paxifi\Store\Controller\DriverController@changePassword');
 
                 // @TODO Subscriptions
+                $this->app['router']->get('me/subscriptions', 'Paxifi\Subscription\Controller\SubscriptionController@index');
                 $this->app['router']->put('me/subscriptions/renew', 'Paxifi\Store\Controller\DriverController@renewSubscription');
                 $this->app['router']->put('me/subscriptions/cancel', 'Paxifi\Store\Controller\DriverController@cancelSubscription');
                 $this->app['router']->put('me/subscriptions/reactive', 'Paxifi\Store\Controller\DriverController@reactiveSubscription');
