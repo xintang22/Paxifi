@@ -172,6 +172,46 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
         $this->active();
     }
 
+    /**
+     * Check whether the subscription need auto subscribe.
+     *
+     * @return bool
+     */
+    public function needAutoSubscribe() {
+        if (in_array($this->status, ['canceled', 'past_due'])) {
+            return false;
+        } else {
+            if ($this->status == 'active') {
+
+                return !!((Carbon::now() >= $this->current_period_end) && (Carbon::now()->subDay() < $this->current_period_end));
+
+            } else {
+//                print_r(Carbon::now());
+//                print_r($this->trial_end);
+                return !!((Carbon::now() >= $this->trial_end) && (Carbon::now()->subDay() < $this->trial_end));
+
+            }
+        }
+    }
+
+    public function subscribe(EloquentPlanRepository $plan) {
+        if ($this->status == 'active') {
+            $this->current_period_start = $this->current_period_end;
+            $this->current_period_end = $this->current_period_end->addMonths($plan->interval_count);
+        }
+
+        if ($this->status == 'trialing') {
+            $this->current_period_start = $this->trial_end;
+            $this->current_period_end = $this->trial_end->addMonths($plan->interval_count);
+        }
+
+        $this->status = 'active';
+        $this->canceled_at = null;
+        $this->cancel_at_period_end = 0;
+
+        $this->save();
+    }
+
     public function getDates()
     {
         return array('created_at', 'updated_at', 'trial_start', 'trial_end', 'start', 'canceled_at', 'ended_at', 'current_period_start', 'current_period_end', 'current_period_start');

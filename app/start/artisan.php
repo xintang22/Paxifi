@@ -17,3 +17,4 @@ Artisan::add(new SetupCommand);
 
 Artisan::add(new ListenCommand);
 
+Artisan::add(new AutoSubscriptionCommand);
