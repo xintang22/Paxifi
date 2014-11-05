@@ -2,7 +2,7 @@
 
 return array(
     "sticker" => array(
-        "subject" => "Paxifi | Sticker",
+        "subject" => "Paxifi | Sticker for your store",
         "from" => "no-reply@paxifi.com",
         "body" => "Dear :name, the sticker pdf is in attachment.",
         "name" => "Paxifi Sticker"
