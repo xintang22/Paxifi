@@ -35,7 +35,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @var array
      */
-    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'paypal_account', 'status', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others', 'paypal_refresh_token',);
+    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'paypal_account', 'status', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others', 'paypal_refresh_token');
 
     /**
      * Driver - Product one to many relationship.
@@ -44,7 +44,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      */
     public function products()
     {
-        return $this->hasMany('Paxifi\Store\Repository\Product\EloquentProductRepository', 'driver_id', 'id');
+        return $this->hasMany('Paxifi\Store\Repository\Product\EloquentProductRepository', 'driver_id', 'id')->orderBy('weight');
     }
 
     /**
