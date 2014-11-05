@@ -54,7 +54,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      */
     public function subscription()
     {
-        return $this->hasOne('Paxifi\Subscription\Repository\EloquentSubscriptionRepository', 'driver_id', 'id')->where('status', '<>', 'past_due');
+        return $this->hasOne('Paxifi\Subscription\Repository\EloquentSubscriptionRepository', 'driver_id', 'id');
     }
 
     // check if user has subscribed before.
