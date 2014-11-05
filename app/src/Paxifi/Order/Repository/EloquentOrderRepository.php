@@ -39,7 +39,7 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
      */
     public function products()
     {
-        return $this->belongsToMany('Paxifi\Store\Repository\Product\EloquentProductRepository', 'order_items', 'order_id', 'product_id')
+        return $this->belongsToMany('Paxifi\Store\Repository\Product\EloquentProductRepository', 'order_items', 'order_id', 'product_id')->withTrashed()
             ->withPivot(array('quantity'))->withTimestamps();
     }
 
