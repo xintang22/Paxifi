@@ -18,6 +18,7 @@ class SaleRepository implements ArrayableInterface
     protected $buyerFeedback;
     protected $buyerComment;
     protected $createdAt;
+    protected $updatedAt;
 
     function __construct($order)
     {
@@ -34,6 +35,7 @@ class SaleRepository implements ArrayableInterface
         $this->buyerFeedback = $order->feedback;
         $this->buyerComment = $order->comment;
         $this->createdAt = $order->created_at;
+        $this->updatedAt = $order->updated_at;
         $this->products = $this->formatProducts($order);
     }
 
@@ -109,6 +111,7 @@ class SaleRepository implements ArrayableInterface
             ),
             'status' => $this->status,
             'created_at' => (string)$this->createdAt,
+            'updated_at' => (string)$this->updatedAt,
             'created_at_month' => $this->createdAt->month,
             'created_at_year' => $this->createdAt->year,
         );
