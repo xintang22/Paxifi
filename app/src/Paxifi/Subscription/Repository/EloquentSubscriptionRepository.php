@@ -97,6 +97,7 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
     public function active()
     {
         $this->status = "active";
+        $this->cancel_at_period_end = false;
         $this->save();
     }
 
@@ -106,6 +107,7 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
     public function expired()
     {
         $this->status = "past_due";
+        $this->cancel_at_period_end = true;
         $this->ended_at = Carbon::now();
         $this->save();
     }
@@ -115,6 +117,8 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
      */
     public function canceled()
     {
+        $this->canceled_at = Carbon::now();
+        $this->cancel_at_period_end = true;
         $this->status = "canceled";
         $this->save();
     }
@@ -123,7 +127,7 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
      * @param EloquentPlanRepository $plan
      * @param EloquentDriverRepository $driver
      */
-    public static function initiateTrail(EloquentPlanRepository $plan, EloquentDriverRepository $driver)
+    public static function initiateTrial(EloquentPlanRepository $plan, EloquentDriverRepository $driver)
     {
         $now = Carbon::now();
 
@@ -152,10 +156,17 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
         $this->cancel_at_period_end = false;
 
         switch($plan->interval) {
+            case 'year':
+                $this->current_period_end = $now->addYears($plan->interval_count);
+                break;
             case 'month':
                 $this->current_period_end = $now->addMonths($plan->interval_count);
                 break;
-            default:;
+            case 'day':
+                $this->current_period_end = $now->addDays($plan->interval_count);
+                break;
+            default:
+                ;
         }
 
         $this->active();

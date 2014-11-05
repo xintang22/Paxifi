@@ -123,7 +123,7 @@ class DriverController extends ApiController
             \DB::beginTransaction();
 
             // initiate driver's subscription / trial
-            EloquentSubscriptionRepository::initiateTrail(EloquentPlanRepository::firstOrFail(), $driver);
+            EloquentSubscriptionRepository::initiateTrial(EloquentPlanRepository::firstOrFail(), $driver);
 
             $accessToken = $this->paypal->getUserAccessToken($driver);
 
@@ -176,9 +176,9 @@ class DriverController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id', 'status', 'paypal_account'));
+            with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id', 'status', 'paypal_account', 'suspended'));
 
-            $driver->update(\Input::except('email', 'seller_id', 'status', 'paypal_account'));
+            $driver->update(\Input::except('email', 'seller_id', 'status', 'paypal_account', 'suspended'));
 
             \Event::fire('paxifi.store.updated', [$driver]);
 
@@ -539,8 +539,6 @@ class DriverController extends ApiController
                     ;
             }
 
-            $subscription->canceled_at = Carbon::now();
-            $subscription->cancel_at_period_end = true;
             $subscription->canceled();
 
             \DB::commit();
