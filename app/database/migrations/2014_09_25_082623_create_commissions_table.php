@@ -19,7 +19,7 @@ class CreateCommissionsTable extends Migration {
             $table->float('commissions');
             $table->string('currency');
             $table->enum('status', ['completed', 'pending'])->default('pending');
-            $table->string('commission_payment_id')-nullable();
+            $table->string('commission_payment_id')->nullable();
             $table->text('commission_ipn')->nullable();
 
             $table->timestamps();
