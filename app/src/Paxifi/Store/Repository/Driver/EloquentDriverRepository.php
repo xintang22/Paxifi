@@ -421,6 +421,14 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
+     * Suspended account.
+     */
+    public function suspended() {
+        $this->suspended = true;
+        $this->save();
+    }
+
+    /**
      * Get the stores's tax rate.
      *
      * @return \Paxifi\Tax\Repository\TaxRateInterface
