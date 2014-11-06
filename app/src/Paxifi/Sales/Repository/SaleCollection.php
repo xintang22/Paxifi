@@ -6,21 +6,6 @@ use Paxifi\Order\Repository\EloquentOrderRepository;
 class SaleCollection extends Collection
 {
     /**
-     * @var
-     */
-    protected $sales;
-
-    /**
-     * @var int
-     */
-    protected $per;
-
-    /**
-     * @var int
-     */
-    protected $page;
-
-    /**
      * @var float
      */
     protected $totalCosts;
