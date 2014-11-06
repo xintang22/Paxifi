@@ -6,7 +6,7 @@ use Paxifi\Subscription\Repository\EloquentPlanRepository;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class AutoSubscriptionCommand extends Command {
+class CrontabCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -57,7 +57,7 @@ class AutoSubscriptionCommand extends Command {
             foreach($drivers as $key => $driver) {
                 $subscription = $driver->subscription;
 
-                if ($subscription->needAutoSubscribe()) {
+                if ($subscription->needChargeSubscription()) {
                     $plan = EloquentPlanRepository::findOrFail($subscription->plan_id);
 
                     if ($subscriptionPayment = $this->paypal->subscriptionPayment($plan, $driver)) {

@@ -143,11 +143,15 @@ class Paypal
             ]);
 
             if ($res->getStatusCode() == 201) {
+
                 // Todo:: record create authorized future payment success.
                 return $res->json(['object' => true]);
+            } else {
+
+                // Todo:: record create authorized future payment failed.
+                return false;
             }
 
-            // Todo:: record create authorized future payment failed.
         } catch (\Exception $e) {
 
             // Todo:: record create authorized future payment failed.
@@ -341,6 +345,7 @@ class Paypal
             }
         }
 
+        // Todo:: record create subscription payment failed.
     }
 
     /**
