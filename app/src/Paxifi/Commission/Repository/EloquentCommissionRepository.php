@@ -18,7 +18,7 @@ class EloquentCommissionRepository extends BaseModel
      *
      * @var array
      */
-    protected $fillable = ['driver_id', 'commissions', 'currency', 'status', 'commission_ipn', 'commission_payment_id', 'capture_created_at', 'capture_updated_at', 'capture_id', 'capture_ipn', 'capture_status'];
+    protected $fillable = ['driver_id', 'commissions', 'currency', 'status', 'commission_ipn', 'commission_payment_id'];
 
     /**
      * Driver - Commission one to many relationship.
