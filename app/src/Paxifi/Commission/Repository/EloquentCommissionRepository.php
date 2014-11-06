@@ -77,4 +77,9 @@ class EloquentCommissionRepository extends BaseModel
     {
         return unserialize($value);
     }
+
+    public function getDates()
+    {
+        return array('commission_start', 'commission_end');
+    }
 } 
