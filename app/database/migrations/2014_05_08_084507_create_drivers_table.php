@@ -22,10 +22,10 @@ class CreateDriversTable extends Migration
             $table->text('address');
             $table->string('currency', 3)->default('USD');
             $table->string('remember_token')->nullable();
-            $table->integer('thumbs_up')->default(0)->nullable();
-            $table->integer('thumbs_down')->default(0)->nullable();
-            $table->string('paypal_account')->default("")->nullable();
-            $table->string('paypal_refresh_token')->default("")->nullable();
+            $table->integer('thumbs_up')->default(0);
+            $table->integer('thumbs_down')->default(0);
+            $table->string('paypal_account')->nullable();
+            $table->string('paypal_refresh_token')->nullable();
 
             $table->boolean('tax_enabled')->default(false);
             $table->boolean('tax_included_in_price')->default(false);
@@ -36,8 +36,8 @@ class CreateDriversTable extends Migration
             $table->boolean('notify_feedback')->default(true);
             $table->boolean('notify_billing')->default(true);
             $table->boolean('notify_others')->default(true);
-            $table->boolean('suspended')->nullable()->default(false);
-            $table->tinyInteger('status', false, true)->nullable()->default(0);
+            $table->boolean('suspended')->default(false);
+            $table->tinyInteger('status', false, true)->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
