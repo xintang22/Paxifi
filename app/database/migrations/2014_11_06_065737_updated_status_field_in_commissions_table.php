@@ -26,6 +26,8 @@ class UpdatedStatusFieldInCommissionsTable extends Migration {
 
         Schema::table('commissions', function($table) {
             $table->enum('status', ['completed', 'pending'])->default('pending');
+            $table->timestamp('commission_start')->nullable();
+            $table->timestamp('commission_end')->nullable();
         });
 	}
 
