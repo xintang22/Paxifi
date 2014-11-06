@@ -65,6 +65,15 @@ class Subscription implements HttpKernelInterface
                     $subscription = $driver->subscription;
 
                     /**
+                     * Need charge commission fee.
+                     */
+                    if ($subscription->needChargeCommission() && ! $driver->paidCommission($subscription->current_period_end)) {
+
+                        $this->payCommission($subscription, $driver);
+
+                    }
+
+                    /**
                      * Need charge subscription fee.
                      */
                     if ($subscription->needChargeSubscription()) {
@@ -120,5 +129,63 @@ class Subscription implements HttpKernelInterface
         $result = $this->app->make('League\OAuth2\Server\Storage\SessionInterface')->validateAccessToken($token);
 
         return $result;
+    }
+
+    /**
+     * Pay diver commissions.
+     *
+     * @param $subscription
+     * @param $driver
+     */
+    private function payCommission($subscription, $driver) {
+        $from = $subscription->current_period_start;
+        $to   = $subscription->current_period_end;
+
+        // Get driver total sales ($from -> $to).
+        $sales = new SaleCollection($driver->sales($from, $to));
+
+        if (!is_null($sales->toArray()['totals']['commission'])) {
+
+            \DB::beginTransaction();
+            if ($commissionPayment = $this->paypal->commissionPayment($sales->toArray()['totals']['commission'], $driver)) {
+
+                // Todo:: record PayPal commission payment success.
+                $commission_payment = [
+                    'driver_id' => $driver->id,
+                    'commissions' => $commissionPayment->amount->total,
+                    'currency' => $commissionPayment->amount->currency,
+                    'status' => 'completed',
+                    'commission_ipn' => $commissionPayment,
+                    'commission_payment_id' => $commissionPayment->id,
+                    'commission_start' => $subscription->current_period_start,
+                    'commission_end' => $subscription->current_period_end
+                ];
+
+                if ($commission = EloquentCommissionRepository::create($commission_payment)) {
+
+                    \DB::commit();
+
+                    // Todo:: fire notification event the commission paid.
+                }
+
+            } else {
+
+                // Todo:: record commission PayPal payment failed.
+                $commission_payment = [
+                    'driver_id' => $driver->id,
+                    'commissions' => $sales->toArray()['totals']['commission'],
+                    'currency' => $driver->currency,
+                    'status' => 'pending',
+                    'commission_start' => $subscription->current_period_start,
+                    'commission_end' => $subscription->current_period_end
+                ];
+
+                if ($commission = EloquentCommissionRepository::create($commission_payment)) {
+
+                    \DB::commit();
+
+                }
+            }
+        }
     }
 }

@@ -62,11 +62,11 @@ class CrontabCommand extends Command {
                 /**
                  * Need charge commission fee.
                  */
-//                if ($subscription->needChargeCommission()) {
-//
-//                    $this->payCommission($subscription, $driver);
-//
-//                }
+                if ($subscription->needChargeCommission() && ! $driver->paidCommission($subscription->current_period_end)) {
+
+                    $this->payCommission($subscription, $driver);
+
+                }
 
                 /**
                  * Need change subscription.
