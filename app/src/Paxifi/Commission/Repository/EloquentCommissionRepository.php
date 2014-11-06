@@ -18,7 +18,7 @@ class EloquentCommissionRepository extends BaseModel
      *
      * @var array
      */
-    protected $fillable = ['driver_id', 'commissions', 'currency', 'status', 'commission_ipn', 'commission_payment_id'];
+    protected $fillable = ['driver_id', 'commissions', 'currency', 'status', 'commission_ipn', 'commission_payment_id', 'commission_start', 'commission_end'];
 
     /**
      * Driver - Commission one to many relationship.
@@ -78,6 +78,9 @@ class EloquentCommissionRepository extends BaseModel
         return unserialize($value);
     }
 
+    /**
+     * @return array
+     */
     public function getDates()
     {
         return array('commission_start', 'commission_end');
