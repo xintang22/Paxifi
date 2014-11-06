@@ -59,7 +59,7 @@ class Paypal
      *
      * @return array
      */
-    public function getFuturePaymentTransaction($amount = 0.1, $currency = 'USD', $description = 'Paxifi PayPal Transaction') {
+    public function getFuturePaymentTransaction($amount = 0.01, $currency = 'USD', $description = 'Paxifi PayPal Transaction') {
         $transaction = [
             'intent' => 'authorize',
             'payer' => [
@@ -129,7 +129,7 @@ class Paypal
      * @throws \Exception
      * @return \GuzzleHttp\Message\ResponseInterface
      */
-    public function createPayment($accessToken, array $transactions = array(), $driver = null)
+    public function createPayment($accessToken = null, array $transactions = array(), $driver = null)
     {
         try {
 
@@ -142,7 +142,7 @@ class Paypal
                 'json' => $transactions
             ]);
 
-            if ($res->getStatusCode() == 201 && $res->json(['object' => true])->state == 'approved') {
+            if ($res->getStatusCode() == 201) {
                 // Todo:: record create authorized future payment success.
                 return $res->json(['object' => true]);
             }
@@ -299,7 +299,7 @@ class Paypal
 
         // Create a fake payment to check the user PayPal account
         // and store his PayPal email (merchant email)
-        $transaction = $this->getFuturePaymentTransaction(0.1, 'USD', 'Paxifi: check validity of PayPal account');
+        $transaction = $this->getFuturePaymentTransaction(0.01, 'USD', 'Paxifi: check validity of PayPal account');
 
         $payment = $this->createPayment($accessToken, $transaction);
 
