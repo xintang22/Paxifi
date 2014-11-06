@@ -423,7 +423,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     /**
      * Suspended account.
      */
-    public function suspended() {
+    public function suspend() {
         $this->suspended = true;
         $this->save();
     }
