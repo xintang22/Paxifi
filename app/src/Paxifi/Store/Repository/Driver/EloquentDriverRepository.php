@@ -94,6 +94,29 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function commissions()
+    {
+        return $this->hasMany('Paxifi\Commission\Repository\EloquentCommissionRepository', 'driver_id', 'id');
+    }
+
+    /**
+     * Check whether user has try to pay the commission.
+     *
+     * If status pending, another script which will find all the failed commission, and re-charge the user.
+     *
+     * @param $current_period_end
+     *
+     * @return mixed
+     */
+    public function paidCommission($current_period_end) {
+        return $this->commissions()
+                ->where('commission_end', '=', $current_period_end)
+                ->first();
+    }
+
+    /**
      * Get all comments of the drivers.
      *
      * @return mixed
@@ -345,6 +368,15 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public static function findByEmail($email)
     {
         return self::where('email', '=', $email)->get()->first();
+    }
+
+    /**
+     * Get driver country's settings.
+     */
+    public function getSettingsByDriverCountry() {
+        $country = self::getCountry();
+
+
     }
 
     /**
