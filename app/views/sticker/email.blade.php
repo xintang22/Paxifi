@@ -1,6 +1,6 @@
 <html>
 <body>
-Hi :name,<br/>
+Hi {{$name}}<br/>
 <br/>
 We sent this email because you have requested us to send you a sticker in PDF format.<br/>
 <br/>
