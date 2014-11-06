@@ -26,7 +26,7 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
      *
      * @var array
      */
-    protected $fillable = ["plan_id", "driver_id", "trial_start", "trial_end", "start", "canceled_at", "ended_at", "current_period_start", "current_period_end", "ipn", "subscr_id", "status"];
+//    protected $fillable = ["plan_id", "driver_id", "trial_start", "trial_end", "start", "canceled_at", "ended_at", "current_period_start", "current_period_end", "ipn", "subscr_id", "status"];
 
     /**
      * The attributes that should be mutated to dates.
@@ -96,9 +96,18 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
      */
     public function active()
     {
-        $this->status = "active";
+        $this->status = $this->inTrial() ? 'trialing' : "active";
         $this->cancel_at_period_end = false;
         $this->save();
+    }
+
+    /**
+     * Check whether account is in trialing status.
+     *
+     * @return bool
+     */
+    public function inTrial() {
+        return !!(Carbon::now() <= $this->trial_end && Carbon::now() >= $this->trial_start );
     }
 
     /**
@@ -177,7 +186,7 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
      *
      * @return bool
      */
-    public function needAutoSubscribe() {
+    public function needChargeSubscription() {
         if (in_array($this->status, ['canceled', 'past_due'])) {
             return false;
         } else {
@@ -186,14 +195,29 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
                 return !!((Carbon::now() >= $this->current_period_end) && (Carbon::now()->subDay() < $this->current_period_end));
 
             } else {
-//                print_r(Carbon::now());
-//                print_r($this->trial_end);
+
                 return !!((Carbon::now() >= $this->trial_end) && (Carbon::now()->subDay() < $this->trial_end));
 
             }
         }
     }
 
+    /**
+     * Check whether the need pay paxifi commission.
+     *
+     * @return bool
+     */
+    public function needChargeCommission() {
+        if ($this->status == 'trialing') {
+            return !!((Carbon::now() >= $this->trial_end) && (Carbon::now()->subDay() < $this->trial_end));
+        } else {
+            return !!((Carbon::now() >= $this->current_period_end) && (Carbon::now()->subDay() < $this->current_period_end));
+        }
+    }
+
+    /**
+     * @param EloquentPlanRepository $plan
+     */
     public function subscribe(EloquentPlanRepository $plan) {
         if ($this->status == 'active') {
             $this->current_period_start = $this->current_period_end;
