@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Paxifi\Order\Repository\EloquentOrderRepository as Order;
+use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Order\Transformer\OrderTransformer;
 use Paxifi\Payment\Repository\EloquentPaymentRepository;
 use Paxifi\Support\Controller\ApiController;
@@ -73,30 +74,28 @@ class OrderController extends ApiController
     public function soldouts()
     {
         try {
-            $this->soldouts = [];
-            $this->orders = [];
+            $this->soldouts = new Collection();
 
-            $refresh_time = \Input::get('refresh_time');
+            $payments = EloquentPaymentRepository::where('status', '=', 1)->orderBy('updated_at', true)->get();
+//            print_r($payments->toArray());
+//            die;
+            $payments->map(function($payment, $index)  {
+                $products = $payment->order->products;
 
-            $from = $refresh_time ? Carbon::createFromTimestamp(Carbon::now()->format('U') - $refresh_time) : Carbon::createFromTimestamp(0);
+                $products->map(function($product, $key) use($index, $payment) {
+                    $product->pivot;
+                    $product->driver;
+                    $product->time = Carbon::createFromTimeStamp($payment->updated_at->format('U'))->diffForHumans();
+                    $product->date = $payment->updated_at;
 
-            $payments = EloquentPaymentRepository::take(5)->where('status', '=', 1)->where('updated_at', '<', Carbon::now())->where('updated_at', '>', $from)->orderBy('updated_at', 'desc')->get();
-
-            $payments->map(function ($payment) {
-
-                $order = $payment->order;
-
-                $order->products->map(function ($product) use ($order) {
-                    $this->soldouts[] = [
-                        "product" => $product->toArray(),
-                        "driver" => $product->driver,
-                        "time" => Carbon::createFromTimeStamp($order->payment->updated_at->format('U'))->diffForHumans()
-                    ];
+                    $this->soldouts->push($product->toArray());
                 });
-
             });
 
-            $this->soldouts = (count($this->soldouts) > 5) ? array_slice($this->soldouts, 0, 5) : $this->soldouts;
+            $page = (\Input::get('page') > 0) ? \Input::get('page', 1) : 1;
+            $per_page = \Input::get('per_page', 5);
+
+            return $this->soldouts->slice(($page - 1) * $per_page, $per_page)->toArray();
 
             return $this->setStatusCode(200)->respond($this->soldouts);
         } catch (\Exception $e) {
