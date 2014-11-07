@@ -134,7 +134,8 @@ class StickerController extends ApiController
                 'to' => $email,
                 'attach' => $sticker_factory->getStickerPdfFilePath(),
                 'as' => 'sticker_' . $driver->seller_id . '.pdf',
-                'mime' => 'application/pdf'
+                'mime' => 'application/pdf',
+                'data' => ['name' => $driver->name]
             );
 
             if (\Event::fire('paxifi.email', array($emailOptions))) {
