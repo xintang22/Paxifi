@@ -1,6 +1,7 @@
 <?php namespace Paxifi\Sales\Repository;
 
 use Illuminate\Support\Contracts\ArrayableInterface;
+use Paxifi\Order\Repository\EloquentOrderRepository;
 
 class SaleRepository implements ArrayableInterface
 {
@@ -16,7 +17,6 @@ class SaleRepository implements ArrayableInterface
     protected $products = [];
     protected $buyerEmail;
     protected $buyerFeedback;
-    protected $buyerComment;
     protected $createdAt;
     protected $updatedAt;
 
@@ -32,8 +32,7 @@ class SaleRepository implements ArrayableInterface
         $this->paymentMethod = 'paypal';
         $this->status = $order->status;
         $this->buyerEmail = $order->buyer_email;
-        $this->buyerFeedback = $order->feedback;
-        $this->buyerComment = $order->comment;
+        $this->buyerFeedback = $order->payment->feedback;
         $this->createdAt = $order->created_at;
         $this->updatedAt = $order->updated_at;
         $this->products = $this->formatProducts($order);
@@ -94,6 +93,8 @@ class SaleRepository implements ArrayableInterface
      */
     public function toArray()
     {
+        $feedback = EloquentOrderRepository::find($this->id)->payment->feedback;
+
         return array(
             'id' => $this->id,
             'total_items' => $this->totalItems,
@@ -107,7 +108,6 @@ class SaleRepository implements ArrayableInterface
             'buyer' => array(
                 'email' => $this->buyerEmail,
                 'feedback' => $this->buyerFeedback,
-                'comment' => $this->buyerComment,
             ),
             'status' => $this->status,
             'created_at' => (string)$this->createdAt,
