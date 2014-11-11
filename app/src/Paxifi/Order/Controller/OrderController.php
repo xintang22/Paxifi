@@ -47,6 +47,7 @@ class OrderController extends ApiController
             // Calculate commission & profit
             /** @var \Paxifi\Support\Commission\CalculatorInterface $calculator */
             $calculator = \App::make('Paxifi\Support\Commission\CalculatorInterface');
+            $calculator->setCommissionRate($order->OrderDriver()->getCommissionRate());
             $order->setCommission($calculator->calculateCommission($order));
             $order->setProfit($calculator->calculateProfit($order));
 
