@@ -26,4 +26,19 @@ class EloquentProblemRepository extends BaseModel {
     {
         return $this->belongsTo('Paxifi\Store\Repository\Product\EloquentProductRepository', 'product_id');
     }
+
+    /**
+     * Get whether the problem has reported.
+     *
+     * @param $problem
+     *
+     * @return mixed
+     */
+    public static function reported($problem)
+    {
+        return self::where('payment_id', '=', $problem['payment_id'])
+            ->where('product_id', '=', $problem['product_id'])
+            ->where('problem_type_id', '=', $problem['problem_type_id'])
+            ->first();
+    }
 } 
