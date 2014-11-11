@@ -5,6 +5,7 @@ use Illuminate\Auth\UserInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Illuminate\Support\Collection;
+use Paxifi\Settings\Repository\EloquentCountryRepository;
 use Paxifi\Support\Contracts\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;
 use Paxifi\Support\Repository\BaseModel;
@@ -476,5 +477,16 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
             'category' => 'global',
             'included_in_price' => (boolean)$this->tax_included_in_price,
         ]];
+    }
+
+    /**
+     * Get driver commission rate.
+     *
+     * @return mixed
+     */
+    public function getCommissionRate() {
+        $country = $this->getCountry();
+
+        return EloquentCountryRepository::where('iso', '=', $country)->first()->commission_rate;
     }
 }
