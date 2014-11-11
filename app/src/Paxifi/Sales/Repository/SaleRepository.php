@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Contracts\ArrayableInterface;
 use Paxifi\Order\Repository\EloquentOrderRepository;
+use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 
 class SaleRepository implements ArrayableInterface
 {
@@ -93,8 +94,6 @@ class SaleRepository implements ArrayableInterface
      */
     public function toArray()
     {
-        $feedback = EloquentOrderRepository::find($this->id)->payment->feedback;
-
         return array(
             'id' => $this->id,
             'total_items' => $this->totalItems,
