@@ -41,4 +41,33 @@ class EloquentProblemRepository extends BaseModel {
             ->where('problem_type_id', '=', $problem['problem_type_id'])
             ->first();
     }
+
+    /**
+     * Get related products.
+     *
+     * @param $payment_id
+     * @param $product_id
+     *
+     * @return mixed
+     */
+    public static function getRelatedProblems($payment_id, $product_id)
+    {
+        return self::where('payment_id', '=', $payment_id)->where('product_id', '=', $product_id)->get();
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            "id" => $this->id,
+            "type" => $this->type->name,
+            "product_id" => $this->product_id,
+            "payment_id" => $this->payment_id,
+            "reporter_email" => $this->reporter_email,
+            "created_at" => $this->created_at,
+            "updated_at" => $this->updated_at
+        ];
+    }
 } 
