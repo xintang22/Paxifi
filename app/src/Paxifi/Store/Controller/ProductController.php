@@ -334,6 +334,16 @@ class ProductController extends ApiController
 
             with(new CreateProblemValidator())->validate($inputs);
 
+            // Check whether the product problem has already reported.
+            if ($problem = Problem::reported($inputs)) {
+                return $this->setStatusCode(200)->respond([
+                    "success" => true,
+                    "problem_id" => $problem->id,
+                    "created_at" => $problem->created_at,
+                    "reporter_email" => $problem->reporter_email
+                ]);
+            }
+
             if($problem = Problem::create($inputs))
             {
                 \DB::commit();
