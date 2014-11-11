@@ -94,6 +94,11 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
             ->withPivot(array('quantity'))->withTimestamps();
     }
 
+    public function category()
+    {
+        return $this->belongsTo('Paxifi\Store\Repository\Category\EloquentCategoryRepository', 'category_id');
+    }
+
     /**
      * @{@inheritdoc }
      */
