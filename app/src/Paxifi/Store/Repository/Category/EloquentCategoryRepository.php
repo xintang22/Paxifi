@@ -23,4 +23,8 @@ class EloquentCategoryRepository extends BaseModel implements CategoryRepository
     {
         return $this->where('enabled', '=', 1)->get();
     }
+
+    public static function getCategoryNameById($id) {
+        return self::where('id', '=', $id)->first()->name;
+    }
 }
