@@ -4,6 +4,7 @@ use Paxifi\Support\Repository\BaseModel;
 use Paxifi\Tax\Repository\TaxRate;
 use Paxifi\Tax\TaxableInterface;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Paxifi\Tax\Calculator\Calculator;
 
 class EloquentProductRepository extends BaseModel implements ProductRepositoryInterface, TaxableInterface
 {
@@ -138,5 +139,27 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
     public function getTaxRate()
     {
         return new TaxRate($this->tax_amount, $this->driver->tax_included_in_price);
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function getProductsForecastSalesInfo()
+    {
+        $info = new \stdClass();
+
+        $info->productUnitPrice = $this->unit_price * $this->inventory;
+        $info->productCosts     = $this->average_cost * $this->inventory;
+
+        if ($this->driver->tax_enabled) {
+            $info->productTax = Calculator::calculate($info->productUnitPrice, $this->getTaxRate());
+        } else {
+            $info->productTax = 0;
+        }
+        $info->productSales = $this->getTaxRate()->isIncludedInPrice() ? $info->productUnitPrice : $info->productUnitPrice + $info->productTax;
+        $info->productCommission = $info->productUnitPrice * $this->driver->getCommissionRate();
+        $info->productProfit = $info->productSales - $info->productCosts - $info->productTax - $info->productCommission;
+
+        return $info;
     }
 }
