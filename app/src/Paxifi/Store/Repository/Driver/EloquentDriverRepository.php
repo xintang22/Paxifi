@@ -376,8 +376,6 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      */
     public function getSettingsByDriverCountry() {
         $country = self::getCountry();
-
-
     }
 
     /**
@@ -485,8 +483,15 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      * @return mixed
      */
     public function getCommissionRate() {
-        $country = $this->getCountry();
+        return EloquentCountryRepository::where('iso', '=', $this->getCountry())->first()->commission_rate;
+    }
 
-        return EloquentCountryRepository::where('iso', '=', $country)->first()->commission_rate;
+    /**
+     * Get driver sticker price.
+     *
+     * @return mixed
+     */
+    public function getStickerPrice() {
+        return EloquentCountryRepository::where('iso', '=', $this->getCountry())->first()->sticker_price;
     }
 }

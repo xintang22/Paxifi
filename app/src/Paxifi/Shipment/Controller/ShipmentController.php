@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Shipment\Controller;
 
+use Paxifi\Paypal\Paypal;
 use Paxifi\Shipment\Repository\Validation\CreateShipmentValidator;
 use Paxifi\Shipment\Transformer\ShipmentTransformer;
 use Paxifi\Support\Controller\ApiController;
@@ -8,6 +9,13 @@ use Paxifi\Support\Validation\ValidationException;
 
 class ShipmentController extends ApiController
 {
+    protected $paypal;
+
+    function __construct(Paypal $paypal) {
+        parent::__construct();
+
+        $this->paypal = $paypal;
+    }
 
     /**
      * Create the shipment for sticker.
@@ -27,18 +35,24 @@ class ShipmentController extends ApiController
 
             $new_shipment = [
                 "sticker_id" => $driver->sticker->id,
-                "address" => \Input::get('address'),
+                "address" => \Input::get('address', $driver->address),
                 "status" => "waiting",
                 "paypal_payment_status" => "pending"
             ];
 
             with(new CreateShipmentValidator())->validate($new_shipment);
 
-            if ($shipment = Shipment::create($new_shipment)) {
+            if($capturedPayment = $this->paypal->buySticker($driver)) {
+                $new_shipment['paypal_payment_id'] = $capturedPayment->parent_payment;
 
-                \DB::commit();
+                if ($shipment = Shipment::create($new_shipment)) {
 
-                return $this->setStatusCode(201)->respondWithItem($shipment);
+                    \DB::commit();
+
+                    return $this->setStatusCode(201)->respondWithItem($shipment);
+                }
+
+                return $this->errorInternalError('Shipment for buying sticker created failed.');
             }
 
             return $this->errorInternalError();

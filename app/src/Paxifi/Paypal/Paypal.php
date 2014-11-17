@@ -132,7 +132,6 @@ class Paypal
     public function createPayment($accessToken = null, array $transactions = array(), $driver = null)
     {
         try {
-
             $accessToken = is_null($accessToken) ? $this->getUserAccessToken($driver) : $accessToken;
 
             $paymentUrl = $this->paypalUrl . 'payments/payment';
@@ -155,6 +154,7 @@ class Paypal
         } catch (\Exception $e) {
 
             // Todo:: record create authorized future payment failed.
+            return false;
 
         }
     }
@@ -366,6 +366,26 @@ class Paypal
             return $capturedPayment;
         } else {
             // Todo:: record capture comission payment failed.
+            return false;
+        }
+    }
+
+    /**
+     * @param EloquentDriverRepository $driver
+     *
+     * @return bool|mixed
+     */
+    public function buySticker(EloquentDriverRepository $driver) {
+        $transaction = $this->getFuturePaymentTransaction($driver->getStickerPrice(), $driver->currency, "Sticker Payment");
+
+        $payment = $this->createPayment(null, $transaction, $driver);
+
+        // Capture the payment
+        if ($capturedPayment = $this->capturePayment(null, $payment, $driver)) {
+            // Todo:: record capture purchase sticker payment success.
+            return $capturedPayment;
+        } else {
+            // Todo:: record capture purchase sticker payment failed.
             return false;
         }
     }
