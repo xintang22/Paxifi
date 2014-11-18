@@ -142,24 +142,11 @@ class EloquentProductRepository extends BaseModel implements ProductRepositoryIn
     }
 
     /**
-     * @return \stdClass
+     * @param int $status
      */
-    public function getProductsForecastSalesInfo()
+    public function hold($status = 0)
     {
-        $info = new \stdClass();
-
-        $info->productUnitPrice = $this->unit_price * $this->inventory;
-        $info->productCosts     = $this->average_cost * $this->inventory;
-
-        if ($this->driver->tax_enabled) {
-            $info->productTax = Calculator::calculate($info->productUnitPrice, $this->getTaxRate());
-        } else {
-            $info->productTax = 0;
-        }
-        $info->productSales = $this->getTaxRate()->isIncludedInPrice() ? $info->productUnitPrice : $info->productUnitPrice + $info->productTax;
-        $info->productCommission = $info->productUnitPrice * $this->driver->getCommissionRate();
-        $info->productProfit = $info->productSales - $info->productCosts - $info->productTax - $info->productCommission;
-
-        return $info;
+        $this->status = $status;
+        $this->save();
     }
 }
