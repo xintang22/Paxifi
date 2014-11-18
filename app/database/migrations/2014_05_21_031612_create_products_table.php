@@ -26,7 +26,6 @@ class CreateProductsTable extends Migration
             $table->decimal('average_cost')->nullable();
             $table->unsignedInteger('inventory')->nullable();
             $table->decimal('tax_amount', 8, 5);
-            $table->boolean('status')->default(1);
 
             $table->timestamps();
             $table->softDeletes();
