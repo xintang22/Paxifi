@@ -3,12 +3,8 @@
 use League\Fractal\TransformerAbstract;
 use Paxifi\Sticker\Repository\EloquentStickerRepository;
 
-class StickerTransformer extends TransformerAbstract {
-
-    protected $fee = [
-        'UK' => 4,
-        'US' => 5
-    ];
+class StickerTransformer extends TransformerAbstract
+{
 
     public function transform(EloquentStickerRepository $sticker)
     {
@@ -16,7 +12,7 @@ class StickerTransformer extends TransformerAbstract {
             'image' => $sticker->getAttribute('image'),
             'pdf' => $sticker->getAttribute('pdf'),
             'currency' => $sticker->driver->currency,
-            'shipment_fee' => $this->fee[$sticker->driver->address['country']]
+            'shipment_fee' => $sticker->driver->getStickerPrice()
         );
     }
 }
