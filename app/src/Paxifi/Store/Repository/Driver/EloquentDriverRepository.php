@@ -445,7 +445,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         return $rates->map(function ($rate) {
             return [
                 'amount' => $rate->amount,
-                'category' => $rate->category,
+                'category' => ucwords($rate->category),
                 'included_in_price' => (boolean)$rate->included_in_price,
             ];
         });
@@ -472,7 +472,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
 
         return [[
             'amount' => $this->tax_global_amount,
-            'category' => 'global',
+            'category' => 'Global',
             'included_in_price' => (boolean)$this->tax_included_in_price,
         ]];
     }
