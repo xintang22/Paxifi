@@ -343,7 +343,7 @@
                                     <tr style="padding: 0;vertical-align: middle;text-align: left;border-spacing: 0 !important;border-collapse: collapse !important;">
                                         <td class="five offset-by-seven"
                                             style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;padding: 10px 0;vertical-align: middle;text-align: left;color: #58585a;font-family: Helvetica, Arial, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;padding-left: 350px;width: 41.666666%;border-collapse: collapse !important;border-spacing: 0 !important;">
-                                            <b>{{{$content['sub_total']}}} </b>{{{$order['total_sales']}}}{{{$driver['currency']}}}
+                                            <b>{{{$content['sub_total']}}} </b>{{{$order['total_sales'] - $order['total_tax']}}} {{{$driver['currency']}}}
                                         </td>
                                     </tr>
                                 </table>
@@ -358,7 +358,7 @@
                                     <tr style="padding: 0;vertical-align: middle;text-align: left;border-spacing: 0 !important;border-collapse: collapse !important;">
                                         <td class="five offset-by-seven"
                                             style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;padding: 10px 0;vertical-align: middle;text-align: left;color: #58585a;font-family: Helvetica, Arial, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;padding-left: 350px;width: 41.666666%;border-collapse: collapse !important;border-spacing: 0 !important;">
-                                            <b>{{{$content['sales_tax']}}} </b>123{{{$driver['currency']}}}
+                                            <b>{{{$content['sales_tax']}}} </b>{{{$order['total_tax']}}} {{{$driver['currency']}}}
                                         </td>
                                     </tr>
                                 </table>
@@ -373,7 +373,7 @@
                                     <tr style="padding: 0;vertical-align: middle;text-align: left;border-spacing: 0 !important;border-collapse: collapse !important;">
                                         <td class="five offset-by-seven"
                                             style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;padding: 10px 0;vertical-align: middle;text-align: left;color: #58585a;font-family: Helvetica, Arial, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;padding-left: 350px;width: 41.666666%;border-collapse: collapse !important;border-spacing: 0 !important;">
-                                            <b>{{{$content['total']}}} </b>123{{{$driver['currency']}}}
+                                            <b>{{{$content['total']}}} </b>{{{$order['total_sales']}}} {{{$driver['currency']}}}
                                         </td>
                                     </tr>
                                 </table>

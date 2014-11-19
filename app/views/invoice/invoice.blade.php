@@ -225,7 +225,7 @@
                             </tr>
                             @endforeach
                             <tr class="data-title">
-                                <td colspan="3" class="five offset-by-seven"><b>{{{$content['sub_total']}}} </b>{{{$order['total_sales'] - $order['total_tax']}}}{{{$driver['currency']}}}</td>
+                                <td colspan="3" class="five offset-by-seven"><b>{{{$content['sub_total']}}} </b>{{{$order['total_sales'] - $order['total_tax']}}} {{{$driver['currency']}}}</td>
                             </tr>
                             <tr class="data-title">
                                 <td colspan="3" class="five offset-by-seven"><b>{{{$content['sales_tax']}}} </b>{{{$order['total_tax']}}} {{{$driver['currency']}}}</td>
