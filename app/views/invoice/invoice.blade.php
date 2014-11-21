@@ -167,7 +167,7 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <b>{{{$content['payment_amount']}}} </b>{{{$order['total_sales']}}}USD
+                                                <b>{{{$content['payment_amount']}}} </b>{{{$order['total_sales']}}} USD
                                             </td>
                                         </tr>
                                         </tbody>
@@ -215,7 +215,7 @@
                             <tr class="data-title">
                                 <th class="three" style="width: 25%;">{{{$content['name']}}}</th>
                                 <th class="four" style="width: 33.333333%;">{{{$content['quantity']}}}</th>
-                                <th class="five" style="width: 41.666666%;">{{{$content['price']}}}({{{$driver['currency']}}})</th>
+                                <th class="five" style="width: 41.666666%;">{{{$content['price']}}} ({{{$driver['currency']}}})</th>
                             </tr>
                             @foreach($products as $product)
                             <tr class="data-body">
@@ -228,7 +228,7 @@
                                 <td colspan="3" class="five offset-by-seven"><b>{{{$content['sub_total']}}} </b>{{{$order['total_sales'] - $order['total_tax']}}} {{{$driver['currency']}}}</td>
                             </tr>
                             <tr class="data-title">
-                                <td colspan="3" class="five offset-by-seven"><b>{{{$content['sales_tax']}}} </b>{{{$order['total_tax']}}}{{{$driver['currency']}}}</td>
+                                <td colspan="3" class="five offset-by-seven"><b>{{{$content['sales_tax']}}} </b>{{{$order['total_tax']}}} {{{$driver['currency']}}}</td>
                             </tr>
                             <tr class="data-title">
                                 <td colspan="3" class="five offset-by-seven"><b>{{{$content['total']}}} </b>{{{$order['total_sales']}}} {{{$driver['currency']}}}</td>
