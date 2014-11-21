@@ -209,7 +209,7 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
      */
     public function needChargeCommission() {
         if ($this->status == 'trialing') {
-            return !!((Carbon::now() >= $this->trial_end) && (Carbon::now()->subDay() < $this->trial_end));
+            return false;
         } else {
             return !!((Carbon::now() >= $this->current_period_end) && (Carbon::now()->subDay() < $this->current_period_end));
         }
