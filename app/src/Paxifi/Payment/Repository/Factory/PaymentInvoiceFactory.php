@@ -1,5 +1,7 @@
 <?php namespace Paxifi\Payment\Repository\Factory;
 
+set_time_limit(0);
+
 use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Store\Repository\Driver\Factory\DriverLogoFactory;
 use Paxifi\Support\SavePdf\PdfConverter;
