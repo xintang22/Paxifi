@@ -178,7 +178,7 @@
                                         <tbody>
                                         <tr>
                                             <td class="seller-logo">
-                                                <img src="{{{$template['pdf_driver_logo']}}}"/>
+                                                <img width="72" height="72" src="{{{$template['pdf_driver_logo']}}}"/>
                                             </td>
                                             <td>
                                                 <table>
@@ -219,16 +219,16 @@
                             </tr>
                             @foreach($products as $product)
                             <tr class="data-body">
-                                <td>{{$product['name']}}</td>
-                                <td>{{$product['pivot']['quantity']}}</td>
-                                <td>{{$product['unit_price']}}</td>
+                                <td>{{{$product['name']}}}</td>
+                                <td>{{{$product['pivot']['quantity']}}}</td>
+                                <td>{{{$product['unit_price']}}}</td>
                             </tr>
                             @endforeach
                             <tr class="data-title">
                                 <td colspan="3" class="five offset-by-seven"><b>{{{$content['sub_total']}}} </b>{{{$order['total_sales'] - $order['total_tax']}}} {{{$driver['currency']}}}</td>
                             </tr>
                             <tr class="data-title">
-                                <td colspan="3" class="five offset-by-seven"><b>{{{$content['sales_tax']}}} </b>{{{$order['total_tax']}}} {{{$driver['currency']}}}</td>
+                                <td colspan="3" class="five offset-by-seven"><b>{{{$content['sales_tax']}}} </b>{{{$order['total_tax']}}}{{{$driver['currency']}}}</td>
                             </tr>
                             <tr class="data-title">
                                 <td colspan="3" class="five offset-by-seven"><b>{{{$content['total']}}} </b>{{{$order['total_sales']}}} {{{$driver['currency']}}}</td>
