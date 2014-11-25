@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
 use Paxifi\Support\FileUploader\FileSystemUploaderProvider;
+use Paxifi\Support\FileUploader\S3UploaderProvider;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class FileUploaderServiceProvider extends ServiceProvider
@@ -44,7 +45,10 @@ class FileUploaderServiceProvider extends ServiceProvider
     protected function registerFileUploaderProvider()
     {
         $this->app->bindShared('paxifi.files.uploader', function ($app) {
-            return new FileSystemUploaderProvider($app['config']);
+            // return new FileSystemUploaderProvider($app['config']);
+            $flysystem = $app->make('GrahamCampbell\Flysystem\FlysystemManager');
+
+            return new S3UploaderProvider($flysystem);
         });
     }
 

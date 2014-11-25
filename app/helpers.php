@@ -12,7 +12,6 @@ if ( ! function_exists('cloudfront_asset'))
      */
     function cloudfront_asset($path = null, $parameters = array(), $secure = null)
     {
-
         return getenv('CLOUDFRONT_URL') . '/' . $path;
     }
 }
