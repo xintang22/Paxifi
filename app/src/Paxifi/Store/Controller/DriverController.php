@@ -361,7 +361,7 @@ class DriverController extends ApiController
             $result = DriverRepository::search($searchParams)->first();
 
             if (empty($result->photo)) {
-                $result->photo = url('images/drivers/template/driver_logo.png');
+                $result->photo = cloudfront_asset('images/drivers/template/driver_logo.png');
             }
 
             return $this->respondWithItem($result);

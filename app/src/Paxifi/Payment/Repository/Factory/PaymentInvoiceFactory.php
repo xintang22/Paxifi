@@ -92,14 +92,14 @@ class PaymentInvoiceFactory extends DriverLogoFactory
 
         // invoice pdf path.
         $this->invoicePdfFilePath = str_replace('/', DIRECTORY_SEPARATOR, public_path(\Config::get('pdf.invoices') . $order->id . '.pdf'));
-        $this->invoicePdfUrlPath = str_replace('/', DIRECTORY_SEPARATOR, url(\Config::get('pdf.invoices') . $order->id . '.pdf'));
+        $this->invoicePdfUrlPath = str_replace('/', DIRECTORY_SEPARATOR, cloudfront_asset(\Config::get('pdf.invoices') . $order->id . '.pdf'));
 
         // template files.
         $this->driverLogoCircleCover = str_replace('/', DIRECTORY_SEPARATOR, public_path(\Config::get('images.invoices.template') . 'driver_logo_bg.png'));
         $this->paxifiLogoFilePath = str_replace('/', DIRECTORY_SEPARATOR, public_path(\Config::get('images.invoices.template') . $this->paxifiLogoName));
-        $this->paxifiLogoUrlPath = str_replace('/', DIRECTORY_SEPARATOR, url(\Config::get('images.invoices.template') . $this->paxifiLogoName));
-        $this->defaultDriverLogoFilePath = str_replace('/', DIRECTORY_SEPARATOR, url(\Config::get('images.invoices.template') . $this->defaultDriverLogoName));
-        $this->defaultDriverLogoUrlPath = str_replace('/', DIRECTORY_SEPARATOR, url(\Config::get('images.invoices.template') . $this->defaultDriverLogoName));
+        $this->paxifiLogoUrlPath = str_replace('/', DIRECTORY_SEPARATOR, cloudfront_asset(\Config::get('images.invoices.template') . $this->paxifiLogoName));
+        $this->defaultDriverLogoFilePath = str_replace('/', DIRECTORY_SEPARATOR, cloudfront_asset(\Config::get('images.invoices.template') . $this->defaultDriverLogoName));
+        $this->defaultDriverLogoUrlPath = str_replace('/', DIRECTORY_SEPARATOR, cloudfront_asset(\Config::get('images.invoices.template') . $this->defaultDriverLogoName, $this->secure));
 
         $this->setDriver($this->getOrderDriver());
     }

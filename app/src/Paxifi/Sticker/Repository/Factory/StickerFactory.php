@@ -139,6 +139,7 @@ class StickerFactory extends DriverLogoFactory
     public function __construct()
     {
         parent::__construct();
+
         $this->stickerDir = str_replace('/', DIRECTORY_SEPARATOR, public_path(\Config::get('images.stickers.img')));
         $this->stickerLogoDir = str_replace('/', DIRECTORY_SEPARATOR, public_path(\Config::get('images.stickers.logo')));
         $this->stickerTemplateDir = str_replace('/', DIRECTORY_SEPARATOR, public_path(\Config::get('images.stickers.template')));
@@ -223,7 +224,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function getStickerFileUrl()
     {
-        return url(\Config::get('images.stickers.img') . $this->getDriverLogoImageName());
+        return cloudfront_asset(\Config::get('images.stickers.img') . $this->getDriverLogoImageName());
     }
 
     /**
@@ -249,7 +250,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function getStickerPdfUrl()
     {
-        return url($this->stickerPdfDir . $this->getSellerId() . '.pdf');
+        return cloudfront_asset($this->stickerPdfDir . $this->getSellerId() . '.pdf');
     }
 
     /**

@@ -68,7 +68,6 @@ class DriverLogoFactory
         $this->driverLogoFolder = \Config::get('images.drivers.logo');
         $this->driverLogoCircleCover = \Config::get('images.drivers.template') . 'driver_logo_bg.png';
         $this->driverLogoDefaultTemplate = \Config::get('images.drivers.template') . 'driver_logo.png';
-
     }
 
     /**
@@ -106,7 +105,7 @@ class DriverLogoFactory
      */
     public function getDriverLogoCircleCoverUrl()
     {
-        return url($this->driverLogoCircleCover);
+        return cloudfront_asset($this->driverLogoCircleCover);
     }
 
     /**
@@ -133,7 +132,7 @@ class DriverLogoFactory
      */
     public function getDriverDefaultLogoUrl()
     {
-        return url($this->driverLogoDefaultTemplate);
+        return cloudfront_asset($this->driverLogoDefaultTemplate);
     }
 
     /**
@@ -161,7 +160,7 @@ class DriverLogoFactory
             return $this->getDriverDefaultLogoUrl();
         }
 
-        return url($this->driverLogoFolder . $this->getDriverLogoImageName());
+        return cloudfront_asset($this->driverLogoFolder . $this->getDriverLogoImageName());
     }
 
     /**
