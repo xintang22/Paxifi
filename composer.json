@@ -17,7 +17,8 @@
         "guzzlehttp/guzzle": "dev-master",
         "cboden/ratchet": "0.3.*",
         "react/zmq": "0.2.*|0.3.*",
-        "doctrine/dbal": "~2.5@dev"
+        "doctrine/dbal": "~2.5@dev",
+        "graham-campbell/flysystem": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",

@@ -129,6 +129,7 @@ return array(
         'Intervention\Image\ImageServiceProvider',
         'Thujohn\Pdf\PdfServiceProvider',
         'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
+        'GrahamCampbell\Flysystem\FlysystemServiceProvider',
 
 	),
 
@@ -199,6 +200,7 @@ return array(
         'PDF'             => 'Thujohn\Pdf\PdfFacade',
         'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
         'ResourceServer' => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
+        'Flysystem' => 'GrahamCampbell\Flysystem\Facades\Flysystem',
 
         'PaypalLog'   => 'Paxifi\Paypal\Logger',
 
