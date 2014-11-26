@@ -23,14 +23,6 @@ class StickerServiceProvider extends ServiceProvider
     }
 
     /**
-     *  Register Sticker Routes
-     */
-    public function registerRoutes()
-    {
-        //Todo::
-    }
-
-    /**
      * Register Sticker Repository
      */
     public function registerStickerRepository()
@@ -51,10 +43,10 @@ class StickerServiceProvider extends ServiceProvider
         $this->app['config']->set('stickers.template.name', 'sticker_template.png');
 
         $config = [
-            'images.stickers.img' => 'images/stickers/img/',
-            'images.stickers.logo' => 'images/stickers/logo/',
+            'images.stickers.img' => 'stickers/img/',
+            'images.stickers.logo' => 'stickers/logo/',
             'images.stickers.template' => 'images/stickers/template/',
-            'pdf.stickers' => 'pdf/stickers/'
+            'pdf.stickers' => 'stickers/pdf/'
         ];
 
         array_walk($config, function ($value, $key) {

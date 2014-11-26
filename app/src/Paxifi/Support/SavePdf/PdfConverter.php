@@ -119,7 +119,7 @@ class PdfConverter
     public function saveHtmlToPdf()
     {
         if (
-        \File::put(
+        \Flysystem::put(
             $this->getPdfFilePath(),
             \PDF::load(
                 $this->getHtmlTemplate(),

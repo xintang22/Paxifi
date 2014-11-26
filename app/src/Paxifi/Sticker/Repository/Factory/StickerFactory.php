@@ -2,6 +2,7 @@
 
 use Paxifi\Store\Repository\Driver\Factory\DriverLogoFactory;
 use Paxifi\Support\SavePdf\PdfConverter;
+use Paxifi\Support\Image;
 
 /**
  * Class StickerFactory
@@ -140,9 +141,8 @@ class StickerFactory extends DriverLogoFactory
     {
         parent::__construct();
 
-        $this->stickerDir = str_replace('/', DIRECTORY_SEPARATOR, public_path(\Config::get('images.stickers.img')));
-        $this->stickerLogoDir = str_replace('/', DIRECTORY_SEPARATOR, public_path(\Config::get('images.stickers.logo')));
-        $this->stickerTemplateDir = str_replace('/', DIRECTORY_SEPARATOR, public_path(\Config::get('images.stickers.template')));
+        $this->stickerDir = \Config::get('images.stickers.img');
+        $this->stickerTemplateDir = \Config::get('images.stickers.template');
         $this->stickerPdfDir = \Config::get('pdf.stickers');
         $this->stickerTemplateName = \Config::get('stickers.template.name');
         $this->setDefaultFontOptions();
@@ -214,7 +214,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function getStickerInterventionCanvas()
     {
-        return \Image::canvas($this->canvasWidth, $this->canvasHeight, '#ffffff');
+        return $this->imageManager->canvas($this->canvasWidth, $this->canvasHeight, '#ffffff');
     }
 
     /**
@@ -234,7 +234,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function getStickerFilePath()
     {
-        return $this->stickerDir . $this->getDriverLogoImageName();
+        return cloudfront_asset($this->stickerDir . $this->getDriverLogoImageName());
     }
 
     /**
@@ -242,7 +242,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function getStickerPdfFilePath()
     {
-        return str_replace('/', DIRECTORY_SEPARATOR, public_path($this->stickerPdfDir . $this->getSellerId() . '.pdf'));
+        return $this->stickerPdfDir . $this->getSellerId() . '.pdf';
     }
 
     /**
@@ -254,22 +254,12 @@ class StickerFactory extends DriverLogoFactory
     }
 
     /**
-     * Resize the driver logo image
-     */
-    public function resizeLogoImage()
-    {
-        $this->getInterventionLogo()->resize($this->logoWidth, $this->logoHeight)->save($this->stickerLogoDir . $this->getDriverLogoImageName());
-
-        return $this;
-    }
-
-    /**
      * Insert the resized driver store logo into sticker intervention canvas
      */
     public function insertStickerLogo()
     {
         $this->sticker->insert(
-            $this->stickerLogoDir . $this->getDriverLogoImageName(),
+            $this->getInterventionLogo()->resize($this->logoWidth, $this->logoHeight),
             '',
             $this->logoXPosition,
             $this->logoYPosition,
@@ -284,7 +274,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function insertStickerTemplate()
     {
-        $this->sticker->insert($this->stickerTemplateDir . $this->stickerTemplateName);
+        $this->sticker->insert(public_path($this->stickerTemplateDir . $this->stickerTemplateName));
 
         return $this;
     }
@@ -312,7 +302,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function saveStickerToImage()
     {
-        $this->sticker->save($this->getStickerFilePath());
+        $this->sticker->saveToS3($this->stickerDir . $this->getDriverLogoImageName());
     }
 
     /**
@@ -320,27 +310,10 @@ class StickerFactory extends DriverLogoFactory
      */
     public function buildSticker()
     {
-        $this->resizeLogoImage()
-            ->insertStickerLogo()
+        $this->insertStickerLogo()
             ->insertStickerTemplate()
             ->insertSellerId()
             ->saveStickerToImage();
-    }
-
-    /**
-     * Delete sticker image
-     */
-    public function deleteSticker()
-    {
-        unlink($this->getStickerFilePath());
-    }
-
-    /**
-     * delete resized sticker logo image.
-     */
-    public function deleteStickerLogo()
-    {
-        unlink($this->stickerLogoDir . $this->getDriverLogoImageName());
     }
 
     /**
@@ -409,9 +382,7 @@ class StickerFactory extends DriverLogoFactory
     {
         return [
             "image" => $this->getStickerFileUrl(),
-            "image_path" => $this->getStickerFilePath(),
             "pdf" => $this->getStickerPdfUrl(),
-            "pdf_path" => $this->getStickerPdfFilePath()
         ];
     }
 }

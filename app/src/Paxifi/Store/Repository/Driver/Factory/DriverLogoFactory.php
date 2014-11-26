@@ -4,6 +4,10 @@ use Paxifi\Support\SavePdf\PdfConverter;
 
 class DriverLogoFactory
 {
+    /**
+     * @var
+     */
+    protected $imageManager;
 
     /**
      * @var
@@ -65,6 +69,8 @@ class DriverLogoFactory
      */
     public function __construct()
     {
+        $this->imageManager = \App::make('paxifi.image');
+
         $this->driverLogoFolder = \Config::get('images.drivers.logo');
         $this->driverLogoCircleCover = \Config::get('images.drivers.template') . 'driver_logo_bg.png';
         $this->driverLogoDefaultTemplate = \Config::get('images.drivers.template') . 'driver_logo.png';
@@ -146,7 +152,7 @@ class DriverLogoFactory
             return $this->getDriverDefaultLogo();
         }
 
-        return public_path($this->driverLogoFolder . $this->getDriverLogoImageName());
+        return $this->driver->photo;
     }
 
     /**
@@ -170,7 +176,7 @@ class DriverLogoFactory
      */
     public function getInterventionLogo()
     {
-        return \Image::make($this->getDriverLogoImagePath());
+        return $this->imageManager->make($this->getDriverLogoImagePath());
     }
 
     /**
