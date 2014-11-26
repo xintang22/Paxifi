@@ -26,7 +26,7 @@ class S3UploaderProvider implements UploaderProviderInterface {
     public function upload($file, $target = 'photos', $options = array())
     {
         if (is_array($file))
-            return array_map(array($this, 'uploadSingleFile'), $file);
+            return array_map(array($this, 'uploadSingleFile'), $file, array_fill(0, count($file), $target));
 
         return array($this->uploadSingleFile($file, $target));
     }
