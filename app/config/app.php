@@ -125,8 +125,7 @@ return array(
         'Paxifi\Provider\FeedbackServiceProvider',
         'Paxifi\Provider\PaypalServiceProvider',
         'Paxifi\Provider\SettingsServiceProvider',
-
-        'Intervention\Image\ImageServiceProvider',
+        'Paxifi\Provider\PaxifiImageServiceProvider',
         'Thujohn\Pdf\PdfServiceProvider',
         'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
         'GrahamCampbell\Flysystem\FlysystemServiceProvider',
@@ -196,7 +195,7 @@ return array(
 		'URL'             => 'Illuminate\Support\Facades\URL',
 		'Validator'       => 'Illuminate\Support\Facades\Validator',
 		'View'            => 'Illuminate\Support\Facades\View',
-        'Image'           => 'Intervention\Image\Facades\Image',
+        'Image'           => 'Paxifi\Support\Image\Facades\Image',
         'PDF'             => 'Thujohn\Pdf\PdfFacade',
         'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
         'ResourceServer' => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
