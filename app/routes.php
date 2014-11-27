@@ -16,3 +16,10 @@ App::missing(function($exception) {
 App::error(function (MethodNotAllowedHttpException $exception) {
     return Redirect::to('/');
 });
+
+Route::get('status', function() {
+    return Response::json([
+        'status' => 'Ok',
+        'time' => \Carbon\Carbon::now()->toISO8601String(),
+    ]);
+});

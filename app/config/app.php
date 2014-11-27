@@ -154,6 +154,7 @@ return array(
         'Thujohn\Pdf\PdfServiceProvider',
         'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
         'GrahamCampbell\Flysystem\FlysystemServiceProvider',
+        'Barryvdh\Cors\CorsServiceProvider',
 
 	),
 
