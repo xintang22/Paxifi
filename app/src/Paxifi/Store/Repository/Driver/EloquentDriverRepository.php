@@ -415,9 +415,6 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
 
         $params->each(function ($param) use ($query) {
             $query->where($param['column'], $param['operator'], $param['value']);
-            if (\Config::get('paxifi.paypal.environment') == 'production') {
-                $query->where('status', '=', 1);
-            }
         });
 
         $models = $query->get(array('id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'status', 'paypal_account'));
