@@ -92,7 +92,7 @@ class PaymentInvoiceFactory extends DriverLogoFactory
 
         // invoice pdf path.
         $this->invoicePdfFilePath = \Config::get('pdf.invoices') . 'invoice-' . $order->id . '.pdf';
-        $this->invoicePdfUrlPath = cloudfront_asset( getenv('AWS_S3_BUCKET') . '/' . \Config::get('pdf.invoices') . 'invoice-' . $order->id . '.pdf');
+        $this->invoicePdfUrlPath = cloudfront_asset(\Config::get('pdf.invoices') . 'invoice-' . $order->id . '.pdf');
 
         // template files.
         $this->driverLogoCircleCover = public_path(\Config::get('images.invoices.template') . 'driver_logo_bg.png');
