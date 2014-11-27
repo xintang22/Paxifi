@@ -91,15 +91,15 @@ class PaymentInvoiceFactory extends DriverLogoFactory
         $this->order = $order;
 
         // invoice pdf path.
-        $this->invoicePdfFilePath = \Config::get('pdf.invoices') . $order->id . '.pdf';
-        $this->invoicePdfUrlPath = cloudfront_asset(\Config::get('pdf.invoices') . $order->id . '.pdf');
+        $this->invoicePdfFilePath = \Config::get('pdf.invoices') . 'invoice-' . $order->id . '.pdf';
+        $this->invoicePdfUrlPath = cloudfront_asset( getenv('AWS_S3_BUCKET') . '/' . \Config::get('pdf.invoices') . 'invoice-' . $order->id . '.pdf');
 
         // template files.
-        $this->driverLogoCircleCover = str_replace('/', DIRECTORY_SEPARATOR, public_path(\Config::get('images.invoices.template') . 'driver_logo_bg.png'));
-        $this->paxifiLogoFilePath = str_replace('/', DIRECTORY_SEPARATOR, public_path(\Config::get('images.invoices.template') . $this->paxifiLogoName));
-        $this->paxifiLogoUrlPath = str_replace('/', DIRECTORY_SEPARATOR, cloudfront_asset(\Config::get('images.invoices.template') . $this->paxifiLogoName));
-        $this->defaultDriverLogoFilePath = str_replace('/', DIRECTORY_SEPARATOR, cloudfront_asset(\Config::get('images.invoices.template') . $this->defaultDriverLogoName));
-        $this->defaultDriverLogoUrlPath = str_replace('/', DIRECTORY_SEPARATOR, cloudfront_asset(\Config::get('images.invoices.template') . $this->defaultDriverLogoName));
+        $this->driverLogoCircleCover = public_path(\Config::get('images.invoices.template') . 'driver_logo_bg.png');
+        $this->paxifiLogoFilePath = public_path(\Config::get('images.invoices.template') . $this->paxifiLogoName);
+        $this->paxifiLogoUrlPath = url(\Config::get('images.invoices.template') . $this->paxifiLogoName, $this->secure);
+        $this->defaultDriverLogoFilePath = url(\Config::get('images.invoices.template') . $this->defaultDriverLogoName, $this->secure);
+        $this->defaultDriverLogoUrlPath = url(\Config::get('images.invoices.template') . $this->defaultDriverLogoName, $this->secure);
 
         $this->setDriver($this->getOrderDriver());
     }
@@ -210,7 +210,6 @@ class PaymentInvoiceFactory extends DriverLogoFactory
      */
     public function saveInvoiceToPdf()
     {
-
         $converter = new PdfConverter();
 
         $converter->setPdfSize('a4')
