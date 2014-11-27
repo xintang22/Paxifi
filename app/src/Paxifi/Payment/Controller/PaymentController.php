@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Payment\Controller;
 
+use GrahamCampbell\Flysystem\FlysystemManager;
 use Paxifi\Payment\Exception\PaymentNotMatchException;
 use Paxifi\Payment\Repository\PaymentRepository as Payment;
 use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository as PaymentMethods;
@@ -12,6 +13,14 @@ use Paxifi\Payment\Repository\Factory\PaymentInvoiceFactory;
 
 class PaymentController extends ApiController
 {
+    protected $flysystem;
+
+    public function __construct(FlysystemManager $flysystem)
+    {
+        parent::__construct();
+        $this->flysystem = $flysystem;
+    }
+
     /**
      * Get specific payment information.
      *
@@ -294,7 +303,7 @@ class PaymentController extends ApiController
             'context' => $this->translator->trans('email.invoice'),
             'to' => $payment->order->buyer_email,
             'data' => $invoiceFactory->getInvoiceData(),
-            'attach' => $invoiceFactory->getPdfFilePath(),
+            'attach' => $invoiceFactory->getPdfUrlPath(),
             'as' => 'invoice_' . $payment->id . '.pdf',
             'mime' => 'application/pdf'
         );
