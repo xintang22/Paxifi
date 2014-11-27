@@ -34,7 +34,7 @@ class PaypalController extends ApiController
             $ipnMessage = Message::createFromGlobals(); // uses php://input      
 
             $verifier->setIpnMessage($ipnMessage);
-            $verifier->setEnvironment(\Config::get('paxifi.paypal.environment'));
+            $verifier->setEnvironment(\Config::get('app.paypal_mode'));
 
             $listener->setVerifier($verifier);
 

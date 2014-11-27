@@ -41,6 +41,18 @@ return array(
 
     'secure' => $_ENV['SECURE'],
 
+    /*
+	|--------------------------------------------------------------------------
+	| PayPal Mode
+	|--------------------------------------------------------------------------
+	|
+	| This URL is used by the console to properly generate URLs when using
+	| the Artisan command line tool. You should set this to the root of
+	| your application so that it is used when running Artisan tasks.
+	|
+	*/
+    'paypal_mode' => $_ENV['PAYPAL_MODE'],
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application Timezone
