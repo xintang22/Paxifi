@@ -178,7 +178,8 @@
                                         <tbody>
                                         <tr>
                                             <td class="seller-logo">
-                                                <img width="72" height="72" src="{{{$template['pdf_driver_logo']}}}"/>
+                                                <img style="position: absolute; width: 90px; height: 90px;" width="72" height="72" src="{{{ public_path('images/drivers/template/driver_logo_bg.png')  }}}" alt=""/>
+                                                <img style="margin: 8px 0 0 8px;" width="72" height="72" src="{{{$template['pdf_driver_logo']}}}"/>
                                             </td>
                                             <td>
                                                 <table>
