@@ -53,12 +53,12 @@ class PaypalServiceProvider extends ServiceProvider
      */
     public function registerConfiguration()
     {
-        $this->app['config']->set('paxifi.paypal.environment', 'sandbox');
+        $this->app['config']->set('paxifi.paypal.environment', getenv('PAYPAL_MODE'));
 
         // Paxifi paypal client
-        $this->app['config']->set('paxifi.paypal.url', "https://api.sandbox.paypal.com/v1/");
-        $this->app['config']->set('paxifi.paypal.client_id', "AWS54BAuSLHhRKWeYKLyah03y09dEtuu_haQHlBuu_XJgrgDjGzPkawZgcu_");
-        $this->app['config']->set('paxifi.paypal.client_secret', "EMt35xD7ksEW7RDrHp60SCOTExhRIsv38tujA6x-x8cjl4LGtsXu1YbE98qy");
+        $this->app['config']->set('paxifi.paypal.url', getenv('PAYPAL_URL'));
+        $this->app['config']->set('paxifi.paypal.client_id', getenv('PAYPAL_CLIENT_ID'));
+        $this->app['config']->set('paxifi.paypal.client_secret', getenv('PAYPAL_CLIENT_SECRET'));
     }
 
     /**
