@@ -178,8 +178,8 @@
                                         <tbody>
                                         <tr>
                                             <td class="seller-logo">
-                                                <img style="position: absolute; width: 90px; height: 90px;" width="72" height="72" src="{{{ public_path('images/drivers/template/driver_logo_bg.png')  }}}" alt=""/>
-                                                <img style="margin: 8px 0 0 8px;" width="72" height="72" src="{{{$template['pdf_driver_logo']}}}"/>
+                                                <img style="position: absolute; width: 90px; height: 90px;" width="90" height="90" src="{{{ public_path('images/drivers/template/driver_logo_bg.png')  }}}" alt=""/>
+                                                <img style="margin: 7px 0 0 7px;" width="76" height="76" src="{{{ $template['pdf_driver_logo']}}}" />
                                             </td>
                                             <td>
                                                 <table>
@@ -245,7 +245,7 @@
                                 <td>
                                     <div class="title">
                                         <b>{{{$content['title']}}}</b>
-                                        <p>{{{$content['description']}}}</p>
+                                        <p>{{{$content['description']}}} <a href="https://www.paxifi.com/#/terms">https://www.paxifi.com/#/terms</a></p>
                                     </div>
                                 </td>
                             </tr>

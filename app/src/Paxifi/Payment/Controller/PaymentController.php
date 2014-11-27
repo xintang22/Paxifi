@@ -13,6 +13,14 @@ use Paxifi\Payment\Repository\Factory\PaymentInvoiceFactory;
 
 class PaymentController extends ApiController
 {
+     protected $flysystem;
+
+     public function __construct(FlysystemManager $flysystem)
+     {
+         parent::__construct();
+         $this->flysystem = $flysystem;
+     }
+
     /**
      * Get specific payment information.
      *
@@ -295,7 +303,7 @@ class PaymentController extends ApiController
             'context' => $this->translator->trans('email.invoice'),
             'to' => $payment->order->buyer_email,
             'data' => $invoiceFactory->getInvoiceData(),
-            'attach' => $invoiceFactory->getPdfUrlPath(),
+            'attach' => $this->flysystem->getAdapter()->getClient()->getObjectUrl(getenv('AWS_S3_BUCKET'), $invoiceFactory->getPdfUrlPath()),
             'as' => 'invoice_' . $payment->id . '.pdf',
             'mime' => 'application/pdf'
         );

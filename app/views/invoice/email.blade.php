@@ -246,10 +246,13 @@
                                     <tbody>
                                     <tr style="padding: 0;vertical-align: middle;text-align: left;border-spacing: 0 !important;border-collapse: collapse !important;">
                                         <td class="seller-logo"
-                                            style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;padding: 40px 10px;vertical-align: middle;text-align: left;color: #58585a;font-family: Helvetica, Arial, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;width: 76px;height: 75px;display: block;border-collapse: collapse !important;border-spacing: 0 !important;">
-                                            <img width="76" height="76" class="store_logo"
-                                                 src="{{{$template['email_driver_logo']}}}"
-                                                 style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;width: auto;max-width: 100%;float: left;clear: both;display: block;">
+                                            style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;padding: 40px 10px;vertical-align: middle;text-align: left;color: #58585a;font-family: Helvetica, Arial, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;width: 80px !important;height: 80px !important;display: block;border-collapse: collapse !important;border-spacing: 0 !important;">
+                                            <img style="position: absolute; width: 80px !important; height: 80px !important;" width="80" height="80" src="{{{ url('images/drivers/template/driver_logo_bg.png')  }}}" alt=""/>
+                                            {{--<img width="76" height="76" class="store_logo"--}}
+                                                 {{--src="{{{ $template['email_driver_logo']}}} "--}}
+                                                 {{--style="margin: 7px 0 0 7px; outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;width: auto;max-width: 100%;float: left;clear: both;display: block;">--}}
+
+                                             <img style="width: 80px !important; height: 80px !important;  outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;width: auto;max-width: 100%;clear: both;display: block;" width="76" height="75" class="store_logo" src="{{{ $template['email_driver_logo']}}}"/>
                                         </td>
                                         <td style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;padding: 10px 0;vertical-align: middle;text-align: left;color: #58585a;font-family: Helvetica, Arial, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;border-collapse: collapse !important;border-spacing: 0 !important;">
                                             <table class="four columns"
