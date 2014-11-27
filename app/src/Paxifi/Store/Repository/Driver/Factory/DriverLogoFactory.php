@@ -63,6 +63,11 @@ class DriverLogoFactory
      */
     protected $driverLogoCircleCover;
 
+    /**
+     * @var
+     */
+    protected $secure = false;
+
 
     /**
      * @internal param $driver
@@ -70,6 +75,8 @@ class DriverLogoFactory
     public function __construct()
     {
         $this->imageManager = \App::make('paxifi.image');
+
+        $this->secure = \Config::get('app.secure');
 
         $this->driverLogoFolder = \Config::get('images.drivers.logo');
         $this->driverLogoCircleCover = \Config::get('images.drivers.template') . 'driver_logo_bg.png';
@@ -138,7 +145,7 @@ class DriverLogoFactory
      */
     public function getDriverDefaultLogoUrl()
     {
-        return cloudfront_asset($this->driverLogoDefaultTemplate);
+        return url($this->driverLogoDefaultTemplate, $this->secure);
     }
 
     /**
@@ -166,7 +173,7 @@ class DriverLogoFactory
             return $this->getDriverDefaultLogoUrl();
         }
 
-        return cloudfront_asset($this->driverLogoFolder . $this->getDriverLogoImageName());
+        return $this->driver->photo;
     }
 
     /**
