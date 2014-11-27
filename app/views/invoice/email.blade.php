@@ -319,15 +319,15 @@
                                     <tr style="padding: 0;vertical-align: middle;text-align: left;border-spacing: 0 !important;border-collapse: collapse !important;">
                                         <td class="three"
                                             style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;padding: 10px 0;vertical-align: middle;text-align: left;color: #58585a;font-family: Helvetica, Arial, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;width: 25%;border-collapse: collapse !important;border-spacing: 0 !important;">
-                                            {{$product['name']}}
+                                            {{{$product['name']}}}
                                         </td>
                                         <td class="four"
                                             style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;padding: 10px 0;vertical-align: middle;text-align: left;color: #58585a;font-family: Helvetica, Arial, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;width: 33.333333%;border-collapse: collapse !important;border-spacing: 0 !important;">
-                                            {{$product['pivot']['quantity']}}
+                                            {{{$product['pivot']['quantity']}}}
                                         </td>
                                         <td class="five"
                                             style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;padding: 10px 0;vertical-align: middle;text-align: left;color: #58585a;font-family: Helvetica, Arial, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;width: 41.666666%;border-collapse: collapse !important;border-spacing: 0 !important;">
-                                            {{$product['unit_price']}}
+                                            {{{$product['unit_price']}}}
                                         </td>
                                     </tr>
                                 </table>
@@ -392,7 +392,7 @@
                                 <div class="title" style="font-weight: bold;"><b>{{{$content['title']}}}</b>
                                 </div>
                                 <p style="color: #58585a;font-family: Helvetica, Arial, sans-serif;font-weight: normal;padding: 0;margin: 0;text-align: left;line-height: 15px;font-size: 13px;margin-bottom: 10px;vertical-align: middle;">
-                                    {{{$content['description']}}}</p>
+                                    {{{$content['description']}}} <a href="https://www.paxifi.com/#/terms">https://www.paxifi.com/#/terms</a></p>
                             </td>
                         </tr>
                         </tbody>
