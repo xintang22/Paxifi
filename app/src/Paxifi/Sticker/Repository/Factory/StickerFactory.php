@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Sticker\Repository\Factory;
 
+use GrahamCampbell\Flysystem\FlysystemManager;
 use Paxifi\Store\Repository\Driver\Factory\DriverLogoFactory;
 use Paxifi\Support\SavePdf\PdfConverter;
 use Paxifi\Support\Image;
@@ -12,6 +13,10 @@ use Paxifi\Support\Image;
  */
 class StickerFactory extends DriverLogoFactory
 {
+    /**
+     * @var
+     */
+    protected $flysystem;
     /**
      * File and asserts dirs
      *
@@ -136,10 +141,12 @@ class StickerFactory extends DriverLogoFactory
 
     /**
      * @internal param \Paxifi\Sticker\Repository\Factory\EloquentDriverRepository $driver
+     * @param FlysystemManager $flysystem
      */
-    public function __construct()
+    public function __construct(FlysystemManager $flysystem)
     {
         parent::__construct();
+        $this->flysystem = $flysystem;
 
         $this->stickerDir = \Config::get('images.stickers.img');
         $this->stickerTemplateDir = \Config::get('images.stickers.template');
@@ -224,7 +231,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function getStickerFileUrl()
     {
-        return cloudfront_asset(\Config::get('images.stickers.img') . $this->getDriverLogoImageName());
+        return \Config::get('images.stickers.img') . $this->getDriverLogoImageName();
     }
 
     /**
@@ -234,7 +241,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function getStickerFilePath()
     {
-        return cloudfront_asset($this->stickerDir . $this->getDriverLogoImageName());
+        return $this->flysystem->getAdapter()->getClient()->getObjectUrl(getenv('AWS_S3_BUCKET'), $this->stickerDir . $this->getDriverLogoImageName());
     }
 
     /**
@@ -250,7 +257,7 @@ class StickerFactory extends DriverLogoFactory
      */
     public function getStickerPdfUrl()
     {
-        return cloudfront_asset($this->stickerPdfDir . $this->getSellerId() . '.pdf');
+        return $this->stickerPdfDir . $this->getSellerId() . '.pdf';
     }
 
     /**
@@ -381,8 +388,8 @@ class StickerFactory extends DriverLogoFactory
     public function getStickerFilesPath()
     {
         return [
-            "image" => $this->getStickerFileUrl(),
-            "pdf" => $this->getStickerPdfUrl(),
+            "image" => cloudfront_asset($this->getStickerFileUrl()),
+            "pdf" => cloudfront_asset($this->getStickerPdfUrl()),
         ];
     }
 }

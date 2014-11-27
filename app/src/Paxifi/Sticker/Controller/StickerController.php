@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Sticker\Controller;
 
+use GrahamCampbell\Flysystem\FlysystemManager;
 use Paxifi\Sticker\Repository\Factory\StickerFactory;
 use Paxifi\Sticker\Repository\Validation\CreateStickerValidator;
 use Paxifi\Sticker\Transformer\StickerTransformer;
@@ -9,6 +10,15 @@ use Paxifi\Support\Validation\ValidationException;
 
 class StickerController extends ApiController
 {
+    protected $flysystem;
+
+    public function __construct(FlysystemManager $flysystem)
+    {
+        parent::__construct();
+
+        $this->flysystem = $flysystem;
+    }
+
     /**
      * @param $driver
      *
@@ -54,7 +64,7 @@ class StickerController extends ApiController
         try {
             \DB::beginTransaction();
 
-            $sticker_factory = with(new StickerFactory())
+            $sticker_factory = with(new StickerFactory($this->flysystem))
                                ->setDriver($driver);
 
             $sticker_factory->buildSticker();
@@ -94,7 +104,7 @@ class StickerController extends ApiController
 
             \DB::beginTransaction();
 
-            $sticker_factory = with(new StickerFactory())
+            $sticker_factory = with(new StickerFactory($this->flysystem))
                                ->setDriver($driver);
 
             $sticker_factory->buildSticker();
@@ -124,7 +134,7 @@ class StickerController extends ApiController
 
             $email = \Input::get('email', $driver->email);
 
-            $sticker_factory = with(new StickerFactory())
+            $sticker_factory = with(new StickerFactory($this->flysystem))
                 ->setDriver($driver);
 
             // Config email options
@@ -132,7 +142,7 @@ class StickerController extends ApiController
                 'template' => 'sticker.email',
                 'context' => $this->translator->trans('email.sticker'),
                 'to' => $email,
-                'attach' => $sticker_factory->getStickerPdfFilePath(),
+                'attach' => $this->flysystem->getAdapter()->getClient()->getObjectUrl(getenv('AWS_S3_BUCKET') , $sticker_factory->getStickerPdfFilePath()),
                 'as' => 'sticker_' . $driver->seller_id . '.pdf',
                 'mime' => 'application/pdf',
                 'data' => ['name' => $driver->name]
