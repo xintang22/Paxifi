@@ -79,7 +79,7 @@ class OrderServiceProvider extends ServiceProvider
     public function registerConfiguration()
     {
         $config = [
-            "pdf.invoices" => "pdf/invoices/",
+            "pdf.invoices" => "invoices/pdf/",
             "images.invoices.template" => "images/invoices/template/"
         ];
 

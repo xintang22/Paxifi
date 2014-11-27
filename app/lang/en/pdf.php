@@ -20,7 +20,7 @@ return array(
         "price" => "Price",
 
         "title" => "Title",
-        "description" => "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+        "description" => "This invoice was generated on your request. In case of billing or service inquiries, please contact the seller directly as above using the email provided. Paxifi is a platform for mobile stores. In no way shall Paxifi be liable for or accept claims for defective goods or services or any consequential damages relating to sellers on our platform. For our full terms and conditions visit",
         "sub_total" => "Sub Total:",
         "sales_tax" => "Sales Tax:",
         "total" => "Total:"
