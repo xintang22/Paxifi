@@ -13,3 +13,8 @@ phpunit.xml
 
 .env.php
 .env.local.php
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
