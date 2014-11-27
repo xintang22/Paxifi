@@ -14,6 +14,8 @@ return array(
 
     'DEBUG'   => $_SERVER['PAXIFI_DEBUG'],
 
+    'SECURE'   => $_SERVER['PAXIFI_SECURE'],
+
     'PAYPAL_MODE' => $_SERVER['PAYPAL_MODE'],
 
     'PAYPAL_URL' => $_SERVER['PAYPAL_URL'],
