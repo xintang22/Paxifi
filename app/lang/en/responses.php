@@ -41,6 +41,6 @@ return array(
     ),
 
     "invoice" => array(
-        "invoice_not_available" => "The payment :payment_id has not been confirmed by the driver."
+        "invoice_not_available" => "The driver has not confirm your cash payment yet. Please kindly remind him."
     ),
 );
