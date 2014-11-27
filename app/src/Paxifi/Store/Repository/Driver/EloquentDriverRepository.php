@@ -414,10 +414,13 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         $query = $this->newQuery();
 
         $params->each(function ($param) use ($query) {
-            $query->where($param['column'], $param['operator'], $param['value']);
+            $query->where($param['column'], $param['operator'], $param['value'])
+                  ->where('drivers.suspended', '<>', true)
+                  ->join('subscriptions', 'subscriptions.driver_id', '=', 'drivers.id')
+                  ->where('subscriptions.status', '<>', 'past_due');
         });
 
-        $models = $query->get(array('id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'status', 'paypal_account'));
+        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status', 'paypal_account'));
 
         if (!$models->isEmpty()) return $models;
 
