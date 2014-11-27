@@ -13,14 +13,6 @@ use Paxifi\Payment\Repository\Factory\PaymentInvoiceFactory;
 
 class PaymentController extends ApiController
 {
-    protected $flysystem;
-
-    public function __construct(FlysystemManager $flysystem)
-    {
-        parent::__construct();
-        $this->flysystem = $flysystem;
-    }
-
     /**
      * Get specific payment information.
      *
