@@ -8,10 +8,10 @@ return array(
         "name" => "Paxifi Sticker"
     ),
     "invoice" => array(
-        "subject" => "Paxifi | Invoice",
+        "subject" => "Paxifi | Your receipt",
         "from" => "no-reply@paxifi.com",
-        "body" => "Dear :name, the invoice pdf is in attachment.",
-        "name" => "Paxifi Invoice"
+        "body" => "Dear :name, the receipt pdf is in attachment.",
+        "name" => "Paxifi Receipt"
     ),
     "problem" => array(
         "subject" => "Paxifi Report - An issue was reported with one of your emails",
