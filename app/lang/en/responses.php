@@ -16,11 +16,11 @@ return array(
 
     "reminder" => array(
 
-        "mail_subject" => "Paxifi | Password Reminder",
+        "mail_subject" => "Paxifi | Password Request",
 
-        "driver" => "We can't find a driver with that e-mail address.",
+        "driver" => "We can't find a seller with that e-mail address.",
 
-        "sent" => "Password reminder has been sent to :email!",
+        "sent" => "Password request has been sent to :email!",
 
         "reset" => "Your password has been successfully updated.",
     ),
@@ -32,15 +32,15 @@ return array(
 
     "product" => array(
 
-        "not_found" => "The product ID :id does not found.",
+        "not_found" => "The product ID :id does not exist.",
 
     ),
 
     "exceptions" => array(
-        "system_error" => "System error. Please try it later.",
+        "system_error" => "Opps, system error. Please try it again.",
     ),
 
     "invoice" => array(
-        "invoice_not_available" => "The driver has not confirm your cash payment yet. Please kindly remind him."
+        "invoice_not_available" => "The driver has not confirm your cash payment yet. Please kindly remind him/her."
     ),
 );
