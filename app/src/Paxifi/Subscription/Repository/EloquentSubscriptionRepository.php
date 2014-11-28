@@ -119,6 +119,9 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
         $this->cancel_at_period_end = true;
         $this->ended_at = Carbon::now();
         $this->save();
+
+        $this->driver->status = 0;
+        $this->driver->save();
     }
 
     /**

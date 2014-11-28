@@ -131,6 +131,7 @@ class DriverController extends ApiController
             $info = $this->paypal->getUserInfoByAccessToken($accessToken);
 
             $driver->paypal_account = $info->email;
+            $driver->status = 1;
             $driver->save();
 
             \DB::commit();
