@@ -28,7 +28,7 @@ return array(
     'paths' => array(
         '*' => array(
             'allowedOrigins' => array('*'),
-            'allowedHeaders' => array('Content-Type', 'Authorization', 'Accept', 'Origin',),
+            'allowedHeaders' => array('*',),
             'allowedMethods' => array('POST', 'PUT', 'GET', 'DELETE')
         ),
     ),
