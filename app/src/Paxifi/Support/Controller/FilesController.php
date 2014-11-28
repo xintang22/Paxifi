@@ -13,7 +13,23 @@ class FilesController extends Controller
 
         $file = \Input::file('files');
 
-        $url = FileUploader::upload($file);
+        $target = \Input::get('target', 'photos');
+
+        switch ($target) {
+            case 'profile':
+                $target = 'profiles';
+                break;
+
+            case 'product':
+                $target = 'products';
+                break;
+
+            default:
+                $target = 'photos';
+                break;
+        }
+
+        $url = FileUploader::upload($file, $target);
 
         return \Response::json(array(
             'success' => 1,
