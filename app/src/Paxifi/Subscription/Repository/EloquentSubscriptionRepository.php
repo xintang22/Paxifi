@@ -98,7 +98,11 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
     {
         $this->status = $this->inTrial() ? 'trialing' : "active";
         $this->cancel_at_period_end = false;
+
         $this->save();
+
+        $this->driver->status = 1;
+        $this->driver->save();
     }
 
     /**

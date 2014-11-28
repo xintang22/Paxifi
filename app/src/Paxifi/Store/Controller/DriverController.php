@@ -496,7 +496,7 @@ class DriverController extends ApiController
 
                 \DB::commit();
 
-                return $this->respondWithItem($driver);
+                return $this->respondWithItem($subscription->driver);
             }
 
             return $this->setStatusCode(406)->respondWithError('Subscription payment failed.');
