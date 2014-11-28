@@ -12,7 +12,7 @@ class DriverTransformer extends TransformerAbstract
         $transformer = array(
             'id' => $driver->id,
             'email' => $driver->email,
-            'photo' => !empty($driver->photo) ? $driver->photo : cloudfront_asset('images/drivers/template/driver_logo.png'),
+            'photo' => !empty($driver->photo) ? $driver->photo : cloudfront_asset('photos/default-logo.png'),
             'name' => $driver->name,
             'seller_id' => !empty($driver->seller_id) ? $driver->seller_id : "",
             'address' => $driver->address,
