@@ -145,15 +145,14 @@ class EloquentSubscriptionRepository extends BaseModel implements SubscriptionRe
      */
     public static function initiateTrial(EloquentPlanRepository $plan, EloquentDriverRepository $driver)
     {
-        $now = Carbon::now();
-
         $subscription = new static();
         $subscription->driver_id = $driver->id;
         $subscription->plan_id = $plan->id;
-        $subscription->trial_start = $now;
-        $subscription->trial_end = $now->addDays($plan->trial_period_days);
-        $subscription->start = $now;
-        $subscription->current_period_start = $now->addDays($plan->trial_period_days);
+        $subscription->trial_start = Carbon::now();
+        $subscription->trial_end = Carbon::now()->addDays($plan->trial_period_days);
+        $subscription->start = Carbon::now();
+        $subscription->current_period_start = Carbon::now()->addDays($plan->trial_period_days);
+        $subscription->current_period_end = Carbon::now()->addDays($plan->trial_period_days)->addMonth();
 
         $subscription->save();
     }
