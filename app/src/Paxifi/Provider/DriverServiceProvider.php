@@ -103,7 +103,7 @@ class DriverServiceProvider extends ServiceProvider
         // @TODO Update to send directly temporary password
         $this->app['router']->get('drivers/password/reset/{token}', 'Paxifi\Store\Controller\RemindersController@show');
         $this->app['router']->post('drivers/password/reset', 'Paxifi\Store\Controller\RemindersController@reset');
-
+        $this->app['router']->post('email/validate', 'Paxifi\Store\Controller\DriverController@emailValidate');
 
         $this->app['router']->group(['before' => 'oauth'], function () {
 

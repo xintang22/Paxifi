@@ -8,6 +8,7 @@ use Paxifi\Paypal\Paypal;
 use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Store\Repository\Driver\Factory\DriverLogoFactory;
 use Paxifi\Store\Repository\Driver\Validation\CreateDriverValidator;
+use Paxifi\Store\Repository\Driver\Validation\EmailValidation;
 use Paxifi\Store\Repository\Driver\Validation\RegisterDriverValidator;
 use Paxifi\Store\Repository\Driver\Validation\SettingsValidator;
 use Paxifi\Store\Repository\Driver\Validation\UpdateDriverSellerIdValidator;
@@ -568,6 +569,24 @@ class DriverController extends ApiController
 
             return $this->setStatusCode(406)->respondWithError('Account cannot be active.');
 
+        } catch (\Exception $e) {
+            return $this->errorInternalError($e->getMessage());
+        }
+    }
+
+    /**
+     * Validate email is available.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function emailValidate()
+    {
+        try {
+            with(new EmailValidation())->validate(\Input::only('email'));
+
+            return $this->setStatusCode(200)->respond(['validate' => true]);
+        } catch (ValidationException $e) {
+            return $this->errorWrongArgs($e->getErrors());
         } catch (\Exception $e) {
             return $this->errorInternalError($e->getMessage());
         }
