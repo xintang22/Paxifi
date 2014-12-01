@@ -1,13 +1,23 @@
 <?php namespace Paxifi\Sales\Controller;
 
 use Carbon\Carbon;
+use GrahamCampbell\Flysystem\FlysystemManager;
+use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Sales\Repository\SaleCollection;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Support\Controller\BaseApiController;
 use Illuminate\Support\Collection;
+use Paxifi\Support\SavePdf\PdfConverter;
 
 class SalesController extends BaseApiController
 {
+    protected $flysystem;
+
+    function __construct(FlysystemManager $flysystem)
+    {
+        parent::__construct();
+        $this->flysystem = $flysystem;
+    }
 
     /**
      * Display a listing of all sales.
@@ -55,6 +65,80 @@ class SalesController extends BaseApiController
         }
 
         return $this->respond($sales->toArray());
+    }
+
+    public function report(EloquentDriverRepository $driver = null)
+    {
+        try {
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
+            $driver = EloquentDriverRepository::find(1);
+
+            $email = \Input::get('email', $driver->email);
+//            $year = \Input::get('year', Carbon::now()->year);
+            $year = 2014;
+
+            $report_path = \Input::get('pdf.reports', 'reports/pdf/') . $driver->id . '-' . $year . '-report' . '.pdf';
+            $report_template = \Input::get('report.sales', 'report.sales');
+
+            $salesIds = $driver->sales(Carbon::create($year, 1, 1, 0, 0), Carbon::create($year+1, 1, 1, 0, 0));
+
+            // Total Sales
+            $sales = new SaleCollection($salesIds);
+            $statistics = $sales->toArray();
+
+            $reports = [];
+
+            // Monthly Reports.
+            for($i = 1; $i <= 12; $i++) {
+                $reports[$i][Carbon::create($year, $i)->format('F')] = [
+                    "total_sales" => 0,
+                    "total_tax" => 0,
+                    "profit" => 0,
+                    "commission" => 0,
+                ];
+                // Monthly Report.
+                $sales->each(function($sale) use(&$reports, &$year, &$i) {
+                    if ($sale->toArray()['created_at_year'] == $year && $sale->toArray()['created_at_month'] == $i) {
+                        $reports[$i][Carbon::create($year, $i)->format('F')]['total_sales'] += $sale->toArray()['total_sales'];
+                        $reports[$i][Carbon::create($year, $i)->format('F')]['total_tax'] += $sale->toArray()['total_tax'];
+                        $reports[$i][Carbon::create($year, $i)->format('F')]['profit'] += $sale->toArray()['profit'];
+                        $reports[$i][Carbon::create($year, $i)->format('F')]['commission'] += $sale->toArray()['commission'];
+                    }
+                });
+            }
+
+            $htmlTemplate = \View::make($report_template)->with(compact('year', 'statistics', 'driver', 'reports'));
+
+            $converter = new PdfConverter();
+
+            $converter->setPdfDirection('landscape');
+            $converter->setPdfFilePath($report_path);
+            $converter->setHtmlTemplate($htmlTemplate);
+
+            $converter->saveHtmlToPdf();
+
+            // Config email options for send sales report.
+            $emailOptions = array(
+                'template' => 'report.email',
+                'context' => $this->translator->trans('email.report'),
+                'to' => $email,
+                'attach' => $this->flysystem->getAdapter()->getClient()->getObjectUrl(getenv('AWS_S3_BUCKET') , $report_path),
+                'as' => 'Paxifi Sales Monthly Report -' . $year . '.pdf',
+                'mime' => 'application/pdf',
+                'data' => ['name' => $driver->name]
+            );
+
+            if (\Event::fire('paxifi.email', array($emailOptions))) {
+                return $this->setStatusCode(200)->respond([
+                    "success" => true
+                ]);
+            }
+        } catch (\Exception $e) {
+            return $this->errorInternalError($e->getMessage());
+        }
     }
 
     /**
