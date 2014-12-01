@@ -18,6 +18,12 @@ return array(
         "from" => "no-reply@paxifi.com",
         "name" => "Paxifi Product Problem"
     ),
+    "report" => array(
+        "subject" => "Paxifi | Monthly Report for your store",
+        "from" => "no-reply@paxifi.com",
+        "body" => "Dear :name, the monthly report pdf is in attachment.",
+        "name" => "Paxifi Monthly Report"
+    ),
     "issue" => array(
         "name" => "Paxifi Message Center"
     )
