@@ -74,11 +74,8 @@ class SalesController extends BaseApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            $driver = EloquentDriverRepository::find(1);
-
             $email = \Input::get('email', $driver->email);
-//            $year = \Input::get('year', Carbon::now()->year);
-            $year = 2014;
+            $year = \Input::get('year', Carbon::now()->year);
 
             $report_path = \Input::get('pdf.reports', 'reports/pdf/') . $driver->id . '-' . $year . '-report' . '.pdf';
             $report_template = \Input::get('report.sales', 'report.sales');
@@ -128,7 +125,7 @@ class SalesController extends BaseApiController
                 'attach' => $this->flysystem->getAdapter()->getClient()->getObjectUrl(getenv('AWS_S3_BUCKET') , $report_path),
                 'as' => 'Paxifi Sales Monthly Report -' . $year . '.pdf',
                 'mime' => 'application/pdf',
-                'data' => ['name' => $driver->name]
+                'data' => ['name' => $driver->name, 'year' => $year]
             );
 
             if (\Event::fire('paxifi.email', array($emailOptions))) {
