@@ -1,13 +1,15 @@
 <!DOCTYPE>
 <html>
     <body>
-        Hi {{$name}}
+        Dear {{$name}},
         <br/>
-        We sent this email because you have requested us to send you a monthly report for {{$year}} in PDF format.
+        We sent this email because you have requested us to send you this monthly report for the year of {{$year}} in a PDF format.<br/>
         <br/>
-        Thank you for choosing Paxifi.
+        Thank you for choosing Paxifi.<br/>
         <br/>
         Sincerely,<br/>
+        <br/>
         Paxifi Team<br/>
+        <br/>
     </body>
 </html>
