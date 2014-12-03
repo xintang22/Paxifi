@@ -3,6 +3,8 @@
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Paxifi\Problem\Repository\EloquentProblemTypesRepository as ProblemType;
 use Paxifi\Problem\Repository\ProblemRepository as Problem;
+use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
+use Paxifi\Store\Repository\Product\EloquentProductRepository;
 use Paxifi\Store\Repository\Product\ProductRepository;
 use Paxifi\Store\Repository\Product\Validation\CreateProblemValidator;
 use Paxifi\Store\Repository\Product\Validation\CreateProductValidator;
@@ -181,10 +183,6 @@ class ProductController extends ApiController
 
                     $product->costs()->create($cost);
 
-                    // EloquentCostRepository::updateOrCreate(array('product_id' => $product->id, 'unit_cost' => $cost['unit_cost']), array(
-                    //     'unit_cost' => $cost['unit_cost'],
-                    //    'inventory' => $cost['inventory'],
-                    // ));
                 }
             }
 
@@ -228,12 +226,6 @@ class ProductController extends ApiController
 
             with(new UpdateProductValidator())->validate(\Input::except('costs'));
 
-//            if (\Input::has('photos')) {
-//                $origin_photos = $product->photos;
-//
-//                \Event::fire('paxifi.products.photos.updated', [$origin_photos, \Input::get('photos')]);
-//            }
-            
             $product->update(\Input::except('costs'));
 
             // @TODO: find a better way to handle updating/deleting product's costs
@@ -248,10 +240,6 @@ class ProductController extends ApiController
 
                     $product->costs()->create($cost);
 
-                    // EloquentCostRepository::updateOrCreate(array('product_id' => $product->id, 'unit_cost' => $cost['unit_cost']), array(
-                    //     'unit_cost' => $cost['unit_cost'],
-                    //    'inventory' => $cost['inventory'],
-                    // ));
                 }
             }
 
@@ -409,6 +397,36 @@ class ProductController extends ApiController
 
             return $this->errorInternalError();
 
+        }
+    }
+
+    /**
+     * Sort the products.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function setWeight()
+    {
+        try {
+            $driver = $this->getAuthenticatedDriver();
+
+            $weights = \Input::get('weights');
+
+            foreach($weights as $index => $weights)
+            {
+                if ($product = EloquentProductRepository::find($weights['id']))
+                {
+                    if ($product->driver_id == $driver->id) {
+                        $product->weight = $weights['weight'];
+                        $product->save();
+                    }
+                }
+            }
+
+            return $this->setStatusCode(200)->respondWithCollection($driver->products);
+
+        } catch (\Exception $e) {
+            return $this->errorInternalError($e->getMessage());
         }
     }
 

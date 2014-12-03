@@ -200,6 +200,7 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->post('me/products', 'Paxifi\Store\Controller\ProductController@store');
                 $this->app['router']->get('me/products', 'Paxifi\Store\Controller\ProductController@index');
                 $this->app['router']->get('me/products/{product}', 'Paxifi\Store\Controller\ProductController@showMine');
+                $this->app['router']->put('me/products/sort', 'Paxifi\Store\Controller\ProductController@setWeight');
                 $this->app['router']->put('me/products/{product}', 'Paxifi\Store\Controller\ProductController@updateMine');
                 $this->app['router']->delete('me/products/{product}', 'Paxifi\Store\Controller\ProductController@destroyMine');
                 $this->app['router']->get('me/count/products', 'Paxifi\Store\Controller\ProductController@getProductsCount');
