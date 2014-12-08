@@ -29,7 +29,7 @@ class Image extends InterventionImage
 
         $data = $this->encode(pathinfo($path, PATHINFO_EXTENSION), $quality);
 
-        Flysystem::put($path, $data);
+        Flysystem::put($path, $data, ['visibility' => 'public']);
 
         return $this;
     }
