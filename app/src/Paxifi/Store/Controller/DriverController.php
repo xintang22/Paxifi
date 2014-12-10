@@ -479,6 +479,7 @@ class DriverController extends ApiController
     public function renewSubscription($driver = null) {
         try {
             \DB::beginTransaction();
+
             if (is_null($driver)) {
                 $driver = $this->getAuthenticatedDriver();
             }
@@ -493,6 +494,8 @@ class DriverController extends ApiController
             $plan = EloquentPlanRepository::findOrFail($subscription->plan_id);
 
             if ($subscriptionPayment = $this->paypal->subscriptionPayment($plan, $driver)) {
+
+                $driver->paypal_metadata_id = \Input::get('metadata_id');
 
                 $subscription->renewSubscription(EloquentPlanRepository::findOrFail($subscription->plan_id), $driver);
 

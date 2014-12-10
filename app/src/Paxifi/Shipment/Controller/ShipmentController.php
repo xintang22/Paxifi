@@ -42,6 +42,9 @@ class ShipmentController extends ApiController
 
             with(new CreateShipmentValidator())->validate($new_shipment);
 
+            // Add paypal_metadata_id for future payment.
+            $driver->paypal_metadata_id = \Input::get('metadata_id');
+
             if($capturedPayment = $this->paypal->buySticker($driver)) {
                 $new_shipment['paypal_payment_id'] = $capturedPayment->parent_payment;
 
