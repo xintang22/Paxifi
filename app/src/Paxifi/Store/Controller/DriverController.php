@@ -98,6 +98,7 @@ class DriverController extends ApiController
 
             // create a new driver
             $driver = DriverRepository::create($data);
+            $driver->paypal_metadata_id = $data['metadata_id'];
 
             \Event::fire('paxifi.drivers.initialize', [$driver]);
 
@@ -129,7 +130,7 @@ class DriverController extends ApiController
             $accessToken = $this->paypal->getUserAccessToken($driver);
 
             // Get Driver Paypal information and store the Paypal email
-            $info = $this->paypal->getUserInfoByAccessToken($accessToken);
+            $info = $this->paypal->getUserInfoByAccessToken($accessToken, $driver);
 
             $driver->paypal_account = $info->email;
             $driver->status = 1;
