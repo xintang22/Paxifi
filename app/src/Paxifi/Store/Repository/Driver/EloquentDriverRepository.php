@@ -5,6 +5,7 @@ use Illuminate\Auth\UserInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Illuminate\Support\Collection;
+use Paxifi\Notification\Repository\EloquentNotificationTypeRepository;
 use Paxifi\Settings\Repository\EloquentCountryRepository;
 use Paxifi\Support\Contracts\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;
@@ -143,16 +144,16 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         $query = $this->notifications();
 
         if (!$this->notify_sale)
-            $query->where('sales', '=', 0);
+            $query->where('type_id', '<>', EloquentNotificationTypeRepository::findByType('sales')->id);
 
         if (!$this->notify_inventory)
-            $query->where('stock_reminder', '=', 0);
+            $query->where('type_id', '<>', EloquentNotificationTypeRepository::findByType('inventory')->id);
 
         if (!$this->notify_feedback)
-            $query->where('ranking', '=', NULL);
+            $query->where('type_id', '<>', EloquentNotificationTypeRepository::findByType('thumbs')->id);
 
         if (!$this->notify_others)
-            $query->where('emails', '=', NULL);
+            $query->where('type_id', '<>', EloquentNotificationTypeRepository::findByType('emails')->id);
 
         return $query
             ->where('created_at', '>=', $from)

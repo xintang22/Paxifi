@@ -20,13 +20,27 @@ class EloquentNotificationRepository extends BaseModel {
     /**
      * @var array
      */
-    protected $fillable = ['driver_id', 'sales', 'ranking', 'stock_reminder', 'emails', 'billing'];
+    protected $fillable = ['driver_id', 'type_id', 'value', 'type'];
 
     /**
      * @var array
      */
     protected $rules = [];
 
+    /**
+     * The type which is the name inside notification type table.
+     *
+     * @var
+     */
+    protected $type;
+
+    /**
+     * Set type value.
+     */
+    public function setTypeAttribute()
+    {
+        $this->attributes['type_id'] = EloquentNotificationTypeRepository::findByType($this->type)->id;
+    }
 
     /**
      * Driver-Notifications relationship.
@@ -36,6 +50,16 @@ class EloquentNotificationRepository extends BaseModel {
     public function driver()
     {
         return $this->belongsTo('Paxifi\Store\Repository\Driver\EloquentDriverRepository', 'driver_id');
+    }
+
+    /**
+     * One to one relationship for one notification belongs to one notification type
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function type()
+    {
+        return $this->belongsTo('Paxifi\Notification\Repository\EloquentNotificationTypeRepository', 'type_id');
     }
 
     /**

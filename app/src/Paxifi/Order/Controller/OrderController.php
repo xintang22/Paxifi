@@ -78,8 +78,7 @@ class OrderController extends ApiController
             $this->soldouts = new Collection();
 
             $payments = EloquentPaymentRepository::where('status', '=', 1)->orderBy('updated_at', true)->get();
-//            print_r($payments->toArray());
-//            die;
+
             $payments->map(function($payment, $index)  {
                 $products = $payment->order->products;
 

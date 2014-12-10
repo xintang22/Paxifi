@@ -22,21 +22,29 @@ class NotificationTransformer extends TransformerAbstract
 
         $response['driver_id'] = $notification->driver->id;
 
-        if ($notification->billing)
-            $response = $this->transformBilling($notification);
+        switch($notification->type->type) {
+            case "thumbs":
+                $response = $this->transformRanking($notification);
+                break;
 
-        if ($notification->ranking)
-            $response = $this->transformRanking($notification);
+            case "billing":
+                $response = $this->transformBilling($notification);
+                break;
 
-        if ($notification->stock_reminder)
-            $response = $this->transformStock($notification);
+            case "sales":
+                $response = $this->transformSales($notification);
+                break;
 
-        if ($notification->sales)
-            $response = $this->transformSales($notification);
+            case "inventory":
+                $response = $this->transformStock($notification);
+                break;
 
+            case "emails":
+                $response = $this->transformEmails($notification);
+                break;
 
-        if ($notification->emails)
-            $response = $this->transformEmails($notification);
+            default:;
+        }
 
         $response['time'] = $notification->created_at->format('Y-m-d H:i:s');
         $response['id'] = $notification->id;
@@ -56,7 +64,7 @@ class NotificationTransformer extends TransformerAbstract
         $billing = [];
 
         if ($notification->billing) {
-            $billing['message'] = $this->translator->trans('notifications.billing', [':commission' => $notification->billing]);
+            $billing['message'] = $this->translator->trans('notifications.billing', [':commission' => $notification->value]);
             $billing['type'] = 'billing';
         }
 
@@ -72,10 +80,8 @@ class NotificationTransformer extends TransformerAbstract
     {
         $ranking = [];
 
-        if ($notification->ranking) {
-            $ranking['message'] = $this->translator->trans('notifications.ranking.' . $notification->ranking);
-            $ranking['type'] = 'ranking';
-        }
+        $ranking['message'] = $this->translator->trans('notifications.ranking.' . $notification->value);
+        $ranking['type'] = 'ranking';
 
         return $ranking;
     }
@@ -89,13 +95,10 @@ class NotificationTransformer extends TransformerAbstract
     {
         $stock = [];
 
-        if ($notification->stock_reminder) {
+        $product = Product::find($notification->value);
 
-            $product = Product::find($notification->stock_reminder);
-
-            $stock['message'] = $this->translator->trans('notifications.stock_reminder', ['product_name' => $product->name]);
-            $stock['type'] = 'stock_reminder';
-        }
+        $stock['message'] = $this->translator->trans('notifications.stock_reminder', ['product_name' => $product->name]);
+        $stock['type'] = 'stock_reminder';
 
         return $stock;
     }
@@ -107,52 +110,46 @@ class NotificationTransformer extends TransformerAbstract
      */
     public function transformSales($notification)
     {
-        $sales = [];
+        $payment = Payment::find($notification->value);
+        $payment_status = strtolower($payment->status);
 
-        if ($notification->sales) {
-            $payment = Payment::find($notification->sales);
-            $payment_status = strtolower($payment->status);
+        // get the payment type.
+        switch ($payment->payment_method()->first()->name)
+        {
+            case 'paypal':
 
-            // get the payment type.
-            switch ($payment->payment_method()->first()->name)
-            {
-                case 'paypal':
+                $translation = "notifications.sales.paypal.completed";
 
-                    $translation = "notifications.sales.paypal.completed";
+                $sales = [
+                    'message' => $this->translator->trans($translation , ['currency' => $notification->driver->currency, 'amount' => $payment->order->total_sales]),
+                    'type' => 'sales',
+                    'status' => $payment_status,
+                    'payment' => $payment
+                ];
 
-                    $sales = [
-                        'message' => $this->translator->trans($translation , ['currency' => $notification->driver->currency, 'amount' => $payment->order->total_sales]),
-                        'type' => 'sales',
-                        'status' => $payment_status,
-                        'payment' => $payment
-                    ];
+                break;
 
-                    break;
+            default:
+                if ($payment_status == 0) {
+                    $status = 'waiting';
+                }
 
-                default:
-                    if ($payment_status == 0) {
-                        $status = 'waiting';
-                    }
+                if ($payment_status == -1) {
+                    $status = 'canceled';
+                }
 
-                    if ($payment_status == -1) {
-                        $status = 'canceled';
-                    }
+                if ($payment_status == 1) {
+                    $status = 'received';
+                }
 
-                    if ($payment_status == 1) {
-                        $status = 'received';
-                    }
+                $translation = "notifications.sales.cash." . $status;
 
-                    $translation = "notifications.sales.cash." . $status;
-
-                    $sales = [
-                        'message' => $this->translator->trans($translation , ['currency' => $notification->driver->currency, 'amount' => $payment->order->total_sales]),
-                        'type' => 'sales',
-                        'status' => $payment_status,
-                        'payment' => $payment
-                    ];
-            }
-
-
+                $sales = [
+                    'message' => $this->translator->trans($translation , ['currency' => $notification->driver->currency, 'amount' => $payment->order->total_sales]),
+                    'type' => 'sales',
+                    'status' => $payment_status,
+                    'payment' => $payment
+                ];
         }
 
         return $sales;
@@ -167,11 +164,9 @@ class NotificationTransformer extends TransformerAbstract
     {
         $emails = [];
 
-        if ($notification->emails) {
-            $emails['message'] = $this->translator->trans('notifications.emails');
-            $emails['type'] = 'emails';
-            $emails['email'] = $notification->emails;
-        }
+        $emails['message'] = $this->translator->trans('notifications.emails');
+        $emails['type'] = 'emails';
+        $emails['email'] = $notification->value;
 
         return $emails;
     }
