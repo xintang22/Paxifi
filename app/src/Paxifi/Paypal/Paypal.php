@@ -136,10 +136,24 @@ class Paypal
 
             $paymentUrl = $this->paypalUrl . 'payments/payment';
 
-            $res = $this->client->post($paymentUrl, [
-                'headers' => ['Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $accessToken],
-                'json' => $transactions
-            ]);
+            if ($driver->paypal_metadata_id) {
+                $res = $this->client->post($paymentUrl,
+                    ['headers' => [
+                        'Content-Type' => 'application/json',
+                        'Authorization' => 'Bearer ' . $accessToken,
+                        'PayPal-Client-Metadata-Id' => $driver->paypal_metadata_id
+                    ],
+                        'json' => $transactions
+                    ]);
+            } else {
+                $res = $this->client->post($paymentUrl,
+                    ['headers' => [
+                        'Content-Type' => 'application/json',
+                        'Authorization' => 'Bearer ' . $accessToken,
+                    ],
+                        'json' => $transactions
+                    ]);
+            }
 
             if ($res->getStatusCode() == 201) {
 
@@ -298,14 +312,14 @@ class Paypal
      *
      * @return mixed
      */
-    public function getUserInfoByAccessToken($accessToken)
+    public function getUserInfoByAccessToken($accessToken, $driver)
     {
 
         // Create a fake payment to check the user PayPal account
         // and store his PayPal email (merchant email)
         $transaction = $this->getFuturePaymentTransaction(0.01, 'USD', 'Paxifi: check validity of PayPal account');
 
-        $payment = $this->createPayment($accessToken, $transaction);
+        $payment = $this->createPayment($accessToken, $transaction, $driver);
 
         // Capture the payment
         $capturedPayment = $this->capturePayment($accessToken, $payment);
