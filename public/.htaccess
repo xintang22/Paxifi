@@ -1,9 +1,18 @@
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, PUT, POST, OPTIONS, DELETE"
+    Header always set Access-Control-Allow-Headers "Origin, Access-Control-Allow-Origin, Content-Type, Accept, Authorization"
+</IfModule>
 <IfModule mod_rewrite.c>
 	<IfModule mod_negotiation.c>
     	Options -MultiViews
     </IfModule>
 
     RewriteEngine On
+
+    # Add Authorization header
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 
     # Redirect Trailing Slashes...
 	RewriteRule ^(.*)/$ /$1 [L,R=301]
