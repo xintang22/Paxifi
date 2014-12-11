@@ -14,19 +14,11 @@ class PaymentRepositoryObserve {
         $payment_method = PaymentMethods::find($payment->payment_method_id);
 
         if ($payment_method->name != 'paypal') {
+
+            $payment->type = "sales";
+
             \Event::fire('paxifi.notifications.sales', [$payment]);
         }
     }
-
-    /**
-     * Register a saved model event with the dispatcher.
-     *
-     * @param  $payment
-     */
-//    public function updated($payment)
-//    {
-//        \Event::fire('paxifi.notifications.sales', [$payment]);
-//    }
-
 }
 

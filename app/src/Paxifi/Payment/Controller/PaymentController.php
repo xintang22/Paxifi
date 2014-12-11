@@ -113,9 +113,7 @@ class PaymentController extends ApiController
             with(new UpdatePaymentValidator())->validate(\Input::only('confirm'));
 
             $confirm = \Input::get('confirm', 1);
-
             $payment->status = $confirm;
-
             $payment->save();
 
             $order = $payment->order;
@@ -131,7 +129,10 @@ class PaymentController extends ApiController
 
                     // Fires an event to notification the driver that the product is in low inventory.
                     if (EloquentProductRepository::find($product->id)->inventory <= 5) {
-                        \Event::fire('paxifi.notifications.stock', array($product));
+
+                        $product->type = "inventory";
+
+                        \Event::fire('paxifi.notifications.stock', [$product]);
                     }
                 });
             }
