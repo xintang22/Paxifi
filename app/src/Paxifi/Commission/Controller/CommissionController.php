@@ -57,6 +57,8 @@ class CommissionController extends ApiController
                                     \DB::commit();
 
                                     // Todo:: fire notification event the commission paid.
+                                    $commission->type = "billing";
+
                                     \Event::fire('paxifi.notifications.billing', [$commission]);
 
                                     return $this->setStatusCode(201)->respondWithItem($commission);

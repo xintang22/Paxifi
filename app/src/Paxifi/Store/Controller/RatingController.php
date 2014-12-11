@@ -29,6 +29,8 @@ class RatingController extends BaseApiController
 
             }
 
+            $feedback->type = "thumbs";
+
             \Event::fire('paxifi.notifications.ranking', [$feedback]);
 
             return $this->respond(array('success' => true));
