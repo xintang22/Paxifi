@@ -1,6 +1,7 @@
 <?php namespace Paxifi\Support\Controller;
 
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Config;
 use Paxifi\Store\Repository\Driver\DriverRepository;
 
 class BaseApiController extends Controller
@@ -17,15 +18,31 @@ class BaseApiController extends Controller
     protected $statusCode = 200;
 
     /**
+     * @var
+     */
+    protected $resourceServer;
+
+    /**
      * The Translator implementation.
      *
      * @var \Illuminate\Translation\Translator
      */
     protected $translator;
 
+    /**
+     * @var
+     */
+    protected $app;
+
     function __construct()
     {
+        $this->app = \App::make('app');
+
         $this->translator = \App::make('translator');
+
+        $this->resourceServer = \App::make('oauth2.resource-server');
+
+        $this->registerCommissionRate();
 
         $this->fireDebugFilters();
     }
@@ -192,7 +209,19 @@ class BaseApiController extends Controller
      */
     public function getAuthenticatedDriver()
     {
-        $driverId = \ResourceServer::getOwnerId();
+        $driverId = $this->resourceServer->getOwnerId();
         return DriverRepository::find($driverId);
+    }
+
+    /**
+     * register commission rate.
+     */
+    public function registerCommissionRate()
+    {
+        $driverId = $this->resourceServer->getOwnerId();
+
+        $commissionRate = !! $driverId && ($driver = DriverRepository::find($driverId)) ? $driver->getCommissionRate() : 0;
+
+        $this->app['config']->set('paxifi.commission.rate', $commissionRate);
     }
 } 

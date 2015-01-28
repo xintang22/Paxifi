@@ -159,7 +159,7 @@ class SalesController extends BaseApiController
             $totalSales += $product->unit_price * $product->inventory;
         });
 
-        $commissionRate = \Config::get('paxifi.commission.rate', 0.05);
+        $commissionRate = \Config::get('paxifi.commission.rate', 0);
         $totalCommission = $commissionRate * $totalSales;
 
         $totalProfit = $totalSales - $totalCommission;
@@ -168,7 +168,7 @@ class SalesController extends BaseApiController
             'forecasts' => array(
                 'sales' => $totalSales,
                 'profit' => $totalProfit,
-                'commission' => $totalCommission,
+//                'commission' => $totalCommission,
                 'items' => $totalItems,
             ),
             'date' => (string)Carbon::now(),
