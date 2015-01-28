@@ -9,7 +9,6 @@ class UpdateDriverValidator extends Validator
         'seller_id' => 'unique:drivers|alpha_dash|max:12|sometimes|required',
         'password' => 'sometimes|required',
         'photo' => 'sometimes|url',
-        'address' => 'sometimes|required',
         'currency' => 'sometimes|required',
         'tax_enabled' => 'boolean',
         'tax_included_in_price' => 'boolean',
