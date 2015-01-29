@@ -31,7 +31,7 @@ class DriverServiceProvider extends ServiceProvider
 
         $this->registerEvents();
 
-        $this->registerMiddleWare();
+//        $this->registerMiddleWare();
     }
 
     /**
@@ -42,8 +42,8 @@ class DriverServiceProvider extends ServiceProvider
         $this->app['config']->set('images.drivers.logo', 'uploads/');
         $this->app['config']->set('images.drivers.template', 'images/drivers/template/');
         $this->app['config']->set('images.drivers.defaultlogo', 'driver_logo.png');
-//        $this->app['config']->set('paxifi.paypal.business', 'paxifiapp@gmail.com');
-        $this->app['config']->set('paxifi.paypal.business', '334531994-facilitator@qq.com');
+        $this->app['config']->set('paxifi.paypal.business', 'paxifiapp@gmail.com');
+//        $this->app['config']->set('paxifi.paypal.business', '334531994-facilitator@qq.com');
     }
 
     /**
