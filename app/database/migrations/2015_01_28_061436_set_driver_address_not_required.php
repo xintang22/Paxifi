@@ -12,6 +12,17 @@ class SetDriverAddressNotRequired extends Migration {
 	 */
 	public function up()
 	{
+        if (Schema::hasTable('drivers'))
+        {
+            if (Schema::hasColumn('drivers', 'address'))
+            {
+                Schema::table('drivers', function($table)
+                {
+                    $table->dropColumn('address');
+                });
+            }
+        }
+
         Schema::table('drivers', function($table)
         {
             $table->text('address')->nullable();
@@ -27,7 +38,7 @@ class SetDriverAddressNotRequired extends Migration {
 	{
         Schema::table('drivers', function($table)
         {
-            $table->text('address');
+            $table->dropColumn('address');
         });
 	}
 

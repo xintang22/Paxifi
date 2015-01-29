@@ -12,25 +12,24 @@ class ChangeNotificationsTableStructure extends Migration {
 	 */
 	public function up()
 	{
-        if (Schema::hasTable('notifications'))
-        {
-            Schema::drop('notifications');
-        }
+        $columns = ['sales', 'ranking', 'stock_reminder', 'billing', 'emails'];
 
-        Schema::create('notifications', function($table)
+        array_map(function($column) {
+            Schema::table('notifications', function($table) use ($column)
+            {
+                $table->dropColumn($column);
+            });
+        }, $columns);
+
+        Schema::table('notifications', function($table)
         {
-            $table->increments('id');
-            $table->unsignedInteger('driver_id');
             $table->unsignedInteger('type_id');
             $table->string('value');
 
-            $table->timestamps();
-            $table->softDeletes();
-
             // Foreign key.
-            $table->foreign('driver_id')->references('id')->on('drivers');
             $table->foreign('type_id')->references('id')->on('notification_types');
         });
+
 	}
 
 	/**
@@ -40,7 +39,10 @@ class ChangeNotificationsTableStructure extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('notifications');
+        Schema::table('notifications', function($table) {
+            $table->dropForeign('notifications_type_id_foreign');
+            $table->dropColumn('value');
+        });
 	}
 
 }
