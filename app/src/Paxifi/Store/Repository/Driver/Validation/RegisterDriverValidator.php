@@ -21,7 +21,6 @@ class RegisterDriverValidator extends Validator
         'notify_feedback' => 'boolean',
         'notify_billing' => 'boolean',
         'notify_others' => 'boolean',
-        'paypal_code' => 'required',
     ];
 
     /**
@@ -51,7 +50,7 @@ class RegisterDriverValidator extends Validator
     {
         parent::validate($data);
 
-        $this->paypal->verifyAuthorizationCode($data['paypal_code'], true);
+        // $this->paypal->verifyAuthorizationCode($data['paypal_code'], true);
     }
 
 }
