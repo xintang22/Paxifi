@@ -31,8 +31,6 @@ abstract class Validator
     function __construct(Factory $validator = null)
     {
         $this->validator = $validator ? : \App::make('validator');
-
-        $this->registerExtensions();
     }
 
     /**

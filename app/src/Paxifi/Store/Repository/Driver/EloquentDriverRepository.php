@@ -220,7 +220,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         $this->attributes['address'] = serialize([
             'street' => isset($value['street']) ? $value['street'] : '',
             'city' => isset($value['city']) ? $value['city'] : '',
-            'country' => isset($value['country']) ? $value['country'] : '',
+            'country' => isset($value['country']) ? $value['country'] : "US",
             'postcode' => isset($value['postcode']) ? $value['postcode'] : '',
         ]);
     }
@@ -485,7 +485,9 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      * @return mixed
      */
     public function getCommissionRate() {
-        return EloquentCountryRepository::where('iso', '=', $this->getCountry())->first()->commission_rate;
+        $country = $this->getCountry() ?: "US";
+
+        return EloquentCountryRepository::where('iso', '=', $country)->first()->commission_rate;
     }
 
     /**
