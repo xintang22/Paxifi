@@ -218,10 +218,10 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public function setAddressAttribute($value)
     {
         $this->attributes['address'] = serialize([
-            'street' => $value['street'] ? : '',
-            'city' => $value['city'] ? : '',
-            'country' => $value['country'] ? : '',
-            'postcode' => $value['postcode'] ? : '',
+            'street' => isset($value['street']) ? $value['street'] : '',
+            'city' => isset($value['city']) ? $value['city'] : '',
+            'country' => isset($value['country']) ? $value['country'] : '',
+            'postcode' => isset($value['postcode']) ? $value['postcode'] : '',
         ]);
     }
 
@@ -373,13 +373,6 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
-     * Get driver country's settings.
-     */
-    public function getSettingsByDriverCountry() {
-        $country = self::getCountry();
-    }
-
-    /**
      * Increment the thumbs up.
      *
      * @return $this
@@ -421,7 +414,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
                   // ->where('subscriptions.status', '<>', 'past_due');
         });
 
-        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status'));
+        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status'));
 
         if (!$models->isEmpty()) return $models;
 
