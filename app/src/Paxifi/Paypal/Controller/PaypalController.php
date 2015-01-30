@@ -209,7 +209,7 @@ class PaypalController extends ApiController
 
         return !! $result;
     }
-    
+
     /**
      * Paypal payment for sticker.
      *
