@@ -179,9 +179,9 @@ class DriverController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id', 'status', 'paypal_account', 'suspended'));
+            with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id', 'status', 'suspended'));
 
-            $driver->update(\Input::except('email', 'seller_id', 'status', 'paypal_account', 'suspended'));
+            $driver->update(\Input::except('email', 'seller_id', 'status', 'suspended'));
 
             \Event::fire('paxifi.store.updated', [$driver]);
 
