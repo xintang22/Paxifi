@@ -54,10 +54,10 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function subscription()
-    {
-        return $this->hasOne('Paxifi\Subscription\Repository\EloquentSubscriptionRepository', 'driver_id', 'id');
-    }
+    // public function subscription()
+    // {
+        // return $this->hasOne('Paxifi\Subscription\Repository\EloquentSubscriptionRepository', 'driver_id', 'id');
+    // }
 
     // check if user has subscribed before.
     public function hasSubscribed()
@@ -416,12 +416,12 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
 
         $params->each(function ($param) use ($query) {
             $query->where($param['column'], $param['operator'], $param['value'])
-                  ->where('drivers.suspended', '<>', true)
-                  ->join('subscriptions', 'subscriptions.driver_id', '=', 'drivers.id')
-                  ->where('subscriptions.status', '<>', 'past_due');
+                  ->where('drivers.suspended', '<>', true);
+                  // ->join('subscriptions', 'subscriptions.driver_id', '=', 'drivers.id')
+                  // ->where('subscriptions.status', '<>', 'past_due');
         });
 
-        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status', 'paypal_account'));
+        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status'));
 
         if (!$models->isEmpty()) return $models;
 
