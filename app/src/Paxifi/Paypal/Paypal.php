@@ -279,6 +279,28 @@ class Paypal
     }
 
     /**
+     * @param $payment_id
+     * @return bool
+     */
+    public function getStickerPaymentVerification($payment_id)
+    {
+
+        // Get application paypal token.
+        $accessToken = $this->getApplicationOauthToken();
+
+        $paymentUrl = $this->paypalUrl . 'payments/payment/' . $payment_id;
+
+        $res = $this->client->get($paymentUrl, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $accessToken
+                ]
+        ]);
+
+        return $res ? $res->json() : false;
+    }
+
+    /**
      * Get the user access token using his stored refresh token
      *
      * @param EloquentDriverRepository $driver
@@ -303,6 +325,30 @@ class Paypal
         } catch (\Exception $e) {
             // Todo:: record get user access token failed.
         }
+    }
+
+    /**
+     * Get application oauth token.
+     *
+     * @return bool
+     */
+    public function getApplicationOauthToken() {
+        $oauth2Url = $this->paypalUrl . 'oauth2/token';
+
+        $res = $this->client->post($oauth2Url,
+            [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                ],
+                'auth' => [$this->clientId, $this->clientSecret],
+                'body' => [
+                    'grant_type' => 'client_credentials',
+                ]
+            ]);
+
+
+        return $res ? $res->json()['access_token'] : false;
     }
 
     /**
