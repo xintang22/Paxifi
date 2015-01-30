@@ -87,20 +87,20 @@ class DriverController extends ApiController
         try {
             \DB::beginTransaction();
 
-            $data = \Input::except('seller_id', 'status', 'paypal_account');
+            $data = \Input::except('seller_id', 'status');
 
             // Validate user input + Paypal token
             $this->registerDriverValidator->validate($data);
 
-            $paypal = \Input::get('paypal');
+            // $paypal = \Input::get('paypal');
 
-            $data['paypal_refresh_token'] = $paypal->refresh_token;
+            // $data['paypal_refresh_token'] = $paypal->refresh_token;
 
             // create a new driver
             $driver = DriverRepository::create($data);
-            $driver->paypal_metadata_id = $data['metadata_id'];
+            // $driver->paypal_metadata_id = $data['metadata_id'];
 
-            \Event::fire('paxifi.drivers.initialize', [$driver]);
+            // \Event::fire('paxifi.drivers.initialize', [$driver]);
 
             \DB::commit();
 
