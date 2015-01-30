@@ -63,9 +63,9 @@ class DriverController extends ApiController
         try {
             \DB::beginTransaction();
 
-            with(new CreateDriverValidator())->validate(\Input::except('seller_id', 'status', 'paypal_account'));
+            with(new CreateDriverValidator())->validate(\Input::except('seller_id', 'status'));
 
-            $driver = DriverRepository::create(\Input::except('seller_id', 'status', 'paypal_account'));
+            $driver = DriverRepository::create(\Input::except('seller_id', 'status'));
 
             \DB::commit();
 
