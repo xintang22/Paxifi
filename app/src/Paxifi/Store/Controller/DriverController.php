@@ -63,9 +63,9 @@ class DriverController extends ApiController
         try {
             \DB::beginTransaction();
 
-            with(new CreateDriverValidator())->validate(\Input::except('seller_id', 'status', 'paypal_account'));
+            with(new CreateDriverValidator())->validate(\Input::except('seller_id', 'status'));
 
-            $driver = DriverRepository::create(\Input::except('seller_id', 'status', 'paypal_account'));
+            $driver = DriverRepository::create(\Input::except('seller_id', 'status'));
 
             \DB::commit();
 
@@ -179,9 +179,9 @@ class DriverController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id', 'status', 'paypal_account', 'suspended'));
+            with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id', 'status', 'suspended'));
 
-            $driver->update(\Input::except('email', 'seller_id', 'status', 'paypal_account', 'suspended'));
+            $driver->update(\Input::except('email', 'seller_id', 'status', 'suspended'));
 
             \Event::fire('paxifi.store.updated', [$driver]);
 

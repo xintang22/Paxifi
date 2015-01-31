@@ -14,6 +14,7 @@ class RegisterDriverValidator extends Validator
         'photo' => 'url',
         'currency' => 'required',
         'tax_enabled' => 'boolean',
+        'address.country' => 'required',
         'tax_included_in_price' => 'boolean',
         'tax_global_amount' => 'numeric|between:0,1',
         'notify_sale' => 'boolean',
