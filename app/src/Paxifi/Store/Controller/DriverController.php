@@ -63,9 +63,9 @@ class DriverController extends ApiController
         try {
             \DB::beginTransaction();
 
-            with(new CreateDriverValidator())->validate(\Input::except('seller_id', 'status', 'paypal_account'));
+            with(new CreateDriverValidator())->validate(\Input::except('seller_id', 'status'));
 
-            $driver = DriverRepository::create(\Input::except('seller_id', 'status', 'paypal_account'));
+            $driver = DriverRepository::create(\Input::except('seller_id', 'status'));
 
             \DB::commit();
 
@@ -87,19 +87,20 @@ class DriverController extends ApiController
         try {
             \DB::beginTransaction();
 
-            $data = \Input::except('seller_id', 'status', 'paypal_account');
+            $data = \Input::except('seller_id', 'status');
 
             // Validate user input + Paypal token
             $this->registerDriverValidator->validate($data);
 
-            $paypal = \Input::get('paypal');
+            // $paypal = \Input::get('paypal');
 
-            $data['paypal_refresh_token'] = $paypal->refresh_token;
+            // $data['paypal_refresh_token'] = $paypal->refresh_token;
 
             // create a new driver
             $driver = DriverRepository::create($data);
+            // $driver->paypal_metadata_id = $data['metadata_id'];
 
-            \Event::fire('paxifi.drivers.initialize', [$driver]);
+            // \Event::fire('paxifi.drivers.initialize', [$driver]);
 
             \DB::commit();
 
@@ -129,7 +130,7 @@ class DriverController extends ApiController
             $accessToken = $this->paypal->getUserAccessToken($driver);
 
             // Get Driver Paypal information and store the Paypal email
-            $info = $this->paypal->getUserInfoByAccessToken($accessToken);
+            $info = $this->paypal->getUserInfoByAccessToken($accessToken, $driver);
 
             $driver->paypal_account = $info->email;
             $driver->status = 1;
@@ -178,9 +179,9 @@ class DriverController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id', 'status', 'paypal_account', 'suspended'));
+            with(new UpdateDriverValidator())->validate(\Input::except('email', 'seller_id', 'status', 'suspended'));
 
-            $driver->update(\Input::except('email', 'seller_id', 'status', 'paypal_account', 'suspended'));
+            $driver->update(\Input::except('email', 'seller_id', 'status', 'suspended'));
 
             \Event::fire('paxifi.store.updated', [$driver]);
 
@@ -478,6 +479,7 @@ class DriverController extends ApiController
     public function renewSubscription($driver = null) {
         try {
             \DB::beginTransaction();
+
             if (is_null($driver)) {
                 $driver = $this->getAuthenticatedDriver();
             }
@@ -492,6 +494,8 @@ class DriverController extends ApiController
             $plan = EloquentPlanRepository::findOrFail($subscription->plan_id);
 
             if ($subscriptionPayment = $this->paypal->subscriptionPayment($plan, $driver)) {
+
+                $driver->paypal_metadata_id = \Input::get('metadata_id');
 
                 $subscription->renewSubscription(EloquentPlanRepository::findOrFail($subscription->plan_id), $driver);
 

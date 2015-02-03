@@ -12,14 +12,6 @@ class AddedProductStatusField extends Migration {
 	 */
 	public function up()
 	{
-        if (Schema::hasColumn('products', 'status'))
-        {
-            Schema::table('products', function($table)
-            {
-                $table->dropColumn('status');
-            });
-        }
-
         Schema::table('products', function($table)
         {
             $table->boolean('status')->default(1);

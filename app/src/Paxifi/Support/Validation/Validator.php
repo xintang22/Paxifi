@@ -113,10 +113,10 @@ abstract class Validator
     {
         $this->validator->extend('address', function ($attribute, $value, $parameters) {
             return $this->validator->make($value, [
-                'street' => 'required',
-                'city' => 'required',
+                // 'street' => 'required',
+                // 'city' => 'required',
                 'country' => 'required',
-                'postcode' => 'required',
+                // 'postcode' => 'required',
             ])->passes();
         });
     }

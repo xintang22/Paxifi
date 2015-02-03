@@ -141,12 +141,6 @@
                                     </div>
                                 </li>
                                 <li>
-                                    <label for="total_revenue">Total Paxifi Fee</label>
-                                    <div>
-                                        <span class="currency">{{$driver->currency}}</span> <span class="value">{{$statistics['totals']['commission']}}</span>
-                                    </div>
-                                </li>
-                                <li>
                                     <label for="total_revenue">Total Tax</label>
                                     <div>
                                         <span class="currency">{{$driver->currency}}</span> <span class="value">{{$statistics['totals']['tax']}}</span>
@@ -175,12 +169,6 @@
                                        <div>
                                         <span class="currency">{{$driver->currency}}</span> <span class="value">{{$report[key($report)]['total_sales']}}</span>
                                        </div>
-                                    </li>
-                                    <li>
-                                        <label for="revenue">Paxifi Fee</label>
-                                        <div>
-                                            <span class="currency">{{$driver->currency}}</span> <span class="value">{{$report[key($report)]['commission']}}</span>
-                                        </div>
                                     </li>
                                     <li>
                                         <label for="revenue">Tax</label>

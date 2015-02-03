@@ -1,5 +1,5 @@
 {
-    "name": "Paxifi",
+    "name": "paxifi/api",
     "description": "Backend for Paxifi APP. Proudly powered by Laravel Framework.",
     "keywords": ["framework", "laravel"],
     "license": "MIT",
@@ -18,7 +18,7 @@
         "cboden/ratchet": "0.3.*",
         "react/zmq": "0.2.*|0.3.*",
         "doctrine/dbal": "~2.5@dev",
-        "graham-campbell/flysystem": "~1.0",
+        "graham-campbell/flysystem": "~0.7",
         "barryvdh/laravel-cors": "0.2.x"
     },
     "require-dev": {

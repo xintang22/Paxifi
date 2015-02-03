@@ -12,9 +12,9 @@ class RegisterDriverValidator extends Validator
         'email' => 'required|email|unique:drivers',
         'password' => 'required|min:6|alpha_dash',
         'photo' => 'url',
-        'address' => 'required',
         'currency' => 'required',
         'tax_enabled' => 'boolean',
+        'address.country' => 'required',
         'tax_included_in_price' => 'boolean',
         'tax_global_amount' => 'numeric|between:0,1',
         'notify_sale' => 'boolean',
@@ -22,7 +22,6 @@ class RegisterDriverValidator extends Validator
         'notify_feedback' => 'boolean',
         'notify_billing' => 'boolean',
         'notify_others' => 'boolean',
-        'paypal_code' => 'required',
     ];
 
     /**
@@ -52,7 +51,7 @@ class RegisterDriverValidator extends Validator
     {
         parent::validate($data);
 
-        $this->paypal->verifyAuthorizationCode($data['paypal_code'], true);
+        // $this->paypal->verifyAuthorizationCode($data['paypal_code'], true);
     }
 
 }

@@ -31,7 +31,7 @@ class DriverServiceProvider extends ServiceProvider
 
         $this->registerEvents();
 
-        $this->registerMiddleWare();
+//        $this->registerMiddleWare();
     }
 
     /**
@@ -42,8 +42,8 @@ class DriverServiceProvider extends ServiceProvider
         $this->app['config']->set('images.drivers.logo', 'uploads/');
         $this->app['config']->set('images.drivers.template', 'images/drivers/template/');
         $this->app['config']->set('images.drivers.defaultlogo', 'driver_logo.png');
-//        $this->app['config']->set('paxifi.paypal.business', 'paxifiapp@gmail.com');
-        $this->app['config']->set('paxifi.paypal.business', '334531994-facilitator@qq.com');
+        $this->app['config']->set('paxifi.paypal.business', 'paxifiapp@gmail.com');
+//        $this->app['config']->set('paxifi.paypal.business', '334531994-facilitator@qq.com');
     }
 
     /**
@@ -200,6 +200,7 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->post('me/products', 'Paxifi\Store\Controller\ProductController@store');
                 $this->app['router']->get('me/products', 'Paxifi\Store\Controller\ProductController@index');
                 $this->app['router']->get('me/products/{product}', 'Paxifi\Store\Controller\ProductController@showMine');
+                $this->app['router']->put('me/products/weights', 'Paxifi\Store\Controller\ProductController@setWeight');
                 $this->app['router']->put('me/products/{product}', 'Paxifi\Store\Controller\ProductController@updateMine');
                 $this->app['router']->delete('me/products/{product}', 'Paxifi\Store\Controller\ProductController@destroyMine');
                 $this->app['router']->get('me/count/products', 'Paxifi\Store\Controller\ProductController@getProductsCount');
@@ -306,10 +307,6 @@ class DriverServiceProvider extends ServiceProvider
             \Queue::push('Paxifi\Support\Queues\Queues@email', $emailOptions);
         });
 
-        // fire initialize driver account information.
-//        $this->app['events']->listen('paxifi.drivers.initialize', function($driver) {
-//            \Queue::push('Paxifi\Store\Controller\DriverController@initialize', $driver);
-//        });
         $this->app['events']->listen('paxifi.drivers.initialize', 'Paxifi\Store\Controller\DriverController@initialize');
 
         // fire driver logo generate event.

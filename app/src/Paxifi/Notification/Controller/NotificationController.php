@@ -1,6 +1,8 @@
 <?php namespace Paxifi\Notification\Controller;
 
 use Carbon\Carbon;
+use Paxifi\Notification\Repository\EloquentNotificationRepository;
+use Paxifi\Notification\Repository\EloquentNotificationTypeRepository;
 use Paxifi\Notification\Repository\NotificationRepository;
 use Paxifi\Notification\Transformer\NotificationTransformer;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
@@ -39,9 +41,9 @@ class NotificationController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            $to = Carbon::createFromTimestamp(Carbon::now()->setTimezone(\Config::get('app.timezone'))->format('U'));
+            $to = Carbon::now();
 
-            $from = Carbon::createFromTimestamp(Carbon::now()->setTimezone(\Config::get('app.timezone'))->format('U') - (60 * 60 * \Config::get('notification_hours')));
+            $from = (\Input::has('from')) ? \Input::get('from', $driver->created_at->format('U')) : $driver->created_at->format('U');
 
             $notifications = $driver->with_notifications($from, $to);
 
@@ -263,11 +265,9 @@ class NotificationController extends ApiController
 
                 $notifications->map(function ($notification) {
 
-                    if ($notification->sales) {
+                    if (EloquentNotificationTypeRepository::find($notification->type_id)->type == 'sales') {
 
-                        $payment = Payment::find($notification->sales);
-
-                        if ($payment->status == 0) {
+                        if (Payment::find($notification->value)->status == 0) {
                             return;
                         }
                     }

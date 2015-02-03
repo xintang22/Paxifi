@@ -12,20 +12,9 @@ class UpdatedStatusFieldInCommissionsTable extends Migration {
 	 */
 	public function up()
 	{
-        $columns = ['capture_created_at', 'capture_updated_at', 'capture_id', 'capture_ipn', 'capture_status', 'status'];
 
-        foreach($columns as $index => $column) {
-            if (Schema::hasColumn('commissions', $column))
-            {
-                Schema::table('commissions', function($table) use ($column)
-                {
-                    $table->dropColumn($column);
-                });
-            }
-        }
-
-        Schema::table('commissions', function($table) {
-            $table->enum('status', ['completed', 'pending'])->default('pending');
+        Schema::table('commissions', function($table)
+        {
             $table->timestamp('commission_start')->nullable();
             $table->timestamp('commission_end')->nullable();
         });
@@ -40,7 +29,7 @@ class UpdatedStatusFieldInCommissionsTable extends Migration {
 	{
         Schema::table('commissions', function($table)
         {
-            $table->dropColumn('status');
+            $table->dropColumn(['commission_start', 'commission_end']);
         });
 	}
 

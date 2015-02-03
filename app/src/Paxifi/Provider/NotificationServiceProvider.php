@@ -47,11 +47,12 @@ class NotificationServiceProvider extends ServiceProvider
      */
     public function registerEvents()
     {
-        $this->app['events']->listen('paxifi.notifications.billing', 'Paxifi\Notification\Controller\NotificationController@billing');
-        $this->app['events']->listen('paxifi.notifications.sales', 'Paxifi\Notification\Controller\NotificationController@sales');
-        $this->app['events']->listen('paxifi.notifications.stock', 'Paxifi\Notification\Controller\NotificationController@stock');
-        $this->app['events']->listen('paxifi.notifications.ranking', 'Paxifi\Notification\Controller\NotificationController@ranking');
-        $this->app['events']->listen('paxifi.notifications.emails', 'Paxifi\Notification\Controller\NotificationController@emails');
+        $this->app['events']->listen('paxifi.notifications.ranking', 'Paxifi\Notification\Event\NotificationEventHandler@handler');
+        $this->app['events']->listen('paxifi.notifications.sales', 'Paxifi\Notification\Event\NotificationEventHandler@handler');
+        $this->app['events']->listen('paxifi.notifications.stock', 'Paxifi\Notification\Event\NotificationEventHandler@handler');
+        $this->app['events']->listen('paxifi.notifications.emails', 'Paxifi\Notification\Event\NotificationEventHandler@handler');
+        $this->app['events']->listen('paxifi.notifications.billing', 'Paxifi\Notification\Event\NotificationEventHandler@handler');
+        $this->app['events']->listen('paxifi.notifications.subscription', 'Paxifi\Notification\Event\NotificationEventHandler@handler');
 
         // Remove notification events
         $this->app['events']->listen('paxifi.notifications.sales.delete', 'Paxifi\Notification\Controller\NotificationController@cancelSales');

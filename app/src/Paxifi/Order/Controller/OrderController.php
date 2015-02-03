@@ -78,8 +78,7 @@ class OrderController extends ApiController
             $this->soldouts = new Collection();
 
             $payments = EloquentPaymentRepository::where('status', '=', 1)->orderBy('updated_at', true)->get();
-//            print_r($payments->toArray());
-//            die;
+
             $payments->map(function($payment, $index)  {
                 $products = $payment->order->products;
 
@@ -97,8 +96,6 @@ class OrderController extends ApiController
             $per_page = \Input::get('per_page', 5);
 
             return $this->soldouts->slice(($page - 1) * $per_page, $per_page)->toArray();
-
-            return $this->setStatusCode(200)->respond($this->soldouts);
         } catch (\Exception $e) {
             return $this->errorInternalError();
         }

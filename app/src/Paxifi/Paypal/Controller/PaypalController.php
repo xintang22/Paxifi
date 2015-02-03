@@ -1,9 +1,9 @@
 <?php namespace Paxifi\Paypal\Controller;
 
-use Carbon\Carbon;
-use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Input;
 use Paxifi\Order\Repository\EloquentOrderRepository;
-use Paxifi\Paypal\Helper\PaypalHelper;
+use Paxifi\Paypal\Exception\PaymentNotValidException;
+use Paxifi\Paypal\Paypal;
 use Paxifi\Shipment\Repository\EloquentShipmentRepository;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Store\Repository\Product\EloquentProductRepository;
@@ -11,11 +11,16 @@ use Paxifi\Support\Controller\ApiController;
 use PayPal\Ipn\Listener;
 use PayPal\Ipn\Message;
 use PayPal\Ipn\Verifier\CurlVerifier;
-use Paxifi\Sales\Repository\SaleCollection;
 use PayPal\Ipn\Verifier\SocketVerifier;
 
 class PaypalController extends ApiController
 {
+    protected $paypal;
+
+    function __construct(Paypal $paypal) {
+        parent::__construct();
+        $this->paypal = $paypal;
+    }
 
     /**
      * Paypal cart payment ipn handler
@@ -104,10 +109,6 @@ class PaypalController extends ApiController
      */
     public function subscribe()
     {
-//        $ipn = \Input::all();
-//        \Log::useFiles(storage_path().'/logs/'. 'sub-'. time(). '.txt');
-//        \Log::info($ipn);
-//        die;
         try {
             \DB::beginTransaction();
             $listener = new Listener;
@@ -196,6 +197,20 @@ class PaypalController extends ApiController
     }
 
     /**
+     * @param $verification
+     * @param $driver
+     * @return bool
+     */
+    private function verifyStickerPayment($verification, $driver) {
+
+        $result = ($verification['transactions'][0]->amount->total == $driver->getStickerPrice() &&
+                    $verification['transactions'][0]->amount->currency == $driver->currency &&
+                    $verification['transactions'][0]->related_resources[0]->sale->state == 'completed');
+
+        return !! $result;
+    }
+
+    /**
      * Paypal payment for sticker.
      *
      * @param null $driver
@@ -206,23 +221,36 @@ class PaypalController extends ApiController
     {
         try {
             \DB::beginTransaction();
+
             if (is_null($driver)) {
                 $driver = $driver = $this->getAuthenticatedDriver();
             }
 
-            $paypal_helper = new PaypalHelper($driver);
+            if (!$payment = Input::get('payment')) return $this->errorWrongArgs();
 
-            $sticker_payment = \Input::all();
+            if ($payment['state'] == 'approved' && $payment['intent'] == 'sale') {
 
-            if ($payment = $paypal_helper->verifyPaypalSinglePayment($sticker_payment)) {
-                $shipment = EloquentShipmentRepository::find(\Input::get('shipment_id'));
+                if (!$verification = $this->paypal->getStickerPaymentVerification($payment['id'])) {
+                    throw new PaymentNotValidException('PayPal Payment not valid.');
+                }
 
-                $shipment->payment_status = 'completed';
+                if($this->verifyStickerPayment($verification, $driver)) {
+                    if (!$shipment = EloquentShipmentRepository::find(Input::get('shipment_id'))) {
+                        return $this->errorNotFound('Shipment not found');
+                    }
 
-                $shipment->save();
-                \DB::commit();
+                    $shipment->payment_status = 'completed';
+                    $shipment->save();
+                    \DB::commit();
+
+                    return $this->setStatusCode(200)->respond(['success' => true]);
+                }
             }
 
+            throw new PaymentNotValidException('PayPal Payment not valid.');
+
+        } catch (PaymentNotValidException $e) {
+            return $this->setStatusCode(402)->respondWithError($e->getMessage());
         } catch (\Exception $e) {
             return $this->setStatusCode(400)->respondWithError($e->getMessage());
         }

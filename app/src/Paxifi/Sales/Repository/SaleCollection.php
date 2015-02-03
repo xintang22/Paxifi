@@ -68,7 +68,7 @@ class SaleCollection extends Collection
                 'sales' => $this->totalSales,
                 'costs' => $this->totalCosts,
                 'profit' => $this->totalProfit,
-                'commission' => $this->totalCommission,
+//                'commission' => $this->totalCommission,
                 'tax' => $this->totalTax,
                 'items' => $this->totalItems,
             ),

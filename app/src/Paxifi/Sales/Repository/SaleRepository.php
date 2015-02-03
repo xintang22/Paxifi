@@ -101,7 +101,7 @@ class SaleRepository implements ArrayableInterface
             'total_sales' => $this->totalSales,
             'total_tax' => $this->totalTax,
             'profit' => $this->profit,
-            'commission' => $this->commission,
+//            'commission' => $this->commission,
             'products' => $this->products,
             'buyer' => array(
                 'email' => $this->buyerEmail,
