@@ -22,10 +22,10 @@ class EloquentShipmentRepository extends BaseModel {
     public function setAddressAttribute($value)
     {
         $this->attributes['address'] = serialize([
-            'street' => $value['street'] ? : '',
-            'city' => $value['city'] ? : '',
-            'country' => $value['country'] ? : '',
-            'postcode' => $value['postcode'] ? : '',
+            'street' => isset($value['street']) ? $value['street'] : '',
+            'city' => isset($value['city']) ? $value['city'] : '',
+            'country' => isset($value['country']) ? $value['country'] : "US",
+            'postcode' => isset($value['postcode']) ? $value['postcode'] : '',
         ]);
     }
 
