@@ -114,21 +114,22 @@ class PdfConverter
     }
 
     /**
+     * @param string $connection
      * @return bool
      */
-    public function saveHtmlToPdf()
+    public function saveHtmlToPdf($connection = 'awss3')
     {
-        if (
-        \Flysystem::put(
+
+        if (\Flysystem::connection($connection)->put(
             $this->getPdfFilePath(),
             \PDF::load(
                 $this->getHtmlTemplate(),
                 $this->getPdfSize(),
                 $this->getPdfDirection()
-            )->output()
+            )->output(),
+            ['visibility' => 'public']
         )
         ) {
-
             return true;
         }
 
