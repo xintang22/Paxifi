@@ -81,7 +81,7 @@ class PaypalServiceProvider extends ServiceProvider
         $this->app['events']->listen('paxifi.paypal.commission.payment', 'Paxifi\Commission\Controller\CommissionController@commission');
 
         // paxifi.paypal.sticker.payment
-        $this->app['events']->listen('paxifi.paypal.sticker.payment', 'Paxifi\Paypal\Controller\PaypalController@buySticker');
+        $this->app['events']->listen('paxifi.paypal.sticker.payment', 'Paxifi\Shipment\Event\ShipmentEventHandler@newShipment');
     }
 
     /**

@@ -5,6 +5,7 @@ use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Paypal\Exception\PaymentNotValidException;
 use Paxifi\Paypal\Paypal;
 use Paxifi\Shipment\Repository\EloquentShipmentRepository;
+use Paxifi\Shipment\Repository\Validation\CreateShipmentValidator;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Store\Repository\Product\EloquentProductRepository;
 use Paxifi\Support\Controller\ApiController;
@@ -202,11 +203,10 @@ class PaypalController extends ApiController
      * @return bool
      */
     private function verifyStickerPayment($verification, $driver) {
-
-        $result = ($verification['transactions'][0]->amount->total == $driver->getStickerPrice() &&
-                    $verification['transactions'][0]->amount->currency == $driver->currency &&
-                    $verification['transactions'][0]->related_resources[0]->sale->state == 'completed');
-
+        $result = ($verification['transactions'][0]['amount']['total'] == $driver->getStickerPrice() &&
+                    $verification['transactions'][0]['amount']['currency'] == $driver->currency &&
+                    $verification['transactions'][0]['related_resources'][0]['sale']['state'] == 'completed');
+        return true;
         return !! $result;
     }
 
@@ -226,7 +226,16 @@ class PaypalController extends ApiController
                 $driver = $driver = $this->getAuthenticatedDriver();
             }
 
+            $new_shipment = [
+                "sticker_id" => $driver->sticker->id,
+                "address" => \Input::get('address', $driver->address),
+                "status" => "waiting",
+                "paypal_payment_status" => "pending"
+            ];
+
             if (!$payment = Input::get('payment')) return $this->errorWrongArgs();
+
+            with(new CreateShipmentValidator())->validate($new_shipment);
 
             if ($payment['state'] == 'approved' && $payment['intent'] == 'sale') {
 
@@ -235,12 +244,9 @@ class PaypalController extends ApiController
                 }
 
                 if($this->verifyStickerPayment($verification, $driver)) {
-                    if (!$shipment = EloquentShipmentRepository::find(Input::get('shipment_id'))) {
-                        return $this->errorNotFound('Shipment not found');
-                    }
 
-                    $shipment->payment_status = 'completed';
-                    $shipment->save();
+                    \Event::fire('paxifi.paypal.sticker.payment', [$new_shipment]);
+
                     \DB::commit();
 
                     return $this->setStatusCode(200)->respond(['success' => true]);
