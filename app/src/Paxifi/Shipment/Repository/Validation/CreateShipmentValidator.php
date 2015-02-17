@@ -11,7 +11,8 @@ class CreateShipmentValidator extends Validator
         "address.country" => "required",
         "address.postcode" => "required",
         "status" => "in:shipped,waiting,printed",
-        "payment_status" => "in:pending,completed"
+        "paypal_payment_status" => "in:pending,completed",
+        "paypal_payment_id" => "required|unique:shipments"
     ];
 
     protected $messages = [
@@ -19,5 +20,8 @@ class CreateShipmentValidator extends Validator
         'address.city.required' => 'The city field is required.',
         'address.country.required' => 'The country field is required.',
         'address.postcode.required' => 'The postcode field is required.',
+        'paypal_payment_id' => [
+            'unique' => 'The shipment already exists.'
+        ],
     ];
 } 

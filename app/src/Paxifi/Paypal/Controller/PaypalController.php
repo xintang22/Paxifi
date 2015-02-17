@@ -9,6 +9,7 @@ use Paxifi\Shipment\Repository\Validation\CreateShipmentValidator;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Store\Repository\Product\EloquentProductRepository;
 use Paxifi\Support\Controller\ApiController;
+use Paxifi\Support\Validation\ValidationException;
 use PayPal\Ipn\Listener;
 use PayPal\Ipn\Message;
 use PayPal\Ipn\Verifier\CurlVerifier;
@@ -235,8 +236,6 @@ class PaypalController extends ApiController
 
             if (!$payment = Input::get('payment')) return $this->errorWrongArgs();
 
-            with(new CreateShipmentValidator())->validate($new_shipment);
-
             if ($payment['state'] == 'approved' && $payment['intent'] == 'sale') {
 
                 if (!$verification = $this->paypal->getStickerPaymentVerification($payment['id'])) {
@@ -244,6 +243,9 @@ class PaypalController extends ApiController
                 }
 
                 if($this->verifyStickerPayment($verification, $driver)) {
+                    $new_shipment['paypal_payment_id'] = $payment['id'];
+
+                    with(new CreateShipmentValidator())->validate($new_shipment);
 
                     \Event::fire('paxifi.paypal.sticker.payment', [$new_shipment]);
 
@@ -255,6 +257,8 @@ class PaypalController extends ApiController
 
             throw new PaymentNotValidException('PayPal Payment not valid.');
 
+        } catch (ValidationException $e) {
+            return $this->errorWrongArgs($e->getErrors());
         } catch (PaymentNotValidException $e) {
             return $this->setStatusCode(402)->respondWithError($e->getMessage());
         } catch (\Exception $e) {
