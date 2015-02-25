@@ -137,12 +137,15 @@ class StickerController extends ApiController
             $sticker_factory = with(new StickerFactory($this->flysystem))
                 ->setDriver($driver);
 
+            $pdf = $this->flysystem->connection('awss3')->read($sticker_factory->getStickerPdfFilePath());
+            $this->flysystem->connection('local')->put('sticker.pdf', $pdf);
+
             // Config email options
             $emailOptions = array(
                 'template' => 'sticker.email',
                 'context' => $this->translator->trans('email.sticker'),
                 'to' => $email,
-                'attach' => $this->flysystem->getAdapter()->getClient()->getObjectUrl(getenv('AWS_S3_BUCKET') , $sticker_factory->getStickerPdfFilePath()),
+                'attach' => $this->flysystem->connection('local')->getAdapter()->getPathPrefix() . 'sticker.pdf',
                 'as' => 'sticker_' . $driver->seller_id . '.pdf',
                 'mime' => 'application/pdf',
                 'data' => ['name' => $driver->name]
