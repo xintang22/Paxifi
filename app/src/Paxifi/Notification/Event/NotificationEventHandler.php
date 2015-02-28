@@ -31,7 +31,7 @@ class NotificationEventHandler
     {
         $notification = [
             "driver_id" => $notification->driver_id,
-            "value" => ($notification->feedback) ? "up" : "down",
+            "value" => ($notification->feedback == 1) ? "up" : "down",
             "type" => $notification->type
         ];
 
