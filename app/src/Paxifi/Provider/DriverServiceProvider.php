@@ -310,10 +310,16 @@ class DriverServiceProvider extends ServiceProvider
         $this->app['events']->listen('paxifi.drivers.initialize', 'Paxifi\Store\Controller\DriverController@initialize');
 
         // fire driver logo generate event.
-        $this->app['events']->listen(['paxifi.drivers.created', 'paxifi.store.photo.updated', 'paxifi.store.seller_id.created'], 'Paxifi\Store\Controller\DriverController@logo');
+        $this->app['events']->listen(['paxifi.drivers.created', 'paxifi.store.photo.updated'], 'Paxifi\Store\Controller\DriverController@logo');
 
         // fire driver rating event.
         $this->app['events']->listen('paxifi.drivers.rating' , 'Paxifi\Store\Controller\RatingController@rating');
+
+        // fire event to create driver sticker
+        $this->app['events']->listen('paxifi.create.sticker', 'Paxifi\Sticker\Controller\StickerController@store');
+
+        // fire driver seller_id  created event.
+        $this->app['events']->listen('paxifi.email.sticker', 'Paxifi\Sticker\Event\EmailSticker@handle');
     }
 
     public function registerMiddleWare() {
