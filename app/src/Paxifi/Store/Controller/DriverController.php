@@ -102,6 +102,8 @@ class DriverController extends ApiController
 
             // \Event::fire('paxifi.drivers.initialize', [$driver]);
 
+            \Event::fire('paxifi.drivers.registered', [$driver]);
+
             \DB::commit();
 
             return $this->setStatusCode(201)->respondWithItem(DriverRepository::find($driver->id));
