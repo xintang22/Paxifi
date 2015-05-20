@@ -22,7 +22,7 @@ class EmailSticker {
      * @param $driver
      * @param $email
      */
-    function handle ($driver, $email) {
+    function handle ($driver, $email = null) {
         if (is_null($email)) {
             $email = $driver->email;
         }
