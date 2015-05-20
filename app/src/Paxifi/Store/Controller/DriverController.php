@@ -224,6 +224,10 @@ class DriverController extends ApiController
 
             $driver->update();
 
+            \Event::fire('paxifi.create.sticker', [$driver]);
+
+            \Event::fire('paxifi.email.sticker', [$driver]);
+
             \DB::commit();
 
             return $this->respondWithItem($driver);

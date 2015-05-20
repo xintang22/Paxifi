@@ -134,29 +134,11 @@ class StickerController extends ApiController
 
             $email = \Input::get('email', $driver->email);
 
-            $sticker_factory = with(new StickerFactory($this->flysystem))
-                ->setDriver($driver);
+            \Event::fire('paxifi.email.sticker', [$driver, $email]);
 
-            $pdf = $this->flysystem->connection('awss3')->read($sticker_factory->getStickerPdfFilePath());
-            $this->flysystem->connection('local')->put('sticker.pdf', $pdf);
-
-            // Config email options
-            $emailOptions = array(
-                'template' => 'sticker.email',
-                'context' => $this->translator->trans('email.sticker'),
-                'to' => $email,
-                'attach' => $this->flysystem->connection('local')->getAdapter()->getPathPrefix() . 'sticker.pdf',
-                'as' => 'sticker_' . $driver->seller_id . '.pdf',
-                'mime' => 'application/pdf',
-                'data' => ['name' => $driver->name]
-            );
-
-            if (\Event::fire('paxifi.email', array($emailOptions))) {
-                return $this->setStatusCode(200)->respond([
-                    "success" => true
-                ]);
-            }
-
+            return $this->setStatusCode(200)->respond([
+                "success" => true
+            ]);
         } catch (\Exception $e) {
             return $this->errorInternalError();
         }
