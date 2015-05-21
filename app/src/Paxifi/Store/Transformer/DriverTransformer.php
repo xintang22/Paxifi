@@ -33,7 +33,8 @@ class DriverTransformer extends TransformerAbstract
             'suspended' => $driver->suspended,
             'status' => $driver->status,
             'created_at' => $driver->created_at,
-            'comments_count' => $driver->comments()->get()->count()
+            'comments_count' => $driver->comments()->get()->count(),
+            'stripe_connected' => $driver->stripe_connected
         );
 
         return $transformer;
