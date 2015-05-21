@@ -13,7 +13,7 @@ class AddDriverStripeConnectedColumn extends Migration {
 	public function up()
 	{
         Schema::table('drivers', function (Blueprint $table) {
-            $table->boolean('stripe_enabled')->default(false);
+            $table->boolean('stripe_connected')->default(false);
         });
 	}
 
@@ -26,7 +26,7 @@ class AddDriverStripeConnectedColumn extends Migration {
 	{
         Schema::table('drivers', function($table)
         {
-            $table->dropColumn('stripe_enabled');
+            $table->dropColumn('stripe_connected');
         });
 	}
 
