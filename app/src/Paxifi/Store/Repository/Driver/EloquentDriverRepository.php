@@ -498,4 +498,23 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public function getStickerPrice() {
         return EloquentCountryRepository::where('iso', '=', $this->getCountry())->first()->sticker_price;
     }
+
+    /**
+     * Enable stripe connection
+     *
+     * @return $this
+     */
+    public function connectStripe() {
+        $this->stripe_connected = true;
+        $this->save();
+
+        return $this;
+    }
+
+    public function disconnectStripe() {
+        $this->stripe_connected = false;
+        $this->save();
+
+        return $this;
+    }
 }
