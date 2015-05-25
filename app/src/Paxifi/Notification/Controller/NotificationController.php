@@ -299,11 +299,12 @@ class NotificationController extends ApiController
     public function cancelSales($payment)
     {
         try {
-            \DB::beginTransaction();
-                if (NotificationRepository::where('sales', '=', $payment->id)->delete()) {
-                    $this->setStatusCode(204);
-                }
-            \DB::commit();
+
+            if (NotificationRepository::where('sales', '=', $payment->id)->delete()) {
+                return $this->setStatusCode(204)->respond([]);
+            }
+
+            return true;
         } catch (\Exception $e) {
             return $this->errorInternalError();
         }
