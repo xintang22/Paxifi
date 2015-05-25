@@ -37,7 +37,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @var array
      */
-    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'paypal_account', 'status', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others', 'paypal_refresh_token');
+    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'paypal_account', 'status', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others', 'paypal_refresh_token', 'stripe_connected');
 
     /**
      * Driver - Product one to many relationship.
@@ -101,6 +101,14 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public function commissions()
     {
         return $this->hasMany('Paxifi\Commission\Repository\EloquentCommissionRepository', 'driver_id', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function stripe()
+    {
+        return $this->hasOne('Paxifi\Stripe\Repository\EloquentStripeRepository', 'driver_id', 'id');
     }
 
     /**
