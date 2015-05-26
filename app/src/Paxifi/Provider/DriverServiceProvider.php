@@ -320,6 +320,9 @@ class DriverServiceProvider extends ServiceProvider
 
         // fire driver seller_id  created event.
         $this->app['events']->listen('paxifi.email.sticker', 'Paxifi\Sticker\Event\EmailSticker@handle');
+
+        // fire payment confirmed event.
+        $this->app['events']->listen('paxifi.payment.confirmed', 'Paxifi\Store\EventsHandler@paymentConfirmed');
     }
 
     public function registerMiddleWare() {
