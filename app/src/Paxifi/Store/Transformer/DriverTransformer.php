@@ -78,6 +78,6 @@ class DriverTransformer extends TransformerAbstract
      * @return string
      */
     protected function transformStripe($driver) {
-        return $driver->stripe_connected ? $driver->stripe()->first() : "";
+        return $driver->stripe_connected ? $driver->stripe()->first() : false;
     }
 }
