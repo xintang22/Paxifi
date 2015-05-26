@@ -23,22 +23,41 @@ class StripeController extends BaseApiController
 {
     private $stripeClient;
 
+    private $stripeSecretKey;
+
+    private $stripeConnectApi;
+
+    private $stripeLiveMode;
+
+    protected $applicationFeeRate;
+
     function __construct()
     {
         parent::__construct();
         $this->stripeClient = CurlClient::instance();
-        Stripe::setApiKey(getenv('STRIPE_SECRET_KEY'));
+
+        $this->applicationFeeRate = !!Config::get('stripe.application.fee.rate') ? (int)Config::get('stripe.application.fee.rate') : 0;
+
+        $this->stripeSecretKey = Config::get('stripe.secret.key');
+
+        $this->stripeConnectApi = Config::get('stripe.connect.api');
+
+        $this->stripeLiveMode = Config::get('stripe.live.mode');
+
+        Stripe::setApiKey($this->stripeSecretKey);
     }
 
     function authorize()
     {
         try {
-            $authUrl = getenv('STRIPE_CONNECT_API') . 'oauth/token';
+            \DB::beginTransaction();
+
+            $authUrl = $this->stripeConnectApi . 'oauth/token';
 
             $params = [
-            'client_secret' => getenv('STRIPE_SECRET_KEY'),
-            'code' => Input::get('code'),
-            'grant_type' => 'authorization_code'
+                'client_secret' => $this->stripeSecretKey,
+                'code' => Input::get('code'),
+                'grant_type' => 'authorization_code'
             ];
 
             $response = $this->stripeClient->request('POST', $authUrl, [], $params, false);
@@ -56,6 +75,8 @@ class StripeController extends BaseApiController
                     if ($stripe = EloquentStripeRepository::create($data)) {
 
                         $driver->connectStripe();
+
+                        \DB::commit();
 
                         return $this->setStatusCode(200)->respond($data);
 
@@ -78,6 +99,7 @@ class StripeController extends BaseApiController
     public function charge()
     {
         try {
+            \DB::beginTransaction();
 
             $driver_id = Input::get('driver_id');
 
@@ -92,23 +114,29 @@ class StripeController extends BaseApiController
 
                 if (!$payment = EloquentPaymentRepository::find(Input::get('payment_id'))) {
                     throw new PaymentNotFoundException();
-                }
-
-                if ($charge = Charge::create($stripeCharge)->__toArray()) {
-
-                    // Validate Charge
-                    if ($this->validateCharge($charge, $payment, $driver)) {
-                        // Update payment status.
-                        $payment->success();
-
-                        \Event::fire('paxifi.payment.confirmed', [$payment]);
-
-                        return $this->setStatusCode(200)->respond(["success" => true]);
-                    } else {
-                        throw new PaymentNotValidException();
+                } else {
+                    if (isset($this->applicationFeeRate) && (int)$this->applicationFeeRate > 0) {
+                        array_push($stripeCharge, ['application_fee' => round(Input::get('amount') * $this->applicationFeeRate / 100)]);
                     }
-                }  else {
-                    throw new PaymentNotSuccessException();
+
+                    if ($charge = Charge::create($stripeCharge)->__toArray()) {
+
+                        // Validate Charge
+                        if ($this->validateCharge($charge, $payment, $driver)) {
+                            // Update payment status.
+                            $payment->success();
+
+                            \Event::fire('paxifi.payment.confirmed', [$payment]);
+
+                            \DB::commit();
+
+                            return $this->setStatusCode(200)->respond(["success" => true]);
+                        } else {
+                            throw new PaymentNotValidException();
+                        }
+                    } else {
+                        throw new PaymentNotSuccessException();
+                    }
                 }
             } else {
                 throw new StoreNotFoundException();
@@ -148,7 +176,7 @@ class StripeController extends BaseApiController
     {
 
         return ($charge['status'] == 'succeeded') &&
-        ($charge['livemode'] == getenv('STRIPE_LIVE_MODE')) &&
+        ($charge['livemode'] == $this->stripeLiveMode) &&
         ($charge['paid'] == true) &&
         (strtolower($charge['currency']) == strtolower($driver->currency)) &&
         (round($charge['amount']) == (round($payment->order->total_sales * 100))) &&
