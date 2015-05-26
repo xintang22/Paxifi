@@ -55,14 +55,19 @@ class PaymentController extends ApiController
              * If don't have the same payment type, delete the old payment.
              * Create a new payment for this order.
              */
+
             if ($order->payment) {
-                if ($order->payment->payment_method()->get()->first()->name == $type) {
+                if ($order->payment->status) {
                     return $this->setStatusCode(200)->respondWithItem($order->payment);
                 } else {
-                    $order->payment->delete();
+                    if ($order->payment->payment_method()->get()->first()->name == $type) {
+                        return $this->setStatusCode(200)->respondWithItem($order->payment);
+                    } else {
+                        $order->payment->delete();
 
-                    // Fire delete sales event.
-                    \Event::fire('paxifi.notifications.sales.delete', [$order->payment]);
+                        // Fire delete sales event.
+                        \Event::fire('paxifi.notifications.sales.delete', [$order->payment]);
+                    }
                 }
             }
 
