@@ -26,5 +26,10 @@ return array(
     ),
     "issue" => array(
         "name" => "Paxifi Message Center"
+    ),
+    "welcome" => array(
+        "subject" => "Welcome to Paxifi. Let's get started!",
+        "from" => "no-reply@paxifi.com",
+        "name" => "Paxifi Welcome Email"
     )
 );
