@@ -17,6 +17,9 @@ class StripeServiceProvider extends ServiceProvider {
         $this->registerRoutes();
     }
 
+    /**
+     * Register routes for stripe.
+     */
     public function registerRoutes() {
         $this->app['router']->group(['before' => 'oauth'], function () {
             $this->app['router']->group(['before' => 'oauth-owner:user'], function () {
@@ -29,6 +32,9 @@ class StripeServiceProvider extends ServiceProvider {
         $this->app['router']->post('stripe/charge', 'Paxifi\Stripe\Controller\StripeController@charge');
     }
 
+    /**
+     * Register stripe configurations.
+     */
     public function registerConfiguration() {
         $this->app['config']->set('stripe.secret.key', getenv('STRIPE_SECRET_KEY'));
 

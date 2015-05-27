@@ -3,6 +3,11 @@
 use Paxifi\Store\Repository\Product\EloquentProductRepository;
 
 class EventsHandler {
+    /**
+     * After payment confirmed, this method will be executed.
+     *
+     * @param $payment
+     */
     function paymentConfirmed($payment) {
         $products = $payment->order->products;
 
