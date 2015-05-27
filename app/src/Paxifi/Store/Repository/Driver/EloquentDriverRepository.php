@@ -422,7 +422,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
                   // ->where('subscriptions.status', '<>', 'past_due');
         });
 
-        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status'));
+        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status', 'drivers.stripe_connected'));
 
         if (!$models->isEmpty()) return $models;
 
