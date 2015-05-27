@@ -323,6 +323,9 @@ class DriverServiceProvider extends ServiceProvider
 
         // fire payment confirmed event.
         $this->app['events']->listen('paxifi.payment.confirmed', 'Paxifi\Store\EventsHandler@paymentConfirmed');
+
+        // New driver registered
+        $this->app['events']->subscribe('Paxifi\Store\Event\DriverEventHandler');
     }
 
     public function registerMiddleWare() {
