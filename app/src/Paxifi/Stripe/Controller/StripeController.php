@@ -44,9 +44,16 @@ class StripeController extends BaseApiController
 
         $this->stripeLiveMode = Config::get('stripe.live.mode');
 
+        $this->stripeClientId = Config::get('stripe.client.id');
+
         Stripe::setApiKey($this->stripeSecretKey);
     }
 
+    /**
+     * Authorize the driver stripe account to connect to Paxifi Platform.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     function authorize()
     {
         try {
@@ -151,6 +158,47 @@ class StripeController extends BaseApiController
             return $this->setStatusCode(406)->respondWithError($this->translator->trans('responses.payment.not_success'));
         } catch (\Exception $e) {
             return $this->errorInternalError($e->getMessage());
+        }
+    }
+
+    /**
+     * Disconnect driver
+     *
+     * @param null $driver
+     */
+    public function deauthorize($driver = null) {
+
+        try {
+            \DB::beginTransaction();
+
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
+            $deauthUrl = $this->stripeConnectApi . 'oauth/deauthorize';
+
+            $params = [
+                'client_secret' => $this->stripeSecretKey,
+                'client_id' => $this->stripeClientId,
+                'stripe_user_id' => $driver->stripe->stripe_user_id
+            ];
+
+            $response = $this->stripeClient->request('POST', $deauthUrl, [], $params, false);
+
+            if ($response[1] == '200') {
+
+                $driver->stripe->delete();
+
+                $driver->disconnectStripe();
+
+                \DB::commit();
+
+                return $this->setStatusCode(204)->respond($this->translator->trans('responses.stripe.connect_success'));
+            } else {
+                return $this->setStatusCode(204)->respond($this->translator->trans('responses.stripe.disconnect_success'));
+            }
+        } catch (\Exception $e) {
+            $this->errorInternalError();
         }
     }
 
