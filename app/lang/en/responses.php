@@ -49,4 +49,10 @@ return array(
         "not_success" => "Payment not success.",
         "not_valid" => "Payment not valid."
     ),
+
+    "stripe" => array(
+        "connect_success" => "Driver stripe account successfully connected to Paxifi platform.",
+
+        "disconnect_success" => "Driver stripe account successfully disconnected from Paxifi platform."
+    ),
 );
