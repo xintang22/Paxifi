@@ -94,4 +94,8 @@ class EloquentPaymentRepository extends BaseModel {
         self::observe(new PaymentRepositoryObserve());
     }
 
-} 
+    public function success() {
+        $this->status = 1;
+        $this->save();
+    }
+}

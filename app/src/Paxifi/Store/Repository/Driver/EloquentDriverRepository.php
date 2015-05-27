@@ -37,7 +37,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      *
      * @var array
      */
-    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'paypal_account', 'status', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others', 'paypal_refresh_token');
+    protected $fillable = array('name', 'seller_id', 'photo', 'password', 'email', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'paypal_account', 'status', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'notify_sale', 'notify_inventory', 'notify_feedback', 'notify_billing', 'notify_others', 'paypal_refresh_token', 'stripe_connected');
 
     /**
      * Driver - Product one to many relationship.
@@ -101,6 +101,14 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public function commissions()
     {
         return $this->hasMany('Paxifi\Commission\Repository\EloquentCommissionRepository', 'driver_id', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function stripe()
+    {
+        return $this->hasOne('Paxifi\Stripe\Repository\EloquentStripeRepository', 'driver_id', 'id');
     }
 
     /**
@@ -414,7 +422,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
                   // ->where('subscriptions.status', '<>', 'past_due');
         });
 
-        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status'));
+        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status', 'drivers.stripe_connected'));
 
         if (!$models->isEmpty()) return $models;
 
@@ -497,5 +505,24 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      */
     public function getStickerPrice() {
         return EloquentCountryRepository::where('iso', '=', $this->getCountry())->first()->sticker_price;
+    }
+
+    /**
+     * Enable stripe connection
+     *
+     * @return $this
+     */
+    public function connectStripe() {
+        $this->stripe_connected = true;
+        $this->save();
+
+        return $this;
+    }
+
+    public function disconnectStripe() {
+        $this->stripe_connected = false;
+        $this->save();
+
+        return $this;
     }
 }

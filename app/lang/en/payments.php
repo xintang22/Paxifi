@@ -5,5 +5,8 @@ return [
     ],
     'paypal' => [
         'create' => 'A paypal payment created.'
-    ]
+    ],
+    'stripe' => [
+        'create' => 'A stripe payment created.'
+    ],
 ];

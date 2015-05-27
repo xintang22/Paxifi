@@ -19,7 +19,8 @@
         "react/zmq": "0.2.*|0.3.*",
         "doctrine/dbal": "~2.5@dev",
         "graham-campbell/flysystem": "~0.7",
-        "barryvdh/laravel-cors": "0.2.x"
+        "barryvdh/laravel-cors": "0.2.x",
+        "stripe/stripe-php": "2.*"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",

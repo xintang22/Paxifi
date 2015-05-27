@@ -55,14 +55,19 @@ class PaymentController extends ApiController
              * If don't have the same payment type, delete the old payment.
              * Create a new payment for this order.
              */
+
             if ($order->payment) {
-                if ($order->payment->payment_method()->get()->first()->name == $type) {
+                if ($order->payment->status) {
                     return $this->setStatusCode(200)->respondWithItem($order->payment);
                 } else {
-                    $order->payment->delete();
+                    if ($order->payment->payment_method()->get()->first()->name == $type) {
+                        return $this->setStatusCode(200)->respondWithItem($order->payment);
+                    } else {
+                        $order->payment->delete();
 
-                    // Fire delete sales event.
-                    \Event::fire('paxifi.notifications.sales.delete', [$order->payment]);
+                        // Fire delete sales event.
+                        \Event::fire('paxifi.notifications.sales.delete', [$order->payment]);
+                    }
                 }
             }
 
@@ -121,20 +126,7 @@ class PaymentController extends ApiController
             $order->save();
 
             if ($confirm == 1) {
-                $products = $payment->order->products;
-
-                $products->map(function ($product) {
-                    // Fires an event to update the inventory.
-                    \Event::fire('paxifi.product.ordered', array($product, $product['pivot']['quantity']));
-
-                    // Fires an event to notification the driver that the product is in low inventory.
-                    if (EloquentProductRepository::find($product->id)->inventory <= 5) {
-
-                        $product->type = "inventory";
-
-                        \Event::fire('paxifi.notifications.stock', [$product]);
-                    }
-                });
+                \Event::fire('paxifi.payment.confirmed', [$payment]);
             }
 
             \DB::commit();

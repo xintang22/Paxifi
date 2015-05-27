@@ -3,6 +3,7 @@
 use League\Fractal\TransformerAbstract;
 use Paxifi\Store\Repository\Driver\DriverRepositoryInterface;
 use Paxifi\Subscription\Transformer\SubscriptionTransformer;
+use StripeTransformer;
 
 class DriverTransformer extends TransformerAbstract
 {
@@ -33,7 +34,8 @@ class DriverTransformer extends TransformerAbstract
             'suspended' => $driver->suspended,
             'status' => $driver->status,
             'created_at' => $driver->created_at,
-            'comments_count' => $driver->comments()->get()->count()
+            'comments_count' => $driver->comments()->get()->count(),
+            'stripe_connected' => $this->transformStripe($driver),
         );
 
         return $transformer;
@@ -67,5 +69,15 @@ class DriverTransformer extends TransformerAbstract
     protected function transformSubscription($driver)
     {
         return $driver->subscription ? with(new SubscriptionTransformer())->transform($driver->subscription) : "";
+    }
+
+    /**
+     * Transform stripe content for driver.
+     *
+     * @param $driver
+     * @return string
+     */
+    protected function transformStripe($driver) {
+        return $driver->stripe_connected ? $driver->stripe()->first() : false;
     }
 }

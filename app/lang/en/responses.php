@@ -43,4 +43,16 @@ return array(
     "invoice" => array(
         "invoice_not_available" => "The driver has not confirm your cash payment yet. Please kindly remind him/her."
     ),
+
+    "payment" => array(
+        "not_found" => "Payment not found.",
+        "not_success" => "Payment not success.",
+        "not_valid" => "Payment not valid."
+    ),
+
+    "stripe" => array(
+        "connect_success" => "Driver stripe account successfully connected to Paxifi platform.",
+
+        "disconnect_success" => "Driver stripe account successfully disconnected from Paxifi platform."
+    ),
 );
