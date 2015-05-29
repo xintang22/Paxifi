@@ -27,7 +27,7 @@ class StripeServiceProvider extends ServiceProvider {
             });
         });
 
-        $this->app['router']->post('stripe/conntect', 'Paxifi\Stripe\Controller\StripeController@authorize');
+        $this->app['router']->post('stripe/connect', 'Paxifi\Stripe\Controller\StripeController@authorize');
 
         $this->app['router']->post('stripe/charge', 'Paxifi\Stripe\Controller\StripeController@charge');
     }
@@ -47,5 +47,7 @@ class StripeServiceProvider extends ServiceProvider {
         $this->app['config']->set('stripe.live.mode', getenv('STRIPE_LIVE_MODE'));
 
         $this->app['config']->set('stripe.application.fee.rate', getenv('STRIPE_APPLICATION_FEE_RATE'));
+
+        $this->app['config']->set('stripe.redirect.url', getenv('STRIPE_REDIRECT_URL'));
     }
 }

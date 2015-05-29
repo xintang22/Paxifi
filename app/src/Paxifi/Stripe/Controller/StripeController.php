@@ -29,6 +29,8 @@ class StripeController extends BaseApiController
 
     private $stripeLiveMode;
 
+    private $stripeRedirectUrl;
+
     protected $applicationFeeRate;
 
     function __construct()
@@ -45,6 +47,8 @@ class StripeController extends BaseApiController
         $this->stripeLiveMode = Config::get('stripe.live.mode');
 
         $this->stripeClientId = Config::get('stripe.client.id');
+
+        $this->stripeRedirectUrl = Config::get('stripe.redirect.url');
 
         Stripe::setApiKey($this->stripeSecretKey);
     }
@@ -85,7 +89,10 @@ class StripeController extends BaseApiController
 
                         \DB::commit();
 
-                        return $this->setStatusCode(200)->respond($data);
+                        return $this->setStatusCode(200)->respond([
+                            'success' => true,
+                            'redirect_url' => $this->stripeRedirectUrl
+                        ]);
 
                     }
                 }
@@ -113,10 +120,10 @@ class StripeController extends BaseApiController
             if ($driver_id && $driver = EloquentDriverRepository::find($driver_id)) {
 
                 $stripeCharge = [
-                    'amount' => Input::get('amount'),
-                    'currency' => Input::get('currency'),
-                    'source' => Input::get('id'),
-                    'destination' => $driver->stripe->stripe_user_id,
+                'amount' => Input::get('amount'),
+                'currency' => Input::get('currency'),
+                'source' => Input::get('id'),
+                'destination' => $driver->stripe->stripe_user_id,
                 ];
 
                 if (!$payment = EloquentPaymentRepository::find(Input::get('payment_id'))) {
@@ -166,7 +173,8 @@ class StripeController extends BaseApiController
      *
      * @param null $driver
      */
-    public function deauthorize($driver = null) {
+    public function deauthorize($driver = null)
+    {
 
         try {
             \DB::beginTransaction();
@@ -178,9 +186,9 @@ class StripeController extends BaseApiController
             $deauthUrl = $this->stripeConnectApi . 'oauth/deauthorize';
 
             $params = [
-                'client_secret' => $this->stripeSecretKey,
-                'client_id' => $this->stripeClientId,
-                'stripe_user_id' => $driver->stripe->stripe_user_id
+            'client_secret' => $this->stripeSecretKey,
+            'client_id' => $this->stripeClientId,
+            'stripe_user_id' => $driver->stripe->stripe_user_id
             ];
 
             $response = $this->stripeClient->request('POST', $deauthUrl, [], $params, false);
