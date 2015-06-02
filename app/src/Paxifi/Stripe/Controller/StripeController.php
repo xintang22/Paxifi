@@ -202,9 +202,9 @@ class StripeController extends BaseApiController
 
                 \DB::commit();
 
-                return $this->setStatusCode(204)->respond($this->translator->trans('responses.stripe.connect_success'));
-            } else {
                 return $this->setStatusCode(204)->respond($this->translator->trans('responses.stripe.disconnect_success'));
+            } else {
+                return $this->setStatusCode(204)->respond($this->translator->trans('responses.stripe.disconnect_failed'));
             }
         } catch (\Exception $e) {
             $this->errorInternalError();

@@ -53,6 +53,8 @@ return array(
     "stripe" => array(
         "connect_success" => "Driver stripe account successfully connected to Paxifi platform.",
 
-        "disconnect_success" => "Driver stripe account successfully disconnected from Paxifi platform."
+        "disconnect_success" => "Driver stripe account successfully disconnected from Paxifi platform.",
+
+        "disconnect_failed" => "Driver stripe account disconnection not success, please try it later."
     ),
 );
