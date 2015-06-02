@@ -89,10 +89,11 @@ class StripeController extends BaseApiController
 
                         \DB::commit();
 
-                        return $this->setStatusCode(200)->respond([
-                            'success' => true,
-                            'redirect_url' => $this->stripeRedirectUrl
-                        ]);
+                        return View::make('appRedirect');
+//                        return $this->setStatusCode(200)->respond([
+//                            'success' => true,
+//                            'redirect_url' => $this->stripeRedirectUrl
+//                        ]);
 
                     }
                 }

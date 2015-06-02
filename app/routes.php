@@ -23,7 +23,3 @@ Route::get('status', function() {
         'time' => \Carbon\Carbon::now()->toISO8601String(),
     ]);
 });
-
-Route::get('test', function() {
-    return View::make('appRedirect');
-});
