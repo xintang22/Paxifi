@@ -47,14 +47,10 @@ class PaymentController extends ApiController
 
             $type = \Input::get('type', 'cash');
 
-            /**
-             * ! Todo:: Optimize the payment creation logic.
-             *
-             * Check if the order payment is exist;
-             * If exist and has the same payment type, return the payment.
-             * If don't have the same payment type, delete the old payment.
-             * Create a new payment for this order.
-             */
+            // Check if payment method is available by the driver.
+            if (!$order->OrderDriver()->paymentMethodAvailable($type)) {
+                return $this->setStatusCode(500)->respondWithError($this->translator->trans('responses.stripe.not_available'));
+            }
 
             if ($order->payment) {
                 if ($order->payment->status) {
