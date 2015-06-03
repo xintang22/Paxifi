@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Illuminate\Support\Collection;
 use Paxifi\Notification\Repository\EloquentNotificationTypeRepository;
+use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository;
 use Paxifi\Settings\Repository\EloquentCountryRepository;
 use Paxifi\Support\Contracts\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;
@@ -428,7 +429,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
                   // ->where('subscriptions.status', '<>', 'past_due');
         });
 
-        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status', 'drivers.stripe_connected'));
+        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status'));
 
         if (!$models->isEmpty()) return $models;
 
@@ -511,6 +512,16 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
      */
     public function getStickerPrice() {
         return EloquentCountryRepository::where('iso', '=', $this->getCountry())->first()->sticker_price;
+    }
+
+    public function paymentMethodAvailable($payment_method) {
+        switch($payment_method) {
+            case 'cash':
+                return true;
+                break;
+            default:
+                return $this->{$payment_method} ? true : false;
+        }
     }
 
     /**

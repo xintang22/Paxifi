@@ -49,7 +49,7 @@ class PaymentController extends ApiController
 
             // Check if payment method is available by the driver.
             if (!$order->OrderDriver()->paymentMethodAvailable($type)) {
-                return $this->setStatusCode(500)->respondWithError($this->translator->trans('responses.stripe.not_available'));
+                return $this->setStatusCode(406)->respondWithError($this->translator->trans('responses.stripe.not_available'));
             }
 
             if ($order->payment) {
