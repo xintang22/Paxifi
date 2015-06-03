@@ -3,23 +3,24 @@
 namespace Paxifi\Stripe\Controller;
 
 // Exceptions
+use Paxifi\OnlinePayment\Controller\OnlinePaymentController;
 use Paxifi\Payment\Exception\PaymentNotFoundException;
 use Paxifi\Payment\Exception\PaymentNotSuccessException;
 use Paxifi\Payment\Exception\PaymentNotValidException;
+use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository;
 use Paxifi\Store\Exception\StoreNotFoundException;
 
 use Paxifi\Payment\Repository\EloquentPaymentRepository;
 use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Stripe\Repository\EloquentStripeRepository;
-use Paxifi\Support\Controller\BaseApiController;
 use Stripe\Charge;
 use Stripe\HttpClient\CurlClient;
 use Stripe\Stripe;
 use StripeTransformer;
 use Input, Config;
 
-class StripeController extends BaseApiController
+class StripeController extends OnlinePaymentController
 {
     private $stripeClient;
 
@@ -34,6 +35,7 @@ class StripeController extends BaseApiController
     function __construct()
     {
         parent::__construct();
+
         $this->stripeClient = CurlClient::instance();
 
         $this->applicationFeeRate = !!Config::get('stripe.application.fee.rate') ? (int)Config::get('stripe.application.fee.rate') : 0;
@@ -81,12 +83,11 @@ class StripeController extends BaseApiController
 
                     if ($stripe = EloquentStripeRepository::create($data)) {
 
-                        $driver->connectStripe();
+                        $driver->available_payment_methods()->attach(EloquentPaymentMethodsRepository::getMethodIdByName('stripe'));
 
                         \DB::commit();
 
                         return $this->setStatusCode(200)->respond($data);
-
                     }
                 }
             } else {
@@ -189,13 +190,13 @@ class StripeController extends BaseApiController
 
                 $driver->stripe->delete();
 
-                $driver->disconnectStripe();
+                $driver->available_payment_methods()->detach(EloquentPaymentMethodsRepository::getMethodIdByName('stripe'));
 
                 \DB::commit();
 
-                return $this->setStatusCode(204)->respond($this->translator->trans('responses.stripe.connect_success'));
-            } else {
                 return $this->setStatusCode(204)->respond($this->translator->trans('responses.stripe.disconnect_success'));
+            } else {
+                return $this->setStatusCode($response[1])->respond($this->translator->trans('responses.stripe.disconnect_failed'));
             }
         } catch (\Exception $e) {
             $this->errorInternalError();
@@ -229,5 +230,10 @@ class StripeController extends BaseApiController
         (strtolower($charge['currency']) == strtolower($driver->currency)) &&
         (round($charge['amount']) == (round($payment->order->total_sales * 100))) &&
         ($charge['destination'] == $driver->stripe->stripe_user_id);
+    }
+
+    public function refund()
+    {
+        // TODO: Implement refund() method.
     }
 }

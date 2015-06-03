@@ -1,7 +1,6 @@
 <?php namespace Paxifi\Support\Controller;
 
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Config;
 use Paxifi\Store\Repository\Driver\DriverRepository;
 
 class BaseApiController extends Controller
