@@ -136,6 +136,9 @@ class StripeController extends OnlinePaymentController
 
                             \Event::fire('paxifi.payment.confirmed', [$payment]);
 
+                            $payment->type = "sales";
+                            \Event::fire('paxifi.notifications.sales', [$payment]);
+
                             \DB::commit();
 
                             return $this->setStatusCode(200)->respond(["success" => true]);

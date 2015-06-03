@@ -13,7 +13,7 @@ class PaymentRepositoryObserve {
     {
         $payment_method = PaymentMethods::find($payment->payment_method_id);
 
-        if ($payment_method->name != 'paypal') {
+        if ($payment_method->name == 'cash') {
 
             $payment->type = "sales";
 
