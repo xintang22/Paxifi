@@ -134,6 +134,17 @@ class NotificationTransformer extends TransformerAbstract
 
                 break;
 
+            case 'stripe':
+                $translation = "notifications.sales.stripe.completed";
+                
+                $sales = [
+                    'message' => $this->translator->trans($translation , ['currency' => $notification->driver->currency, 'amount' => $payment->order->total_sales]),
+                    'type' => 'sales',
+                    'status' => $payment_status,
+                    'payment' => $payment
+                ];
+
+                break;
             default:
                 if ($payment_status == 0) {
                     $status = 'waiting';
