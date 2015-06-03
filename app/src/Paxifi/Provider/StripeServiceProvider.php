@@ -47,5 +47,7 @@ class StripeServiceProvider extends ServiceProvider {
         $this->app['config']->set('stripe.live.mode', getenv('STRIPE_LIVE_MODE'));
 
         $this->app['config']->set('stripe.application.fee.rate', getenv('STRIPE_APPLICATION_FEE_RATE'));
+
+        $this->app['config']->set('stripe.redirect.url', getenv('STRIPE_REDIRECT_URL'));
     }
 }

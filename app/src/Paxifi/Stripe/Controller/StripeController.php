@@ -30,6 +30,8 @@ class StripeController extends OnlinePaymentController
 
     private $stripeLiveMode;
 
+    private $stripeRedirectUrl;
+
     protected $applicationFeeRate;
 
     function __construct()
@@ -48,6 +50,8 @@ class StripeController extends OnlinePaymentController
 
         $this->stripeClientId = Config::get('stripe.client.id');
 
+        $this->stripeRedirectUrl = Config::get('stripe.redirect.url');
+
         Stripe::setApiKey($this->stripeSecretKey);
     }
 
@@ -64,9 +68,9 @@ class StripeController extends OnlinePaymentController
             $authUrl = $this->stripeConnectApi . 'oauth/token';
 
             $params = [
-                'client_secret' => $this->stripeSecretKey,
-                'code' => Input::get('code'),
-                'grant_type' => 'authorization_code'
+            'client_secret' => $this->stripeSecretKey,
+            'code' => Input::get('code'),
+            'grant_type' => 'authorization_code'
             ];
 
             $response = $this->stripeClient->request('POST', $authUrl, [], $params, false);
@@ -87,7 +91,12 @@ class StripeController extends OnlinePaymentController
 
                         \DB::commit();
 
-                        return $this->setStatusCode(200)->respond($data);
+                        return View::make('appRedirect');
+//                        return $this->setStatusCode(200)->respond([
+//                            'success' => true,
+//                            'redirect_url' => $this->stripeRedirectUrl
+//                        ]);
+
                     }
                 }
             } else {
@@ -114,10 +123,10 @@ class StripeController extends OnlinePaymentController
             if ($driver_id && $driver = EloquentDriverRepository::find($driver_id)) {
 
                 $stripeCharge = [
-                    'amount' => Input::get('amount'),
-                    'currency' => Input::get('currency'),
-                    'source' => Input::get('id'),
-                    'destination' => $driver->stripe->stripe_user_id,
+                'amount' => Input::get('amount'),
+                'currency' => Input::get('currency'),
+                'source' => Input::get('id'),
+                'destination' => $driver->stripe->stripe_user_id
                 ];
 
                 if (!$payment = EloquentPaymentRepository::find(Input::get('payment_id'))) {
@@ -170,7 +179,8 @@ class StripeController extends OnlinePaymentController
      *
      * @param null $driver
      */
-    public function deauthorize($driver = null) {
+    public function deauthorize($driver = null)
+    {
 
         try {
             \DB::beginTransaction();
@@ -182,9 +192,9 @@ class StripeController extends OnlinePaymentController
             $deauthUrl = $this->stripeConnectApi . 'oauth/deauthorize';
 
             $params = [
-                'client_secret' => $this->stripeSecretKey,
-                'client_id' => $this->stripeClientId,
-                'stripe_user_id' => $driver->stripe->stripe_user_id
+            'client_secret' => $this->stripeSecretKey,
+            'client_id' => $this->stripeClientId,
+            'stripe_user_id' => $driver->stripe->stripe_user_id
             ];
 
             $response = $this->stripeClient->request('POST', $deauthUrl, [], $params, false);
