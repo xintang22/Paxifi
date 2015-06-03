@@ -178,6 +178,7 @@ class StripeController extends OnlinePaymentController
      * Disconnect driver
      *
      * @param null $driver
+     * @return \Illuminate\Http\JsonResponse
      */
     public function deauthorize($driver = null)
     {
@@ -212,7 +213,7 @@ class StripeController extends OnlinePaymentController
                 return $this->setStatusCode($response[1])->respond($this->translator->trans('responses.stripe.disconnect_failed'));
             }
         } catch (\Exception $e) {
-            $this->errorInternalError();
+            return $this->errorInternalError();
         }
     }
 
