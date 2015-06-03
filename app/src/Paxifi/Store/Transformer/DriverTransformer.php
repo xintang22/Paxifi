@@ -27,15 +27,13 @@ class DriverTransformer extends TransformerAbstract
                 'notify_billing' => (boolean)$driver->notify_billing,
                 'notify_others' => (boolean)$driver->notify_others,
             ),
-            // 'paypal_account' => !empty($driver->paypal_account) ? $driver->paypal_account : "",
-            // 'paypal_authorized' => (boolean)$driver->paypal_refresh_token ? true: false,
             'thumbs_up' => $driver->thumbs_up,
             'thumbs_down' => $driver->thumbs_down,
             'suspended' => $driver->suspended,
             'status' => $driver->status,
             'created_at' => $driver->created_at,
             'comments_count' => $driver->comments()->get()->count(),
-            'stripe_connected' => $this->transformStripe($driver),
+            'available_payment_methods' => $this->transformPaymentMethods($driver),
         );
 
         return $transformer;
@@ -79,5 +77,25 @@ class DriverTransformer extends TransformerAbstract
      */
     protected function transformStripe($driver) {
         return $driver->stripe_connected ? $driver->stripe()->first() : false;
+    }
+
+    /**
+     * Transform payment methods.
+     *
+     * @param $driver
+     * @return array
+     */
+    protected function transformPaymentMethods($driver) {
+        $methods = $driver->available_payment_methods()->get();
+
+        $details = [
+            "cash" => true
+        ];
+
+        foreach($methods as $key => $method) {
+            $details[$method->name] = $driver->{$method->name}->first()->toArray();
+        }
+
+        return $details;
     }
 }

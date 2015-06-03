@@ -138,6 +138,12 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         return $query->where('comment', '<>', "")->orderBy('created_at', 'desc');
     }
 
+    public function available_payment_methods() {
+
+        return $this->belongsToMany('Paxifi\Payment\Repository\EloquentPaymentMethodsRepository', 'driver_payment_methods', 'driver_id', 'payment_method_id')->withTimestamps();
+
+    }
+
     /**
      * Get driver notifications with conditions
      *
@@ -508,21 +514,11 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
-     * Enable stripe connection
+     * Driver get stripe information
      *
-     * @return $this
+     * @return mixed
      */
-    public function connectStripe() {
-        $this->stripe_connected = true;
-        $this->save();
-
-        return $this;
-    }
-
-    public function disconnectStripe() {
-        $this->stripe_connected = false;
-        $this->save();
-
-        return $this;
+    public function getStripe() {
+        return $this->stripe;
     }
 }
