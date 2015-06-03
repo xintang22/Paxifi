@@ -15,6 +15,9 @@ return array(
         ],
         "paypal" => [
             'completed' => 'You received an amount of :currency :amount via PayPal.',
+        ],
+        "stripe" => [
+            'completed' => 'You received an amount of :currency :amount via Stripe.',
         ]
     ],
     'emails' => 'You have a new email, please check your email inbox.',

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Illuminate\Support\Collection;
 use Paxifi\Notification\Repository\EloquentNotificationTypeRepository;
+use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository;
 use Paxifi\Settings\Repository\EloquentCountryRepository;
 use Paxifi\Support\Contracts\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;
@@ -136,6 +137,12 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         $query = $this->feedbacks();
 
         return $query->where('comment', '<>', "")->orderBy('created_at', 'desc');
+    }
+
+    public function available_payment_methods() {
+
+        return $this->belongsToMany('Paxifi\Payment\Repository\EloquentPaymentMethodsRepository', 'driver_payment_methods', 'driver_id', 'payment_method_id')->withTimestamps();
+
     }
 
     /**
@@ -422,7 +429,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
                   // ->where('subscriptions.status', '<>', 'past_due');
         });
 
-        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status', 'drivers.stripe_connected'));
+        $models = $query->get(array('drivers.id', 'name', 'seller_id', 'email', 'photo', 'address', 'currency', 'thumbs_up', 'thumbs_down', 'tax_enabled', 'tax_included_in_price', 'tax_global_amount', 'drivers.status'));
 
         if (!$models->isEmpty()) return $models;
 
@@ -507,22 +514,22 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         return EloquentCountryRepository::where('iso', '=', $this->getCountry())->first()->sticker_price;
     }
 
-    /**
-     * Enable stripe connection
-     *
-     * @return $this
-     */
-    public function connectStripe() {
-        $this->stripe_connected = true;
-        $this->save();
-
-        return $this;
+    public function paymentMethodAvailable($payment_method) {
+        switch($payment_method) {
+            case 'cash':
+                return true;
+                break;
+            default:
+                return $this->{$payment_method} ? true : false;
+        }
     }
 
-    public function disconnectStripe() {
-        $this->stripe_connected = false;
-        $this->save();
-
-        return $this;
+    /**
+     * Driver get stripe information
+     *
+     * @return mixed
+     */
+    public function getStripe() {
+        return $this->stripe;
     }
 }
