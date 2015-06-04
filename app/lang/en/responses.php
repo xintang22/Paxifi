@@ -60,6 +60,9 @@ return array(
         "disconnect_failed" => "Driver stripe account disconnection failed, please try it later.",
 
         "not_available" => "Stripe payment is not available in this store, please try it later."
+    ),
 
+    "driver" => array(
+        "not_found" => "The driver does not exist"
     ),
 );

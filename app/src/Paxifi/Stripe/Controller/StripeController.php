@@ -73,16 +73,20 @@ class StripeController extends OnlinePaymentController
             'grant_type' => 'authorization_code'
             ];
 
-            $response = $this->stripeClient->request('POST', $authUrl, [], $params, false);
+            $driver_id = Input::get('state');
 
-            if ($response[1] == '200') {
+            if ($driver = DriverRepository::findOrFail($driver_id)) {
 
-                $driver_id = Input::get('state');
+                if ($driver->hasConnectStripe()) {
+                    return View::make('appRedirect');
+                }
 
-                $data = json_decode($response[0], true);
+                $response = $this->stripeClient->request('POST', $authUrl, [], $params, false);
 
-                if ($driver = DriverRepository::findOrFail($driver_id)) {
+                if ($response[1] == '200') {
 
+                    $data = json_decode($response[0], true);
+                    
                     $data['driver_id'] = $driver->id;
 
                     if ($stripe = EloquentStripeRepository::create($data)) {
@@ -92,16 +96,15 @@ class StripeController extends OnlinePaymentController
                         \DB::commit();
 
                         return View::make('appRedirect');
-//                        return $this->setStatusCode(200)->respond([
-//                            'success' => true,
-//                            'redirect_url' => $this->stripeRedirectUrl
-//                        ]);
-
                     }
+                } else {
+                    return $this->setStatusCode($response[1])->respondWithError(json_decode($response[0])->error);
                 }
             } else {
-                return $this->setStatusCode($response[1])->respondWithError(json_decode($response[0])->error);
+                throw new StoreNotFoundException();
             }
+        } catch(StoreNotFoundException $e) {
+          return $this->setStatusCode(404)->respondWithError($this->translator->trans('responses.driver.not_found'));
         } catch (\Exception $e) {
             return $this->errorInternalError($e->getMessage());
         }

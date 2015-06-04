@@ -532,4 +532,8 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public function getStripe() {
         return $this->stripe;
     }
+
+    public function hasConnectStripe() {
+        return $this->getStripe() ? true : false;
+    }
 }
