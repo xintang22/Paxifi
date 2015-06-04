@@ -18,7 +18,7 @@ use Stripe\Charge;
 use Stripe\HttpClient\CurlClient;
 use Stripe\Stripe;
 use StripeTransformer;
-use Input, Config;
+use Input, Config, View;
 
 class StripeController extends OnlinePaymentController
 {
