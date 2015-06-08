@@ -24,6 +24,7 @@ class StripeServiceProvider extends ServiceProvider {
         $this->app['router']->group(['before' => 'oauth'], function () {
             $this->app['router']->group(['before' => 'oauth-owner:user'], function () {
                 $this->app['router']->post('me/stripe/disconnect', 'Paxifi\Stripe\Controller\StripeController@deauthorize');
+                $this->app['router']->post('me/stripe/refund', 'Paxifi\Stripe\Controller\StripeController@refund');
             });
         });
 
