@@ -3,16 +3,20 @@
 namespace Paxifi\Stripe\Controller;
 
 // Exceptions
+use Illuminate\Support\Facades\DB;
 use Paxifi\OnlinePayment\Controller\OnlinePaymentController;
 use Paxifi\Payment\Exception\PaymentNotFoundException;
 use Paxifi\Payment\Exception\PaymentNotSuccessException;
 use Paxifi\Payment\Exception\PaymentNotValidException;
 use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository;
+use Paxifi\Payment\Transformer\PaymentTransformer;
 use Paxifi\Store\Exception\StoreNotFoundException;
 
 use Paxifi\Payment\Repository\EloquentPaymentRepository;
 use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
+use Paxifi\Stripe\Exception\RefundException;
+use Paxifi\Stripe\Exception\RefundNotValidException;
 use Paxifi\Stripe\Repository\EloquentStripeRepository;
 use Stripe\Charge;
 use Stripe\HttpClient\CurlClient;
@@ -86,7 +90,7 @@ class StripeController extends OnlinePaymentController
                 if ($response[1] == '200') {
 
                     $data = json_decode($response[0], true);
-                    
+
                     $data['driver_id'] = $driver->id;
 
                     if ($stripe = EloquentStripeRepository::create($data)) {
@@ -103,8 +107,8 @@ class StripeController extends OnlinePaymentController
             } else {
                 throw new StoreNotFoundException();
             }
-        } catch(StoreNotFoundException $e) {
-          return $this->setStatusCode(404)->respondWithError($this->translator->trans('responses.driver.not_found'));
+        } catch (StoreNotFoundException $e) {
+            return $this->setStatusCode(404)->respondWithError($this->translator->trans('responses.driver.not_found'));
         } catch (\Exception $e) {
             return $this->errorInternalError($e->getMessage());
         }
@@ -143,6 +147,7 @@ class StripeController extends OnlinePaymentController
 
                         // Validate Charge
                         if ($this->validateCharge($charge, $payment, $driver)) {
+                            $payment->transaction_details = $charge;
                             // Update payment status.
                             $payment->success();
 
@@ -249,8 +254,61 @@ class StripeController extends OnlinePaymentController
         ($charge['destination'] == $driver->stripe->stripe_user_id);
     }
 
-    public function refund()
+    public function refund($driver = null)
     {
-        // TODO: Implement refund() method.
+        try {
+            DB::beginTransaction();
+
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
+            $paymentId = Input::get('payment_id');
+
+            if ($payment = EloquentPaymentRepository::find($paymentId)) {
+
+                if ($payment->refunded) {
+                    return $this->setStatusCode(406)->respondWithError($this->translator->trans('responses.stripe.refund_not_available'));
+                }
+
+                if ($payment->status == 1 && $payment->order->OrderDriver()->id == $driver->id) {
+                    $details = $payment->transaction_details;
+
+                    $ch = Charge::retrieve($details['id']);
+
+                    if ($refund = $ch->refunds->create(array('amount' => round($payment->order->total_sales * 100), 'reverse_transfer' => true))->__toArray()) {
+
+                        if ($this->validateRefund($refund, $payment, $driver)) {
+
+                            $payment->refunded();
+
+                            DB::commit();
+
+                            return $this->setStatusCode(200)->respond(with(new PaymentTransformer())->transform($payment));
+                        } else {
+                            throw new RefundNotValidException();
+                        }
+                    }
+                } else {
+                    throw new RefundException();
+                }
+            } else {
+                throw new PaymentNotFoundException();
+            }
+        } catch (RefundException $e) {
+            return $this->setStatusCode(406)->respondWithError($this->translator->trans('responses.stripe.refund_failed'));
+        } catch (RefundNotValidException $e) {
+            return $this->setStatusCode(406)->respondWithError($this->translator->trans('responses.stripe.refund_failed'));
+        } catch (\Exception $e) {
+            return $this->setStatusCode(500)->respondWithError($e->getMessage());
+        }
+
+    }
+
+    public function validateRefund($refund, $payment, $driver)
+    {
+        return ($refund['object'] == 'refund') &&
+        (strtolower($refund['currency']) == strtolower($driver->currency)) &&
+        (round($refund['amount']) == (round($payment->order->total_sales * 100)));
     }
 }
