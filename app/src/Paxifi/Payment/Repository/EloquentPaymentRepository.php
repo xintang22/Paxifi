@@ -9,7 +9,7 @@ class EloquentPaymentRepository extends BaseModel {
 
     protected $table = 'payments';
 
-    protected $fillable = ['order_id', 'payment_method_id', 'status', 'details', 'paypal_transaction_id', 'paypal_transaction_status', 'ipn'];
+    protected $fillable = ['order_id', 'payment_method_id', 'status', 'details', 'paypal_transaction_id', 'paypal_transaction_status', 'ipn', 'transaction_details', 'refunded'];
 
     /**
      * The attributes that should be mutated to dates.
@@ -73,6 +73,30 @@ class EloquentPaymentRepository extends BaseModel {
     }
 
     /**
+     * Attributes
+     *
+     * Serialize the ipn
+     *
+     * @param $value
+     */
+    public function setTransactionDetailsAttribute($value)
+    {
+        $this->attributes['transaction_details'] = serialize($value);
+    }
+
+    /**
+     * Returns un-serialized ipn.
+     *
+     * @param $value
+     *
+     * @return mixed
+     */
+    public function getTransactionDetailsAttribute($value)
+    {
+        return unserialize($value);
+    }
+
+    /**
      * @param $order
      *
      * @return mixed
@@ -96,6 +120,11 @@ class EloquentPaymentRepository extends BaseModel {
 
     public function success() {
         $this->status = 1;
+        $this->save();
+    }
+
+    public function refunded() {
+        $this->refunded = 1;
         $this->save();
     }
 }
