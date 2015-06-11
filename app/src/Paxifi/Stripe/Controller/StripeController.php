@@ -305,6 +305,14 @@ class StripeController extends OnlinePaymentController
 
     }
 
+    /**
+     * Validate refund.
+     *
+     * @param $refund
+     * @param $payment
+     * @param $driver
+     * @return bool
+     */
     public function validateRefund($refund, $payment, $driver)
     {
         return ($refund['object'] == 'refund') &&
