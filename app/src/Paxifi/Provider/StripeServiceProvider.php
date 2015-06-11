@@ -31,6 +31,8 @@ class StripeServiceProvider extends ServiceProvider {
         $this->app['router']->get('stripe/connect', 'Paxifi\Stripe\Controller\StripeController@authorize');
 
         $this->app['router']->post('stripe/charge', 'Paxifi\Stripe\Controller\StripeController@charge');
+
+        $this->app['router']->get('stripe/redirect', 'Paxifi\Stripe\Controller\StripeController@redirect');
     }
 
     /**

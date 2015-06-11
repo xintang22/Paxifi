@@ -82,7 +82,7 @@ class StripeController extends OnlinePaymentController
             if ($driver = DriverRepository::findOrFail($driver_id)) {
 
                 if ($driver->hasConnectStripe()) {
-                    return View::make('appRedirect');
+                    return $this->setStatusCode(200)->respond(["success" => true, "message" => "Stripe already connected."]);
                 }
 
                 $response = $this->stripeClient->request('POST', $authUrl, [], $params, false);
@@ -99,7 +99,7 @@ class StripeController extends OnlinePaymentController
 
                         \DB::commit();
 
-                        return View::make('appRedirect');
+                        return $this->setStatusCode(200)->respond(["success" => true, "message" => "Stripe connect success"]);
                     }
                 } else {
                     return $this->setStatusCode($response[1])->respondWithError(json_decode($response[0])->error);
@@ -113,6 +113,15 @@ class StripeController extends OnlinePaymentController
             return $this->errorInternalError($e->getMessage());
         }
 
+    }
+
+    function redirect() {
+        $params = [
+        'code' => Input::get('code'),
+        'grant_type' => 'authorization_code'
+        ];
+
+        return View::make('appRedirect')->with($params);
     }
 
     /**
