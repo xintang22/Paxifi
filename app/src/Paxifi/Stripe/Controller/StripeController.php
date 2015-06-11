@@ -64,49 +64,48 @@ class StripeController extends OnlinePaymentController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    function authorize()
+    function authorize($driver = null)
     {
         try {
             \DB::beginTransaction();
 
+            if (is_null($driver)) {
+                $driver = $this->getAuthenticatedDriver();
+            }
+
             $authUrl = $this->stripeConnectApi . 'oauth/token';
 
             $params = [
-            'client_secret' => $this->stripeSecretKey,
-            'code' => Input::get('code'),
-            'grant_type' => 'authorization_code'
+                'client_secret' => $this->stripeSecretKey,
+                'code' => Input::get('code'),
+                'grant_type' => 'authorization_code'
             ];
 
-            $driver_id = Input::get('state');
 
-            if ($driver = DriverRepository::findOrFail($driver_id)) {
+            if ($driver->hasConnectStripe()) {
+                return $this->setStatusCode(200)->respond(["success" => true, "message" => "Stripe already connected."]);
+            }
 
-                if ($driver->hasConnectStripe()) {
-                    return $this->setStatusCode(200)->respond(["success" => true, "message" => "Stripe already connected."]);
-                }
+            $response = $this->stripeClient->request('POST', $authUrl, [], $params, false);
 
-                $response = $this->stripeClient->request('POST', $authUrl, [], $params, false);
+            if ($response[1] == '200') {
 
-                if ($response[1] == '200') {
+                $data = json_decode($response[0], true);
 
-                    $data = json_decode($response[0], true);
+                $data['driver_id'] = $driver->id;
 
-                    $data['driver_id'] = $driver->id;
+                if ($stripe = EloquentStripeRepository::create($data)) {
 
-                    if ($stripe = EloquentStripeRepository::create($data)) {
+                    $driver->available_payment_methods()->attach(EloquentPaymentMethodsRepository::getMethodIdByName('stripe'));
 
-                        $driver->available_payment_methods()->attach(EloquentPaymentMethodsRepository::getMethodIdByName('stripe'));
+                    \DB::commit();
 
-                        \DB::commit();
-
-                        return $this->setStatusCode(200)->respond(["success" => true, "message" => "Stripe connect success"]);
-                    }
-                } else {
-                    return $this->setStatusCode($response[1])->respondWithError(json_decode($response[0])->error);
+                    return $this->setStatusCode(200)->respond(["success" => true, "message" => "Stripe connect success"]);
                 }
             } else {
-                throw new StoreNotFoundException();
+                return $this->setStatusCode($response[1])->respondWithError(json_decode($response[0])->error);
             }
+
         } catch (StoreNotFoundException $e) {
             return $this->setStatusCode(404)->respondWithError($this->translator->trans('responses.driver.not_found'));
         } catch (\Exception $e) {
