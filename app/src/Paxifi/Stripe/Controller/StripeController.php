@@ -62,6 +62,7 @@ class StripeController extends OnlinePaymentController
     /**
      * Authorize the driver stripe account to connect to Paxifi Platform.
      *
+     * @param null $driver
      * @return \Illuminate\Http\JsonResponse
      */
     function authorize($driver = null)
