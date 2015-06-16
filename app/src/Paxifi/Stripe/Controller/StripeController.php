@@ -293,7 +293,7 @@ class StripeController extends OnlinePaymentController
 
                             DB::commit();
 
-                            return $this->setStatusCode(204)->respond(["success" => "Payment refund success."]);
+                            return $this->setStatusCode(200)->respond($this->translator->trans('responses.stripe.refund_success'));
                         } else {
                             throw new RefundNotValidException();
                         }

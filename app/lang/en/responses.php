@@ -41,7 +41,7 @@ return array(
     ),
 
     "invoice" => array(
-        "invoice_not_available" => "The driver has not confirm your cash payment yet. Please kindly remind him/her."
+        "invoice_not_available" => "The driver has not confirmed your cash payment yet. Please kindly remind him/her."
     ),
 
     "payment" => array(
@@ -63,7 +63,9 @@ return array(
 
         "refund_failed" => "Stripe refund is not success, please try it later.",
 
-        "refund_not_available" => "The payment has already refunded."
+        "refund_not_available" => "The payment has already refunded.",
+
+        "refund_success" => "Payment has refunded successfully"
     ),
 
     "driver" => array(
