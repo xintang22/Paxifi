@@ -71,4 +71,11 @@ return array(
     "driver" => array(
         "not_found" => "The driver does not exist"
     ),
+
+    "errors" => array(
+        "device" => array(
+            "not_found" => "Device not found.",
+            "not_valid" => "Device register failed with not valid data"
+        )
+    )
 );

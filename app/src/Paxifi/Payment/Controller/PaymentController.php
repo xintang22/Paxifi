@@ -13,13 +13,13 @@ use Paxifi\Payment\Repository\Factory\PaymentInvoiceFactory;
 
 class PaymentController extends ApiController
 {
-     protected $flysystem;
+    protected $flysystem;
 
-     public function __construct(FlysystemManager $flysystem)
-     {
-         parent::__construct();
-         $this->flysystem = $flysystem;
-     }
+    public function __construct(FlysystemManager $flysystem)
+    {
+        parent::__construct();
+        $this->flysystem = $flysystem;
+    }
 
     /**
      * Get specific payment information.
@@ -28,7 +28,24 @@ class PaymentController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($payment) {
+    public function show($payment)
+    {
+        return $this->respondWithItem($payment);
+    }
+
+    /**
+     * Get driver payment with driver_id and payment_id
+     *
+     * @param null $driver
+     * @param $payment
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function meShow($driver = null, $payment) {
+
+        if (is_null($driver)) {
+            $driver = $this->getAuthenticatedDriver();
+        }
+
         return $this->respondWithItem($payment);
     }
 
@@ -136,7 +153,7 @@ class PaymentController extends ApiController
         } catch (ValidationException $e) {
             return $this->errorWrongArgs($e->getErrors());
         } catch (\Exception $e) {
-            return $this->errorInternalError();
+            return $this->errorInternalError($e->getMessage());
         }
     }
 
@@ -252,7 +269,7 @@ class PaymentController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function paypalPaymentConfirmation ($payment, $ipn)
+    public function paypalPaymentConfirmation($payment, $ipn)
     {
         try {
             \DB::beginTransaction();
@@ -281,7 +298,8 @@ class PaymentController extends ApiController
     /**
      * Build invoice event
      */
-    public function buildInvoice($payment) {
+    public function buildInvoice($payment)
+    {
         $invoiceFactory = new PaymentInvoiceFactory($payment->order, $this->getInvoiceContentTranslation());
 
         $invoiceFactory->build();
