@@ -182,6 +182,9 @@ class DriverServiceProvider extends ServiceProvider
                 $this->app['router']->get('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@show');
                 $this->app['router']->put('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@update');
                 $this->app['router']->delete('drivers/{driver}/subscriptions/{subscription}', 'Paxifi\Subscription\Controller\SubscriptionController@cancel');
+
+                // Payment
+                $this->app['router']->get('drivers/{driver}/payments/{payment}', 'Paxifi\Payment\Controller\PaymentController@meShow');
             });
 
             $this->app['router']->group(['before' => 'oauth-owner:user'], function () {
@@ -213,6 +216,9 @@ class DriverServiceProvider extends ServiceProvider
 
                 // taxes
                 $this->app['router']->get('me/taxes', 'Paxifi\Store\Controller\TaxController@index');
+
+                // registerDeviceToken
+                $this->app['router']->post('me/devices', 'Paxifi\PushNotifications\Controller\PushDeviceController@registerDeviceToken');
 
                 // Logout the driver
                 $this->app['router']->post('me/logout', 'Paxifi\Store\Controller\AuthController@logout');
