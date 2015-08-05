@@ -6,6 +6,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Paxifi\Paypal\Paypal;
 use Paxifi\Store\Repository\Driver\DriverRepository;
+use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Store\Repository\Driver\Factory\DriverLogoFactory;
 use Paxifi\Store\Repository\Driver\Validation\CreateDriverValidator;
 use Paxifi\Store\Repository\Driver\Validation\EmailValidation;
@@ -142,7 +143,7 @@ class DriverController extends ApiController
         } catch (\Exception $e) {
             return $this->errorWrongArgs($e->getMessage());
         }
-}
+    }
 
     /**
      * Display the specified driver.
@@ -482,7 +483,8 @@ class DriverController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function renewSubscription($driver = null) {
+    public function renewSubscription($driver = null)
+    {
         try {
             \DB::beginTransaction();
 
@@ -523,7 +525,8 @@ class DriverController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function cancelSubscription($driver = null) {
+    public function cancelSubscription($driver = null)
+    {
         try {
             \DB::beginTransaction();
 
@@ -534,7 +537,7 @@ class DriverController extends ApiController
             $subscription = $driver->subscription;
 
             // check if subscription is still usable.
-            if (in_array($subscription->status, ['canceled', 'past_due']) ) {
+            if (in_array($subscription->status, ['canceled', 'past_due'])) {
                 return $this->setStatusCode(406)->respondWithError('Account is already canceled subscription or expired.');
             }
 
@@ -555,7 +558,8 @@ class DriverController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function reactiveSubscription($driver = null) {
+    public function reactiveSubscription($driver = null)
+    {
         try {
             \DB::beginTransaction();
 
@@ -567,7 +571,7 @@ class DriverController extends ApiController
 
             if ($subscription->status == 'canceled') {
 
-                if (Carbon::now() <= $subscription->trial_end || Carbon::now() <= $subscription->current_period_end ) {
+                if (Carbon::now() <= $subscription->trial_end || Carbon::now() <= $subscription->current_period_end) {
                     $subscription->active();
 
                     \DB::commit();
