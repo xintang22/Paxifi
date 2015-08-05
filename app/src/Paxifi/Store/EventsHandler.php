@@ -23,5 +23,12 @@ class EventsHandler {
                 \Event::fire('paxifi.notifications.stock', [$product]);
             }
         });
+
+        // TODO:: fire event to publish notifications for payment confirmed.
+        $driver = $payment->order->products->first()->driver()->first();
+
+        $payment_method = $payment->payment_method()->first()->name;
+
+        \Event::fire('paxifi.push.notifications.payment.confirmed', ["driver" => $driver, "payment" => $payment, "payment_method" => $payment_method]);
     }
 } 

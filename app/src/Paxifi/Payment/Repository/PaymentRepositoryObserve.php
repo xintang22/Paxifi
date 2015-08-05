@@ -11,14 +11,18 @@ class PaymentRepositoryObserve {
      */
     public function created($payment)
     {
-        $payment_method = PaymentMethods::find($payment->payment_method_id);
+        $payment_method = PaymentMethods::find($payment->payment_method_id)->name;
 
-        if ($payment_method->name == 'cash') {
+        $driver = $payment->order->products->first()->driver()->first();
+
+        if ($payment_method == 'cash') {
 
             $payment->type = "sales";
 
             \Event::fire('paxifi.notifications.sales', [$payment]);
         }
+
+        \Event::fire('paxifi.push.notifications.payment.created', ["driver" => $driver, "payment" => $payment, "payment_method" => $payment_method]);
     }
 }
 
