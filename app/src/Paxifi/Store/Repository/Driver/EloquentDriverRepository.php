@@ -51,6 +51,15 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     }
 
     /**
+     * Driver - Devices need to push notifications.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function push_devices() {
+        return $this->hasMany('Paxifi\PushNotifications\Repository\PushDevice', 'driver_id', 'id');
+    }
+
+    /**
      * Driver - Subscription one to one relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
@@ -514,6 +523,12 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         return EloquentCountryRepository::where('iso', '=', $this->getCountry())->first()->sticker_price;
     }
 
+    /**
+     * Get driver available payment methods
+     *
+     * @param $payment_method
+     * @return bool
+     */
     public function paymentMethodAvailable($payment_method) {
         switch($payment_method) {
             case 'cash':
@@ -533,6 +548,9 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
         return $this->stripe;
     }
 
+    /**
+     * @return bool
+     */
     public function hasConnectStripe() {
         return $this->getStripe() ? true : false;
     }
