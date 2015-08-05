@@ -158,6 +158,7 @@ return array(
 		'Paxifi\Provider\PaypalServiceProvider',
 		'Paxifi\Provider\SettingsServiceProvider',
 		'Paxifi\Provider\PaxifiImageServiceProvider',
+        'Paxifi\PushNotifications\PushNotificationsServiceProvider'
 
 	),
 
