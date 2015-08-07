@@ -95,7 +95,7 @@ class NotificationTransformer extends TransformerAbstract
     {
         $stock = [];
 
-        $product = Product::find($notification->value);
+        $product = Product::withTrashed()->find($notification->value);
 
         if ($product->inventory > 0) {
             $stock['message'] = $this->translator->trans('notifications.stock_almost_reminder', ['product_name' => $product->name]);
