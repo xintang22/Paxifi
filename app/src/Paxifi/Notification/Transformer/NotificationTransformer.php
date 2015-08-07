@@ -115,7 +115,7 @@ class NotificationTransformer extends TransformerAbstract
      */
     public function transformSales($notification)
     {
-        $payment = Payment::find($notification->value);
+        $payment = Payment::withTrashed()->find($notification->value);
         $payment_status = strtolower($payment->status);
 
         // get the payment type.
