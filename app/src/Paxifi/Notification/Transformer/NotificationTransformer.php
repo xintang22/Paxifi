@@ -168,6 +168,8 @@ class NotificationTransformer extends TransformerAbstract
                 ];
         }
 
+        $sales['payment_method_name'] = $payment->payment_method()->first()->name;
+
         return $sales;
     }
 

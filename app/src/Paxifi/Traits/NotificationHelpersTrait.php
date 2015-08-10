@@ -1,6 +1,7 @@
 <?php namespace Paxifi\Traits;
 
 use Config, App;
+use Log;
 
 trait NotificationHelpersTrait {
 
@@ -31,6 +32,7 @@ trait NotificationHelpersTrait {
 
         if (!empty($devices['ios'])) {
 //            $pusher->pushApns($devices['ios'], trans('messages.push_notifications.' . $message, $parameters, 'messages', $account->language));
+            Log::info('Pushed ios devices', ['devices' => $devices['ios']]);
             $pusher->pushApns($devices['ios'], trans('messages.push_notifications.' . $message, $parameters), $options);
         }
 
