@@ -17,6 +17,9 @@ class PaymentTransformer extends TransformerAbstract
     {
         return [
             'id' => $payment->id,
+            'invoice' => $payment->invoice,
+            'invoice_email' => !is_null($payment->invoice_email) ? $payment->invoice_email : "",
+            'item_received' => !is_null($payment->item_received) ? $payment->item_received : false,
             'total_items' => $payment->order->total_items,
             'total_costs' => $payment->order->total_costs,
             'total_sales' => $payment->order->total_sales,

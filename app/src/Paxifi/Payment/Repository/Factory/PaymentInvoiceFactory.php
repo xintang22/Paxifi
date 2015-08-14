@@ -76,10 +76,13 @@ class PaymentInvoiceFactory extends DriverLogoFactory
     /**
      * @var string
      */
-    protected $paxifiLogoName = "logo.png";
+    protected $paxifiLogoName = "logo.jpg";
 
     /**
      * The construct of invoice pdf factory
+     *
+     * @param EloquentOrderRepository $order
+     * @param $translation
      */
     public function __construct(EloquentOrderRepository $order, $translation)
     {

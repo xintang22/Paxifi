@@ -1,25 +1,17 @@
 <?php namespace Paxifi\Payment\Controller;
 
-use GrahamCampbell\Flysystem\FlysystemManager;
+use Paxifi\Payment\Exception\PaymentNotFoundException;
 use Paxifi\Payment\Exception\PaymentNotMatchException;
 use Paxifi\Payment\Repository\PaymentRepository as Payment;
 use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository as PaymentMethods;
 use Paxifi\Payment\Repository\Validation\UpdatePaymentValidator;
 use Paxifi\Payment\Transformer\PaymentTransformer;
-use Paxifi\Store\Repository\Product\EloquentProductRepository;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
-use Paxifi\Payment\Repository\Factory\PaymentInvoiceFactory;
 
 class PaymentController extends ApiController
 {
-    protected $flysystem;
-
-    public function __construct(FlysystemManager $flysystem)
-    {
-        parent::__construct();
-        $this->flysystem = $flysystem;
-    }
+    protected $queue;
 
     /**
      * Get specific payment information.
@@ -34,13 +26,37 @@ class PaymentController extends ApiController
     }
 
     /**
+     * @param $payment
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function received($payment)
+    {
+        try {
+            \DB::beginTransaction();
+
+            if ($payment) {
+                $payment->received();
+
+                return $this->respondWithItem($payment);
+            } else {
+                throw new PaymentNotFoundException();
+            }
+        } catch(PaymentNotFoundException $e) {
+//            return $this->respond()
+        } catch (\Exception $e) {
+            return $this->errorInternalError();
+        }
+    }
+
+    /**
      * Get driver payment with driver_id and payment_id
      *
      * @param null $driver
      * @param $payment
      * @return \Illuminate\Http\JsonResponse
      */
-    public function meShow($driver = null, $payment) {
+    public function meShow($driver = null, $payment)
+    {
 
         if (is_null($driver)) {
             $driver = $this->getAuthenticatedDriver();
@@ -62,10 +78,11 @@ class PaymentController extends ApiController
         try {
             \DB::beginTransaction();
 
-            $type = \Input::get('type', 'cash');
+            $data = \Input::get('data');
+
 
             // Check if payment method is available by the driver.
-            if (!$order->OrderDriver()->paymentMethodAvailable($type)) {
+            if (!$order->OrderDriver()->paymentMethodAvailable($data['type'])) {
                 return $this->setStatusCode(406)->respondWithError($this->translator->trans('responses.stripe.not_available'));
             }
 
@@ -73,7 +90,7 @@ class PaymentController extends ApiController
                 if ($order->payment->status) {
                     return $this->setStatusCode(200)->respondWithItem($order->payment);
                 } else {
-                    if ($order->payment->payment_method()->get()->first()->name == $type) {
+                    if ($order->payment->payment_method()->get()->first()->name == $data['type']) {
                         return $this->setStatusCode(200)->respondWithItem($order->payment);
                     } else {
                         $order->payment->delete();
@@ -84,11 +101,7 @@ class PaymentController extends ApiController
                 }
             }
 
-            $newPayment = [
-                'payment_method_id' => PaymentMethods::getMethodIdByName($type),
-                'order_id' => $order->id,
-                'details' => $this->translator->trans("payments.$type.create")
-            ];
+            $newPayment = $this->getPaymentData($data);
 
             if ($payment = Payment::create($newPayment)) {
 
@@ -105,7 +118,7 @@ class PaymentController extends ApiController
 
         } catch (\Exception $e) {
 
-            return $this->errorInternalError();
+            return $this->errorInternalError($e->getMessage());
 
         }
     }
@@ -140,6 +153,11 @@ class PaymentController extends ApiController
 
             if ($confirm == 1) {
                 \Event::fire('paxifi.payment.confirmed', [$payment]);
+
+                // If need get invoice:
+                if ($payment->invoice && !empty($payment->invoice_email)) {
+                    \Event::fire('paxifi.build.invoice', [$payment]);
+                }
             }
 
             \DB::commit();
@@ -296,41 +314,6 @@ class PaymentController extends ApiController
     }
 
     /**
-     * Build invoice event
-     */
-    public function buildInvoice($payment)
-    {
-        $invoiceFactory = new PaymentInvoiceFactory($payment->order, $this->getInvoiceContentTranslation());
-
-        $invoiceFactory->build();
-
-        // Config email options
-        $emailOptions = array(
-            'template' => 'invoice.email',
-            'context' => $this->translator->trans('email.invoice'),
-            'to' => $payment->order->buyer_email,
-            'data' => $invoiceFactory->getInvoiceData(),
-            'attach' => $this->flysystem->getAdapter()->getClient()->getObjectUrl(getenv('AWS_S3_BUCKET'), $invoiceFactory->getPdfUrlPath()),
-            'as' => 'invoice_' . $payment->id . '.pdf',
-            'mime' => 'application/pdf'
-        );
-
-        // Fire email invoice pdf event.
-        \Event::fire('paxifi.email', array($emailOptions));
-    }
-
-
-    /**
-     * @internal param \Paxifi\Order\Repository\EloquentOrderRepository $order
-     *
-     * @return array
-     */
-    public function getInvoiceContentTranslation()
-    {
-        return $this->translator->trans('pdf.content');
-    }
-
-    /**
      * Retrieves the Data Transformer
      *
      * @return \League\Fractal\TransformerAbstract
@@ -338,5 +321,28 @@ class PaymentController extends ApiController
     public function getTransformer()
     {
         return new PaymentTransformer();
+    }
+
+    /**
+     * Get payment object data.
+     *
+     * @param $data
+     * @return array
+     */
+    private function getPaymentData($data)
+    {
+
+        $newPayment = [
+            'payment_method_id' => PaymentMethods::getMethodIdByName($data['type']),
+            'order_id' => $data['id'],
+            'details' => $this->translator->trans("payments.{$data['type']}.create")
+        ];
+
+        if ($data['invoice'] && $data['invoice_email']) {
+            $newPayment['invoice'] = $data['invoice'];
+            $newPayment['invoice_email'] = $data['invoice_email'];
+        }
+
+        return $newPayment;
     }
 }

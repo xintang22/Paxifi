@@ -37,6 +37,9 @@ class PaymentServiceProvider extends ServiceProvider
             // Get payment with specific payment id.
             $this->app['router']->get('payments/{payment}', 'Paxifi\Payment\Controller\PaymentController@show');
 
+            // Confirm item received
+            $this->app['router']->put('payments/{payment}/item-received', 'Paxifi\Payment\Controller\PaymentController@received');
+
             // Cancel order
             $this->app['router']->put('payments/{payment}/cancel', 'Paxifi\Payment\Controller\PaymentController@cancel');
 
@@ -104,7 +107,7 @@ class PaymentServiceProvider extends ServiceProvider
      */
     protected function registerPaymentEvents()
     {
-        $this->app['events']->listen('paxifi.build.invoice' , 'Paxifi\Payment\Controller\PaymentController@buildInvoice');
+        $this->app['events']->subscribe('Paxifi\Payment\Event\PaymentEventHandler');
     }
 
     /**

@@ -9,7 +9,7 @@ class EloquentPaymentRepository extends BaseModel {
 
     protected $table = 'payments';
 
-    protected $fillable = ['order_id', 'payment_method_id', 'status', 'details', 'paypal_transaction_id', 'paypal_transaction_status', 'ipn', 'transaction_details', 'refunded'];
+    protected $fillable = ['order_id', 'payment_method_id', 'status', 'invoice', 'invoice_email', 'item_received', 'details', 'paypal_transaction_id', 'paypal_transaction_status', 'ipn', 'transaction_details', 'refunded'];
 
     /**
      * The attributes that should be mutated to dates.
@@ -125,6 +125,11 @@ class EloquentPaymentRepository extends BaseModel {
 
     public function refunded() {
         $this->refunded = 1;
+        $this->save();
+    }
+
+    public function received() {
+        $this->item_received = 1;
         $this->save();
     }
 }
