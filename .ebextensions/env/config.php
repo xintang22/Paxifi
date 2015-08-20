@@ -65,4 +65,5 @@ return array(
     'QUEUE_HOST' => $_SERVER['QUEUE_HOST'],
 
     'QUEUE_NAME' => $_SERVER['QUEUE_NAME'],
+);
 
