@@ -80,8 +80,9 @@ class NotificationTransformer extends TransformerAbstract
     {
         $ranking = [];
 
-        $ranking['message'] = $this->translator->trans('notifications.ranking.' . $notification->value);
+        $ranking['message'] = trans('notifications.ranking.' . $notification->value);
         $ranking['type'] = 'ranking';
+        $ranking['value'] = $notification->value;
 
         return $ranking;
     }
