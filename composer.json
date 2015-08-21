@@ -24,7 +24,8 @@
     "graham-campbell/flysystem": "~0.7",
     "barryvdh/laravel-cors": "0.2.x",
     "stripe/stripe-php": "2.*",
-    "sly/notification-pusher": "dev-master"
+    "sly/notification-pusher": "dev-master",
+    "predis/predis": "0.8"
   },
   "require-dev": {
     "phpunit/phpunit": "3.7.*",

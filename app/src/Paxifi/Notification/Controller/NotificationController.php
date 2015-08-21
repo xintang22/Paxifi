@@ -50,7 +50,7 @@ class NotificationController extends ApiController
             return $this->setStatusCode(200)->respondWithCollection($notifications);
 
         } catch (\Exception $e) {
-            return $this->errorInternalError();
+            return $this->errorInternalError($e->getMessage());
         }
     }
 

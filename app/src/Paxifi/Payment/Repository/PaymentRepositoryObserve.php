@@ -22,7 +22,9 @@ class PaymentRepositoryObserve {
             \Event::fire('paxifi.notifications.sales', [$payment]);
         }
 
-        \Event::fire('paxifi.push.notifications.payment.created', ["driver" => $driver, "payment" => $payment, "payment_method" => $payment_method]);
+        if (getenv('NOTIFICATION_ENABLED') ?: false) {
+            \Event::fire('paxifi.push.notifications.payment.created', ["driver" => $driver, "payment" => $payment, "payment_method" => $payment_method]);
+        }
     }
 }
 
