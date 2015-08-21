@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Illuminate\Support\Collection;
 use Paxifi\Notification\Repository\EloquentNotificationTypeRepository;
-use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository;
 use Paxifi\Settings\Repository\EloquentCountryRepository;
 use Paxifi\Support\Contracts\RatingInterface;
 use Paxifi\Support\Contracts\AddressInterface;

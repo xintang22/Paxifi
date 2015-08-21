@@ -324,7 +324,7 @@ class DriverServiceProvider extends ServiceProvider
         // fire event to create driver sticker
         $this->app['events']->listen('paxifi.create.sticker', 'Paxifi\Sticker\Controller\StickerController@store');
 
-        // fire driver seller_id  created event.
+        // fire driver seller_id created event.
         $this->app['events']->listen('paxifi.email.sticker', 'Paxifi\Sticker\Event\EmailSticker@handle');
 
         // fire payment confirmed event.
