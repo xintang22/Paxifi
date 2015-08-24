@@ -3,11 +3,11 @@
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
-use Paxifi\Order\Repository\EloquentOrderRepository as Order;
-use Paxifi\Order\Repository\EloquentOrderRepository;
+use Paxifi\Order\Repository\OrderRepository as Order;
 use Paxifi\Order\Transformer\OrderTransformer;
 use Paxifi\Payment\Repository\EloquentPaymentRepository;
 use Paxifi\Support\Controller\ApiController;
+use Cache;
 
 class OrderController extends ApiController
 {
@@ -20,7 +20,19 @@ class OrderController extends ApiController
      */
     public function show($order)
     {
-        return $this->respondWithItem($order);
+        $cacheKey = Order::getTable();
+
+        if (Cache::getDefaultDriver() == "file" || Cache::getDefaultDriver() == "database") {
+            $cachedOrder = $order;
+        } else {
+            if (is_null(Cache::tags($cacheKey)->get($order->id))) {
+                Cache::tags($cacheKey)->put($order->id, $order, 10);
+            }
+
+            $cachedOrder = Cache::tags($cacheKey)->get($order->id);
+        }
+
+        return $this->respondWithItem($cachedOrder);
     }
 
     /**

@@ -18,6 +18,15 @@ class OrderServiceProvider extends ServiceProvider
         $this->registerRouteModelBindings();
 
         $this->registerEvent();
+
+        $this->registerOrderRepository();
+    }
+
+    /**
+     * Register Order Repository
+     */
+    protected function registerOrderRepository() {
+        $this->app->bind('paxifi.repository.order', 'Paxifi\Order\Repository\EloquentOrderRepository', true);
     }
 
     /**
@@ -71,6 +80,17 @@ class OrderServiceProvider extends ServiceProvider
         parent::boot();
 
         $this->registerConfiguration();
+    }
+
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return array('paxifi.repository.order');
     }
 
     /**
