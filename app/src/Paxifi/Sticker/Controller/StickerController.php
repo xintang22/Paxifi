@@ -134,6 +134,8 @@ class StickerController extends ApiController
 
             $email = \Input::get('email', $driver->email);
 
+            \Event::fire('paxifi.create.sticker', [$driver]);
+
             \Event::fire('paxifi.email.sticker', [$driver, $email]);
 
             return $this->setStatusCode(200)->respond([

@@ -225,23 +225,19 @@ class DriverController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            if (!empty($driver->seller_id)) {
-                return $this->errorWrongArgs('Seller id can be filled one time only.');
-            }
-
             $seller_id = \Input::get('seller_id');
 
-            with(new UpdateDriverSellerIdValidator())->validate(\Input::only('seller_id'));
+            if (!empty($seller_id) && $seller_id == $driver->seller_id) {
+                \DB::commit();
+            } else {
+                with(new UpdateDriverSellerIdValidator())->validate(\Input::only('seller_id'));
 
-            $driver->seller_id = $seller_id;
+                $driver->seller_id = $seller_id;
 
-            $driver->update();
+                $driver->update();
 
-            \Event::fire('paxifi.create.sticker', [$driver]);
-
-            \Event::fire('paxifi.email.sticker', [$driver]);
-
-            \DB::commit();
+                \DB::commit();
+            }
 
             return $this->respondWithItem($driver);
 
