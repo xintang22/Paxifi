@@ -1,9 +1,9 @@
 <?php namespace Paxifi\Store\Controller;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Paxifi\Problem\Repository\EloquentProblemTypesRepository as ProblemType;
 use Paxifi\Problem\Repository\ProblemRepository as Problem;
-use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Store\Repository\Product\EloquentProductRepository;
 use Paxifi\Store\Repository\Product\ProductRepository;
 use Paxifi\Store\Repository\Product\Validation\CreateProblemValidator;
@@ -12,6 +12,7 @@ use Paxifi\Store\Repository\Product\Validation\UpdateProductValidator;
 use Paxifi\Store\Transformer\ProductTransformer;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
+use Cache, Paginator;
 
 class ProductController extends ApiController
 {
@@ -30,9 +31,9 @@ class ProductController extends ApiController
             }
 
             if (\Input::has('page')) {
-                return $this->respondWithCollection($driver->products()->paginate(\Input::get('per_page', 6)));
+                return $this->respondWithCollection($driver->products()->cacheTags(array('drivers', 'products'))->remember(10)->paginate(\Input::get('per_page', 6)));
             } else {
-                return $this->respondWithCollection($driver->products()->get());
+                return $this->respondWithCollection($driver->products()->cacheTags(array('drivers', 'products'))->remember(10)->get());
             }
         } catch (\Exception $e) {
             return $this->errorInternalError($e->getMessage());
