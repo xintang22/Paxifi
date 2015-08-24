@@ -1,14 +1,15 @@
 <?php namespace Paxifi\Notification\Controller;
 
 use Carbon\Carbon;
-use Paxifi\Notification\Repository\EloquentNotificationRepository;
 use Paxifi\Notification\Repository\EloquentNotificationTypeRepository;
 use Paxifi\Notification\Repository\NotificationRepository;
 use Paxifi\Notification\Transformer\NotificationTransformer;
+use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
 use Paxifi\Payment\Repository\EloquentPaymentRepository as Payment;
+use Cache;
 
 class NotificationController extends ApiController
 {
@@ -41,13 +42,24 @@ class NotificationController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
+            $cacheKey = [DriverRepository::getTable(), NotificationRepository::getTable()];
+
             $to = Carbon::now();
 
-            $from = (\Input::has('from')) ? \Input::get('from', $driver->created_at->format('U')) : $driver->created_at->format('U');
+            $from = (\Input::has('from')) ? Carbon::createFromTimestamp(\Input::get('from', $driver->created_at->format('U'))) : Carbon::createFromTimestamp($driver->created_at->format('U'));
 
-            $notifications = $driver->with_notifications($from, $to);
+            if (Cache::getDefaultDriver() == "file" || Cache::getDefaultDriver() == "database" || \Input::has('from')) {
+                $cachedNotifications = $driver->with_notifications($from, $to);
+            } else {
 
-            return $this->setStatusCode(200)->respondWithCollection($notifications);
+                if (is_null(Cache::tags($cacheKey)->get($driver->id))) {
+                    Cache::tags($cacheKey)->put($driver->id, $driver->with_notifications($from, $to), 10);
+                }
+
+                $cachedNotifications = Cache::tags($cacheKey)->get($driver->id);
+            }
+
+            return $this->setStatusCode(200)->respondWithCollection($cachedNotifications);
 
         } catch (\Exception $e) {
             return $this->errorInternalError($e->getMessage());
