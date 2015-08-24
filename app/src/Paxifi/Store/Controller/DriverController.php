@@ -6,7 +6,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Paxifi\Paypal\Paypal;
 use Paxifi\Store\Repository\Driver\DriverRepository;
-use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Store\Repository\Driver\Factory\DriverLogoFactory;
 use Paxifi\Store\Repository\Driver\Validation\CreateDriverValidator;
 use Paxifi\Store\Repository\Driver\Validation\EmailValidation;
@@ -20,6 +19,7 @@ use Paxifi\Subscription\Repository\EloquentPlanRepository;
 use Paxifi\Subscription\Repository\EloquentSubscriptionRepository;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
+use Cache;
 
 class DriverController extends ApiController
 {
@@ -159,7 +159,17 @@ class DriverController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            return $this->respondWithItem($driver);
+            if (Cache::getDefaultDriver() == "file" || Cache::getDefaultDriver() == "database") {
+                $cachedDriver = $driver;
+            } else {
+                if (is_null(Cache::tags($driver->getTable())->get($driver->id))) {
+                    Cache::tags($driver->getTable())->put($driver->id, $driver, 10);
+                }
+
+                $cachedDriver = Cache::tags($driver->getTable())->get($driver->id);
+            }
+
+            return $this->respondWithItem($cachedDriver);
         } catch (\Exception $e) {
             $this->errorInternalError();
         }
