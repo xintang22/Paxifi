@@ -2,9 +2,20 @@
 
 use Paxifi\Support\Repository\BaseModel;
 
-class EloquentFeedbackRepository extends BaseModel {
+class EloquentFeedbackRepository extends BaseModel
+{
+    /**
+     * Table
+     *
+     * @var string
+     */
     protected $table = "feedbacks";
 
+    /**
+     * Fillable
+     *
+     * @var array
+     */
     protected $fillable = ['driver_id', 'payment_id', 'buyer_email', 'feedback', 'comment'];
 
     /**
@@ -12,7 +23,8 @@ class EloquentFeedbackRepository extends BaseModel {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function driver() {
+    public function driver()
+    {
         return $this->belongsTo('Paxifi\Store\Repository\Driver\EloquentDriverRepository', 'driver_id', 'id');
     }
 
@@ -21,7 +33,8 @@ class EloquentFeedbackRepository extends BaseModel {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function payment() {
+    public function payment()
+    {
         return $this->belongsTo('Paxifi\Payment\Repository\EloquentPaymentRepository', 'payment_id');
     }
 } 

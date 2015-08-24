@@ -1,8 +1,9 @@
 <?php namespace Paxifi\Feedback\Controller;
 
-use Paxifi\Feedback\Repository\EloquentFeedbackRepository as Feedback;
+use Paxifi\Feedback\Repository\FeedbackRepository as Feedback;
 use Paxifi\Feedback\Transformer\FeedbackTransformer;
 use Paxifi\Payment\Repository\Validation\CreatePaymentFeedbackValidator;
+use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Support\Controller\ApiController;
 use Paxifi\Support\Validation\ValidationException;
 
@@ -62,14 +63,16 @@ class FeedbackController extends ApiController {
      */
     public function comments($driver) {
         try {
+            $cacheKey = [DriverRepository::getTable(), Feedback::getTable()];
+
             $count = 4;
 
             $page = \Input::get('page');
 
             if (\Input::has('page') && $page >= 1) {
-                $comments = $driver->comments()->skip(($page - 1) * $count)->take($count)->get()->toArray();
+                $comments = $driver->comments()->cacheTags($cacheKey)->remember(10)->skip(($page - 1) * $count)->take($count)->get()->toArray();
             } else {
-                $comments = $driver->comments()->get()->toArray();
+                $comments = $driver->comments()->cacheTags($cacheKey)->remember(10)->get()->toArray();
             }
 
             return $this->setStatusCode(200)->respond(
