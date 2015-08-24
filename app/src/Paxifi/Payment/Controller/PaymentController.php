@@ -42,7 +42,7 @@ class PaymentController extends ApiController
                 throw new PaymentNotFoundException();
             }
         } catch(PaymentNotFoundException $e) {
-//            return $this->respond()
+            return $this->setStatusCode(404)->respondWithError($e->getMessage());
         } catch (\Exception $e) {
             return $this->errorInternalError();
         }
@@ -104,7 +104,6 @@ class PaymentController extends ApiController
             $newPayment = $this->getPaymentData($data);
 
             if ($payment = Payment::create($newPayment)) {
-
                 \DB::commit();
 
                 return $this->setStatusCode(200)->respondWithItem($payment);
