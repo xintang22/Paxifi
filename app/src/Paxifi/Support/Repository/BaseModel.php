@@ -9,7 +9,8 @@ use Paxifi\Support\ModelObserver\ModelObserver;
  */
 class BaseModel extends Model
 {
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
 
         self::observe(new ModelObserver());
