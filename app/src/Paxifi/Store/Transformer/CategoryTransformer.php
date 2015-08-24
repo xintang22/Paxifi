@@ -10,6 +10,7 @@ class CategoryTransformer extends TransformerAbstract
         return array(
             'id' => $category->id,
             'name' => $category->name,
+            'enabled' => $category->enabled
         );
     }
 } 

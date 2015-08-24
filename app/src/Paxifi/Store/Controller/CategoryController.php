@@ -15,7 +15,7 @@ class CategoryController extends ApiController
     {
         try {
 
-            $categories = CategoryRepository::enabled();
+            $categories = CategoryRepository::rememberForever()->where('enabled', '=', 1)->get();
 
             return $this->respondWithCollection($categories);
         } catch (\Exception $e) {
