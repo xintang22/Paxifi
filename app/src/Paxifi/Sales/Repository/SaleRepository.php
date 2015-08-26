@@ -1,7 +1,9 @@
 <?php namespace Paxifi\Sales\Repository;
 
 use Illuminate\Support\Contracts\ArrayableInterface;
+use Paxifi\Order\Repository\EloquentOrderRepository;
 use Paxifi\Problem\Repository\EloquentProblemRepository;
+use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Paxifi\Tax\Calculator\Calculator;
 
 class SaleRepository implements ArrayableInterface
@@ -124,18 +126,20 @@ class SaleRepository implements ArrayableInterface
      */
     protected function formatProducts($order)
     {
+
         return $order->products->map(function ($product) use($order) {
             $salesInfo = $this->getProductSaleInfo($product);
 
             return array(
                 'id' => $product->id,
                 'name' => $product->name,
-                'unit_price' => $product->unit_price,
+                'unit_price' => $product->pivot->unit_price,
                 'description' => $product->description,
                 'photos' => $product->photos,
                 'tax_amount' => $product->tax_amount,
                 'quantity' => $product->pivot->quantity,
-                'cost' => $product->average_cost,
+                'cost' => $product->pivot->average_cost,
+                'currency' => $product->pivot->currency,
                 'profit' => $salesInfo->productProfit,
                 'category' => $product->category->name,
                 'issues' => $this->getProductProblemsInSale($product, $order),
@@ -155,15 +159,16 @@ class SaleRepository implements ArrayableInterface
 
         $info = new \stdClass();
 
-        $info->productUnitPrice = $product->unit_price * $product->pivot->quantity;
-        $info->productCosts     = $product->average_cost * $product->pivot->quantity;
+        $info->productUnitPrice = $product->pivot->unit_price * $product->pivot->quantity;
+        $info->productCosts     = $product->pivot->average_cost * $product->pivot->quantity;
 
-        if ($product->driver->tax_enabled) {
-            $info->productTax = Calculator::calculate($info->productUnitPrice, $product->getTaxRate());
+        if ($product->pivot->tax_enabled) {
+            $info->productTax = $product->pivot->tax_included_in_price ? $info->productUnitPrice - ($info->productUnitPrice / (1 + $product->pivot->tax_amount)) : $info->productUnitPrice * $product->pivot->tax_amount;
         } else {
             $info->productTax = 0;
         }
-        $info->productSales = $product->getTaxRate()->isIncludedInPrice() ? $info->productUnitPrice : $info->productUnitPrice + $info->productTax;
+
+        $info->productSales = $product->pivot->tax_included_in_price ? $info->productUnitPrice : $info->productUnitPrice + $info->productTax;
         $info->productCommission = $info->productUnitPrice * $product->driver->getCommissionRate();
         $info->productProfit = $info->productSales - $info->productCosts - $info->productTax - $info->productCommission;
 

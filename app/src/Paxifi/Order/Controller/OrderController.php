@@ -78,7 +78,7 @@ class OrderController extends ApiController
         } catch (\InvalidArgumentException $e) {
             return $this->errorWrongArgs($e->getMessage());
         } catch (\Exception $e) {
-            return $this->errorInternalError();
+            return $this->errorInternalError($e->getMessage());
         }
     }
 
