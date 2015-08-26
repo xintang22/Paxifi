@@ -40,7 +40,7 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
     public function products()
     {
         return $this->belongsToMany('Paxifi\Store\Repository\Product\EloquentProductRepository', 'order_items', 'order_id', 'product_id')->withTrashed()
-            ->withPivot(array('quantity'))->withTimestamps();
+            ->withPivot(array('quantity', 'unit_price', 'tax_amount', 'tax_enabled', 'tax_included_in_price', 'average_cost', 'currency'))->withTimestamps();
     }
 
     /**
@@ -126,7 +126,17 @@ class EloquentOrderRepository extends BaseModel implements OrderRepositoryInterf
         // Total Sales
         $this->total_sales += $product->getTaxRate()->isIncludedInPrice() ? $totalUnitPrice : $totalUnitPrice + $totalTax;
 
-        $this->products()->attach($product->id, array('quantity' => $item['quantity']));
+        $this->products()->attach($product->id,
+            [
+                'unit_price' => $product->unit_price,
+                'average_cost' => $product->average_cost,
+                'tax_amount' => $product->tax_amount,
+                'tax_enabled' => $product->driver->tax_enabled,
+                'tax_included_in_price' => $product->driver->tax_included_in_price,
+                'currency' => $product->driver->currency,
+                'quantity' => $item['quantity']
+            ]
+        );
 
         return $this;
     }
