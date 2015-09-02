@@ -1,5 +1,6 @@
 <?php namespace Paxifi\Store\Event;
 
+use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository;
 use Paxifi\Store\Repository\Driver\EloquentDriverRepository;
 use Config, Mail;
 
@@ -26,6 +27,9 @@ class DriverEventHandler {
         $email = $driver->email;
         $subject = trans('email.welcome.subject');
         $from = trans('email.welcome.from');
+
+        // Create Driver Cash Payment
+        $driver->available_payment_methods()->attach(EloquentPaymentMethodsRepository::getMethodIdByName('cash'));
 
         Mail::queue('emails.welcome.welcome', [], function ($message) use ($email, $from, $subject) {
             $message

@@ -92,8 +92,12 @@ class DriverTransformer extends TransformerAbstract
             "cash" => true
         ];
 
-        foreach($methods as $key => $method) {
-            $details[$method->name] = $driver->{$method->name}->first()->toArray();
+        if ($methods) {
+            foreach($methods as $key => $method) {
+                if ($method->name != 'cash') {
+                    $details[$method->name] = $driver->{$method->name}->first()->toArray();
+                }
+            }
         }
 
         return $details;

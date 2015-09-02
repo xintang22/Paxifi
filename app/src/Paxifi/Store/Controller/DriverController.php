@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
+use Paxifi\Payment\Repository\EloquentPaymentMethodsRepository;
 use Paxifi\Paypal\Paypal;
 use Paxifi\Store\Repository\Driver\DriverRepository;
 use Paxifi\Store\Repository\Driver\Factory\DriverLogoFactory;
