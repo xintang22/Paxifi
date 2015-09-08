@@ -155,7 +155,7 @@ class PaymentController extends ApiController
 
                 // If need get invoice:
                 if ($payment->invoice && !empty($payment->invoice_email)) {
-                    \Event::fire('paxifi.build.invoice', [$payment]);
+                    \Event::fire('paxifi.build.invoice', $payment);
                 }
             }
 

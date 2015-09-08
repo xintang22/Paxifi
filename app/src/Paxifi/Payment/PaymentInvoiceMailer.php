@@ -51,7 +51,10 @@ class PaymentInvoiceMailer
             return;
         }
 
-        $order = EloquentOrderRepository::findOrFail($payment['order_id'])->first();
+        $order = EloquentOrderRepository::findOrFail($payment['order_id']);
+        if (!$order) {
+            return true;
+        }
         $invoiceFactory = new PaymentInvoiceFactory($order, trans('pdf.content'));
 
         $invoiceFactory->build();

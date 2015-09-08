@@ -100,9 +100,9 @@ class PaymentInvoiceFactory extends DriverLogoFactory
         // template files.
         $this->driverLogoCircleCover = public_path(\Config::get('images.invoices.template') . 'driver_logo_bg.png');
         $this->paxifiLogoFilePath = public_path(\Config::get('images.invoices.template') . $this->paxifiLogoName);
-        $this->paxifiLogoUrlPath = url(\Config::get('images.invoices.template') . $this->paxifiLogoName, $this->secure);
-        $this->defaultDriverLogoFilePath = url(\Config::get('images.invoices.template') . $this->defaultDriverLogoName, $this->secure);
-        $this->defaultDriverLogoUrlPath = url(\Config::get('images.invoices.template') . $this->defaultDriverLogoName, $this->secure);
+        $this->paxifiLogoUrlPath = url(\Config::get('images.invoices.template') . $this->paxifiLogoName, null, $this->secure);
+        $this->defaultDriverLogoFilePath = url(\Config::get('images.invoices.template') . $this->defaultDriverLogoName, null, $this->secure);
+        $this->defaultDriverLogoUrlPath = url(\Config::get('images.invoices.template') . $this->defaultDriverLogoName, null, $this->secure);
 
         $this->setDriver($this->getOrderDriver());
     }

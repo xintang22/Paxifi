@@ -145,7 +145,7 @@ class DriverLogoFactory
      */
     public function getDriverDefaultLogoUrl()
     {
-        return url($this->driverLogoDefaultTemplate, $this->secure);
+        return url($this->driverLogoDefaultTemplate, null, $this->secure);
     }
 
     /**

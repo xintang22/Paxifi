@@ -176,7 +176,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
             $query->where('type_id', '<>', EloquentNotificationTypeRepository::findByType('thumbs')->id);
 
         if (!$this->notify_others)
-            $query->where('type_id', '<>', EloquentNotificationTypeRepository::findByType('emails')->id);
+            $query->where('type_id', '<>', EloquentNotificationTypeRepository::findByType('email')->id);
 
         return $query
             ->where('created_at', '>=', $from)
