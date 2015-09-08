@@ -6,7 +6,7 @@ return array(
         'down' => 'You recieved a thumbs down.',
     ],
     'stock_reminder' => ':product_name is out of stock!',
-    'stock_almost_reminder' => ':product_name is near out of stock!',
+    'stock_almost_reminder' => ':product_name is nearly out of stock!',
     'sales' => [
         "cash" => [
             'waiting' => 'The cash payment of :currency :amount is waiting for your confirmation.',
