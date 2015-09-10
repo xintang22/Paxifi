@@ -48,18 +48,9 @@ class NotificationController extends ApiController
 
             $from = (\Input::has('from')) ? Carbon::createFromTimestamp(\Input::get('from', $driver->created_at->format('U'))) : Carbon::createFromTimestamp($driver->created_at->format('U'));
 
-            if (Cache::getDefaultDriver() == "file" || Cache::getDefaultDriver() == "database" || \Input::has('from')) {
-                $cachedNotifications = $driver->with_notifications($from, $to);
-            } else {
+            $notifications = $driver->with_notifications($from, $to);
 
-                if (is_null(Cache::tags($cacheKey)->get($driver->id))) {
-                    Cache::tags($cacheKey)->put($driver->id, $driver->with_notifications($from, $to), 10);
-                }
-
-                $cachedNotifications = Cache::tags($cacheKey)->get($driver->id);
-            }
-
-            return $this->setStatusCode(200)->respondWithCollection($cachedNotifications);
+            return $this->setStatusCode(200)->respondWithCollection($notifications);
 
         } catch (\Exception $e) {
             return $this->errorInternalError($e->getMessage());
