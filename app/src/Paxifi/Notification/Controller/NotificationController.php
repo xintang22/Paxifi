@@ -42,8 +42,6 @@ class NotificationController extends ApiController
                 $driver = $this->getAuthenticatedDriver();
             }
 
-            $cacheKey = [DriverRepository::getTable(), NotificationRepository::getTable()];
-
             $to = Carbon::now();
 
             $from = (\Input::has('from')) ? Carbon::createFromTimestamp(\Input::get('from', $driver->created_at->format('U'))) : Carbon::createFromTimestamp($driver->created_at->format('U'));

@@ -153,16 +153,18 @@ class SalesController extends BaseApiController
 
         $totalItems = 0;
         $totalSales = 0;
+        $totalCosts = 0;
 
-        $driver->products()->get()->each(function ($product) use (&$totalItems, &$totalSales) {
+        $driver->products()->get()->each(function ($product) use (&$totalItems, &$totalSales, &$totalCosts) {
             $totalItems += $product->inventory;
             $totalSales += $product->unit_price * $product->inventory;
+            $totalCosts += $product->average_cost * $product->inventory;
         });
 
         $commissionRate = \Config::get('paxifi.commission.rate', 0);
         $totalCommission = $commissionRate * $totalSales;
 
-        $totalProfit = $totalSales - $totalCommission;
+        $totalProfit = $totalSales - $totalCosts - $totalCommission;
 
         return $this->respond(array(
             'forecasts' => array(
