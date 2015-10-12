@@ -8,9 +8,9 @@ class CountriesTableSeeder extends Seeder
     protected $countries = [
         ["name" => "United States", "iso" => "US", "currency" => "USD", "sticker_price" => 5, "commission_rate" => 0],
         ["name" => "United Kingdom", "iso" => "UK", "currency" => "GBP", "sticker_price" => 4, "commission_rate" => 0],
-        ["name" => "Australia", "iso" => "AU", "currency" => "USD", "sticker_price" => 4, "commission_rate" => 0],
-        ["name" => "Kenya", "iso" => "KE", "currency" => "USD", "sticker_price" => 4, "commission_rate" => 0],
-        ["name" => "India", "iso" => "IN", "currency" => "USD", "sticker_price" => 4, "commission_rate" => 0],
+        ["name" => "Australia", "iso" => "AU", "currency" => "AUD", "sticker_price" => 4, "commission_rate" => 0],
+        ["name" => "Kenya", "iso" => "KE", "currency" => "INR", "sticker_price" => 4, "commission_rate" => 0],
+        ["name" => "India", "iso" => "IN", "currency" => "KES", "sticker_price" => 4, "commission_rate" => 0],
         ["name" => "Other", "iso" => "Other", "currency" => "USD", "sticker_price" => 4, "commission_rate" => 0],
     ];
 
