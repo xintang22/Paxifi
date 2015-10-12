@@ -39,7 +39,7 @@ class NotificationTransformer extends TransformerAbstract
                 $response = $this->transformStock($notification);
                 break;
 
-            case "emails":
+            case "email":
                 $response = $this->transformEmails($notification);
                 break;
 

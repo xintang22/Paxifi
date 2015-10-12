@@ -31,7 +31,7 @@ class Queues
 
             if ($driver = Driver::findByEmail($data['to'])) {
 
-                $driver->type = "emails";
+                $driver->type = "email";
 
                 \Event::fire('paxifi.notifications.emails', [$driver]);
             }

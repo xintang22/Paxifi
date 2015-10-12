@@ -6,5 +6,5 @@ use Paxifi\Notification\Repository\EloquentNotificationRepository;
 
 class EmailNotification extends EloquentNotificationRepository
 {
-    protected $type = "emails";
+    protected $type = "email";
 }

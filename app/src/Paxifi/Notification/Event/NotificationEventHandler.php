@@ -93,7 +93,7 @@ class NotificationEventHandler
      * @param $driver
      * @return bool
      */
-    public function emails($driver)
+    public function email($driver)
     {
         $notification = [
             "driver_id" => $driver->id,
