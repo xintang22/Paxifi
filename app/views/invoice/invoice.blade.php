@@ -167,7 +167,7 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <b>{{{$content['payment_amount']}}} </b>{{{$order['total_sales']}}} USD
+                                                <b>{{{$content['payment_amount']}}} </b>{{{$order['total_sales']}}} {{{$driver['currency']}}}
                                             </td>
                                         </tr>
                                         </tbody>

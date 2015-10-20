@@ -510,7 +510,7 @@ class EloquentDriverRepository extends BaseModel implements DriverRepositoryInte
     public function getCommissionRate() {
         $country = $this->getCountry() ?: "US";
 
-        return EloquentCountryRepository::where('iso', '=', $country)->first() ? EloquentCountryRepository::where('iso', '=', $country)->first()->commission_rate: EloquentCountryRepository::where('iso', '=', 'OC')->first()->commission_rate;
+        return EloquentCountryRepository::where('iso', '=', $country)->first() ? EloquentCountryRepository::where('iso', '=', $country)->first()->commission_rate: EloquentCountryRepository::where('iso', '=', 'Other')->first()->commission_rate;
     }
 
     /**
