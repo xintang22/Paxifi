@@ -20,7 +20,10 @@ class FeedbackController extends ApiController {
     {
         try {
             if($payment->feedback) {
-                return $this->setStatusCode(200)->respond([]);
+                return $this->setStatusCode(200)->respond([
+                    "success" => true,
+                    "isNew" => false
+                ]);
             }
 
             \DB::beginTransaction();
@@ -40,6 +43,7 @@ class FeedbackController extends ApiController {
 
             return $this->setStatusCode(200)->respond([
                 "success" => true,
+                "isNew" => true,
                 "message" => "Feedback has been sent."
             ]);
 
